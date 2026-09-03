@@ -18,11 +18,31 @@ labels are drawn as live HTML on top, which is what makes them independently fil
 | `lateral.jpg` | Lateral surface | 2000 × 1423 |
 | `ventral.jpg` | Ventral surface | 2000 × 1419 |
 | `posterior-internal.jpg` | Posterior, internal | 2000 × 1850 |
+| `pulled-back-lateral.jpg` | Lateral, cerebellum retracted | 2000 × 1438 |
 | `coronal-a.jpg` … `coronal-f.jpg` | Coronal series, rostral → caudal | ~2000 × 1450–1540 |
 
-**Still needed:** `pulled-back-lateral.jpg` — the lateral view with the cerebellum retracted,
-covering the geniculate nuclei, brachium, and middle cerebellar peduncle (quiz blocks Lat 12–16).
-A labeled version exists in `labeled/`; the clean master hasn't been produced yet.
+All twelve views have clean plates.
+
+### A note on `pulled-back-lateral`
+
+The unlabeled master for this one was thought lost. It turned up inside
+`Pulled Back Lateral View.pdf` — the labels there are **vector text drawn over an
+untouched 4032 × 3024 raster**, so the photograph was never flattened. Extracting the
+embedded image recovered it at full resolution:
+
+```python
+import fitz                      # PyMuPDF
+doc = fitz.open("Pulled Back Lateral View.pdf")
+xref = doc[0].get_images(full=True)[0][0]
+open("raw.png", "wb").write(doc.extract_image(xref)["image"])
+```
+
+Worth trying first if another master goes missing — a PDF export usually keeps the photo
+and the labels as separate layers.
+
+The extracted raster still had the lab background, so it was masked with Vision's
+foreground-instance segmentation, then the blue glove was dropped by channel
+(`B - R > 25`) and the residual shadow by luminance.
 
 ### Regenerating
 

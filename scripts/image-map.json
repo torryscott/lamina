@@ -7,8 +7,7 @@
     "When you upload a plate to your Qualtrics graphics library, paste its",
     "IM_ id here so the qualtrics-hosted variant can pick it up.",
     "Leave qualtrics_im null for plates you haven't uploaded.",
-    "",
-    "pulled-back-lateral has no clean plate yet \u2014 see images/README.md"
+    ""
   ],
   "pages_base": "https://torryscott.github.io/lamina",
   "qualtrics_base": "https://smcm.pdx1.qualtrics.com/CP/Graphic.php?IM=",
@@ -55,6 +54,10 @@
     },
     "coronal-f": {
       "repo_path": "images/clean/coronal-f.jpg",
+      "qualtrics_im": null
+    },
+    "pulled-back-lateral": {
+      "repo_path": "images/clean/pulled-back-lateral.jpg",
       "qualtrics_im": null
     }
   }
