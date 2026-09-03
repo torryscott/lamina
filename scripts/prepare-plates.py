@@ -23,6 +23,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "images" / "clean"
 
 # Source filename -> canonical plate name (matches images/labeled/)
+# NOTE: midsagittal is deliberately excluded. Its 25 marker coordinates were
+# placed against the original plate, which frames the specimen edge-to-edge.
+# Regenerating it here would reframe the specimen and misalign every label.
+# Re-enable only if you also re-place the markers in the capture tool.
 PLATES = {
     "Coronal A.png":                "coronal-a",
     "Coronal B.png":                "coronal-b",
@@ -34,7 +38,7 @@ PLATES = {
     "Gross Lateral View.png":       "lateral",
     "Gross Posterior Internal.png": "posterior-internal",
     "Gross Ventral View.png":       "ventral",
-    "Midsagittal.png":              "midsagittal",
+    # "Midsagittal.png":            "midsagittal",   # see note below
 }
 
 
