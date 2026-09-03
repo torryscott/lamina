@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Qualtrics exports — response data should never land in this repo
+*Responses*.csv
+*Responses*.tsv
+*.sav
+
+# Working copies of survey files (keep only the canonical one in qualtrics/)
+*_v[0-9].qsf
+*_v[0-9][0-9].qsf

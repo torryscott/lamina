@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: Lamina
+message: >-
+  If you use this module in your teaching or reference it in
+  scholarship, please cite it as below.
+type: software
+authors:
+  - name: "FlowingMind"
+    # Add a personal author alongside the org if you'd prefer to be cited by name:
+    # - given-names: ""
+    #   family-names: ""
+    #   affiliation: "St. Mary's College of Maryland"
+    #   orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/torryscott/lamina"
+abstract: >-
+  A customizable neuroanatomy practicum for Qualtrics. Students
+  identify structures on photographs of a preserved sheep brain
+  across three anatomical views. Instructors select which
+  structures are included via URL parameters, without editing or
+  duplicating the survey. Includes an interactive labeled atlas
+  with keyboard- and screen-reader-accessible study modes.
+keywords:
+  - neuroanatomy
+  - anatomy education
+  - Qualtrics
+  - sheep brain
+  - interactive atlas
+  - open educational resources
+license: MIT
+license-url: "https://github.com/torryscott/lamina/blob/main/LICENSE"

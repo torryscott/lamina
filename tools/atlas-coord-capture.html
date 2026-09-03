@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atlas Coord Capture — Midsagittal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --ink: #1a1d29;
+    --ink-soft: #3c4050;
+    --muted: #6b7280;
+    --muted-soft: #9aa0ac;
+    --accent: #1e3a5f;
+    --accent-hover: #2a4e7a;
+    --rule: #e3e7ee;
+    --chip: #eef1f6;
+    --danger: #b2423c;
+    --success: #2f7a3d;
+    --marker: #e0b040;
+    --marker-selected: #1e3a5f;
+    --leader: rgba(30, 58, 95, 0.55);
+    --leader-selected: #1e3a5f;
+    --label-bg: rgba(255, 255, 255, 0.96);
+    --label-border: #c8cfdb;
+    --radius: 10px;
+    --shadow: 0 4px 18px rgba(20, 20, 30, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  header {
+    padding: 18px 24px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+  }
+  header h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin: 0 0 2px;
+  }
+  header p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+
+  .app {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 16px;
+    padding: 16px;
+    height: calc(100vh - 70px);
+  }
+
+  .canvas-wrap {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .toolbar .spacer { flex: 1; }
+  .toolbar input[type="file"] { font-size: 0.85rem; }
+  .toolbar .toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toolbar .toggle input { margin: 0; cursor: pointer; }
+
+  .dropzone {
+    flex: 1;
+    overflow: auto;
+    background: #fafbfc;
+    border: 1px dashed var(--rule);
+    border-radius: 8px;
+    position: relative;
+    min-height: 200px;
+  }
+  .dropzone.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .stage {
+    position: relative;
+    display: inline-block;
+  }
+  .stage img {
+    display: block;
+    max-width: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .stage svg.leaders {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: clamp(6px, calc(var(--iw, 1000px) * 0.0055), 12px);
+    height: clamp(6px, calc(var(--iw, 1000px) * 0.0055), 12px);
+    border-radius: 50%;
+    background: var(--marker);
+    box-shadow: 0 0 0 3px rgba(224, 176, 64, 0.28), 0 1px 2px rgba(0,0,0,0.3);
+    cursor: move;
+    border: 1px solid #fff;
+    z-index: 3;
+  }
+  .marker.selected {
+    background: var(--marker-selected);
+    box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.28), 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .label-pill {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: var(--label-bg);
+    border: 1px solid var(--label-border);
+    padding: 0.3em 0.8em;
+    border-radius: 14px;
+    font-size: clamp(0.65rem, calc(var(--iw, 1000px) * 0.011), 1.3rem);
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+    max-width: 12em;
+    text-align: center;
+    line-height: 1.15;
+    cursor: move;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 2;
+    backdrop-filter: blur(2px);
+  }
+  .label-pill.selected {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.15), 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  /* Hide-labels mode */
+  .stage.hide-labels .label-pill { display: none; }
+  .stage.hide-labels svg.leaders { display: none; }
+
+  /* Hover preview mode — dots always; labels + leaders only for the hovered marker */
+  .stage.hover-mode .label-pill { opacity: 0; transition: opacity 0.15s; }
+  .stage.hover-mode .label-pill.hovered { opacity: 1; }
+  .stage.hover-mode svg.leaders line { opacity: 0; transition: opacity 0.15s; }
+  .stage.hover-mode svg.leaders line.hovered { opacity: 1; }
+
+  /* Side panel */
+  .side {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .side h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .side .hint { color: var(--muted); font-size: 0.82rem; margin: 0 0 10px; }
+
+  .form-row { display: flex; gap: 6px; margin-bottom: 8px; }
+  .form-row select, .form-row input {
+    flex: 1;
+    padding: 7px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    background: #fff;
+  }
+  .form-row select:focus, .form-row input:focus { outline: 1.5px solid var(--accent); border-color: var(--accent); }
+
+  .markers-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 6px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .markers-list .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    padding: 6px 2px;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+  }
+  .markers-list .row:hover { background: var(--chip); }
+  .markers-list .row.selected { background: #e9f0fa; }
+  .markers-list .row .name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    line-height: 1.2;
+    color: var(--ink);
+    word-break: break-all;
+  }
+  .markers-list .row .name small {
+    display: block;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    margin-top: 1px;
+  }
+  .markers-list .row button {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9rem;
+  }
+  .markers-list .row button:hover { color: var(--danger); background: #fde8e7; }
+
+  button {
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+    color: var(--ink);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.84rem;
+    transition: all 0.15s;
+  }
+  button:hover { background: var(--chip); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.primary:hover { background: var(--accent-hover); }
+  button:focus-visible,
+  select:focus-visible,
+  input[type="text"]:focus-visible,
+  input[type="file"]:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .export {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+  }
+  textarea.json-out {
+    width: 100%;
+    min-height: 120px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 8px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: #fafbfc;
+    resize: vertical;
+  }
+  .copied { font-size: 0.8rem; color: var(--success); margin-left: 6px; opacity: 0; transition: opacity 0.2s; }
+  .copied.show { opacity: 1; }
+
+  .status {
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 4px 0;
+  }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; height: auto; }
+    .side { max-height: 440px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Atlas Coord Capture — Midsagittal</h1>
+  <p>Click to drop a labeled marker. Drag the dot or the pill to fine-tune target and label positions. The leader line updates automatically.</p>
+</header>
+
+<div class="app">
+  <div class="canvas-wrap">
+    <div class="toolbar">
+      <input type="file" id="imgFile" accept="image/*">
+      <button id="clearBtn">Clear markers</button>
+      <span class="spacer"></span>
+      <label class="toggle"><input type="checkbox" id="hideLabels"> Hide labels</label>
+      <label class="toggle"><input type="checkbox" id="hoverMode"> Preview hover mode</label>
+      <span class="status" id="status"></span>
+    </div>
+    <div class="dropzone empty" id="dropzone">
+      Drop an image here or use the picker above.
+    </div>
+  </div>
+
+  <aside class="side">
+    <h2>Labels</h2>
+    <p class="hint">Pick a flag, then click the image at the structure's location. The label pill is auto-placed in the nearest margin — drag either piece to refine.</p>
+
+    <div class="form-row">
+      <select id="flagSel"></select>
+    </div>
+    <div class="form-row">
+      <input type="text" id="displayText" placeholder="Optional display text (defaults to area name)">
+    </div>
+
+    <div class="markers-list" id="list"></div>
+
+    <div class="export">
+      <div class="actions">
+        <button class="primary" id="copyJson">Copy JSON</button>
+        <button id="downloadJson">Download .json</button>
+        <button id="loadJson">Load JSON…</button>
+        <span class="copied" id="copiedMsg" role="status" aria-live="polite"></span>
+      </div>
+      <textarea class="json-out" id="jsonOut" readonly></textarea>
+    </div>
+  </aside>
+</div>
+
+<script>
+const ALL_AREAS = {
+  'Always visible': [
+    {flag: '', area: '(no flag — always shown)'}
+  ],
+  'Midsagittal': [
+    {flag: 'inc_mid_habenula',                      area: 'Habenula'},
+    {flag: 'inc_mid_cerebellum',                    area: 'Cerebellum'},
+    {flag: 'inc_mid_tegmentum',                     area: 'Tegmentum'},
+    {flag: 'inc_mid_medulla',                       area: 'Medulla'},
+    {flag: 'inc_mid_thalamus',                      area: 'Thalamus'},
+    {flag: 'inc_mid_corpus_callosum',               area: 'Corpus Callosum'},
+    {flag: 'inc_mid_arbor_vitae',                   area: 'Arbor Vitae'},
+    {flag: 'inc_mid_cerebral_aqueduct',             area: 'Cerebral Aqueduct'},
+    {flag: 'inc_mid_third_ventricle',               area: 'Third Ventricle'},
+    {flag: 'inc_mid_cingulate_gyrus',               area: 'Cingulate Gyrus'},
+    {flag: 'inc_mid_hypothalamus',                  area: 'Hypothalamus'},
+    {flag: 'inc_mid_optic_chiasm',                  area: 'Optic Chiasm'},
+    {flag: 'inc_mid_pineal_body',                   area: 'Pineal Body'},
+    {flag: 'inc_mid_superior_colliculus',           area: 'Superior Colliculus'},
+    {flag: 'inc_mid_inferior_colliculus',           area: 'Inferior Colliculus'},
+    {flag: 'inc_mid_fornix',                        area: 'Fornix'},
+    {flag: 'inc_mid_septum_pellucidum',             area: 'Septum Pellucidum'},
+    {flag: 'inc_mid_posterior_commissure',          area: 'Posterior Commissure'},
+    {flag: 'inc_mid_anterior_commissure',           area: 'Anterior Commissure'},
+    {flag: 'inc_mid_lat_brachium',                  area: 'Brachium'},
+    {flag: 'inc_mid_lat_lateral_geniculate_nucleus',area: 'Lateral Geniculate Nucleus'},
+    {flag: 'inc_mid_lat_medial_geniculate_nucleus', area: 'Medial Geniculate Nucleus'},
+    {flag: 'inc_mid_lat_middle_cerebellar_peduncle',area: 'Middle Cerebellar Peduncle'},
+    {flag: 'inc_mid_lat_superior_colliculus',       area: 'Superior Colliculus (Mid-Lat)'},
+    {flag: 'inc_mid_central_sulcus',                area: 'Central Sulcus'},
+    {flag: 'inc_mid_precentral_gyrus',              area: 'Precentral Gyrus'},
+    {flag: 'inc_mid_postcentral_gyrus',             area: 'Postcentral Gyrus'},
+    {flag: 'inc_mid_mammillary_bodies',             area: 'Mammillary Bodies'},
+    {flag: 'inc_mid_pons',                          area: 'Pons'},
+    {flag: 'inc_mid_fourth_ventricle',              area: 'Fourth Ventricle'}
+  ],
+  'Gross (Dorsal/Lat/Vent/Post)': [
+    {flag: 'inc_dorsal_central_sulcus',        area: 'Central Sulcus'},
+    {flag: 'inc_dorsal_precentral_gyrus',      area: 'Precentral Gyrus'},
+    {flag: 'inc_dorsal_postcentral_gyrus',     area: 'Postcentral Gyrus'},
+    {flag: 'inc_dorsal_longitudinal_fissure',  area: 'Longitudinal Fissure'},
+    {flag: 'inc_dorsal_frontal_lobe',          area: 'Frontal Lobe'},
+    {flag: 'inc_dorsal_occipital_lobe',        area: 'Occipital Lobe'},
+    {flag: 'inc_dosal_dorsomedian_fissure',    area: 'Dorsomedian Fissure'},
+    {flag: 'inc_lat_rhinencephalon',           area: 'Rhinencephalon'},
+    {flag: 'inc_lat_rhinal_fissure',           area: 'Rhinal Fissure'},
+    {flag: 'inc_lat_insula',                   area: 'Insula'},
+    {flag: 'inc_post_vermis',                  area: 'Vermis'},
+    {flag: 'inc_post_cerebellar_hemispheres',  area: 'Cerebellar Hemispheres'},
+    {flag: 'inc_post_fourth_ventricle',        area: 'Fourth Ventricle'},
+    {flag: 'inc_vent_lateral_olfactory_tract', area: 'Lateral Olfactory Tract'},
+    {flag: 'inc_vent_optic_chiasm',            area: 'Optic Chiasm (Vent)'},
+    {flag: 'inc_vent_optic_tract',             area: 'Optic Tract'},
+    {flag: 'inc_vent_pyramidal_tract',         area: 'Pyramidal Tract'},
+    {flag: 'inc_vent_trapezoid_body',          area: 'Trapezoid Body'},
+    {flag: 'inc_vent_pons',                    area: 'Pons'},
+    {flag: 'inc_vent_infundibulum',            area: 'Infundibulum'},
+    {flag: 'inc_vent_cerebral_peduncles',      area: 'Cerebral Peduncles'},
+    {flag: 'inc_vent_interpeduncular_cistern', area: 'Interpeduncular Cistern'},
+    {flag: 'inc_vent_mammillary_bodies',       area: 'Mammillary Bodies (Vent)'},
+    {flag: 'inc_vent_ventromedian_fissure',    area: 'Ventromedian Fissure'},
+    {flag: 'inc_dorsal_vermis',                area: 'Vermis (Dorsal)'},
+    {flag: 'inc_dorsal_cerebellar_hemisphere', area: 'Cerebellar Hemisphere (Dorsal)'},
+    {flag: 'inc_dorsal_occipital_pole',        area: 'Occipital Pole (Dorsal)'},
+    {flag: 'inc_dorsal_parietal_lobe',         area: 'Parietal Lobe (Dorsal)'},
+    {flag: 'inc_dorsal_prefrontal_cortex',     area: 'Prefrontal Cortex'},
+    {flag: 'inc_lat_frontal_lobe',             area: 'Frontal Lobe (Lat)'},
+    {flag: 'inc_lat_parietal_lobe',            area: 'Parietal Lobe (Lat)'},
+    {flag: 'inc_lat_occipital_lobe',           area: 'Occipital Lobe (Lat)'},
+    {flag: 'inc_lat_occipital_pole',           area: 'Occipital Pole (Lat)'},
+    {flag: 'inc_lat_cerebellum',               area: 'Cerebellum (Lat)'},
+    {flag: 'inc_lat_temporal_lobe',            area: 'Temporal Lobe'},
+    {flag: 'inc_lat_pons',                     area: 'Pons (Lat)'},
+    {flag: 'inc_lat_medulla',                  area: 'Medulla (Lat)'},
+    {flag: 'inc_lat_lateral_geniculate_nucleus',area:'Lateral Geniculate Nucleus (Lat)'},
+    {flag: 'inc_lat_medial_geniculate_nucleus', area:'Medial Geniculate Nucleus (Lat)'},
+    {flag: 'inc_lat_superior_colliculus',      area: 'Superior Colliculus (Lat)'},
+    {flag: 'inc_lat_brachium',                 area: 'Brachium of the Inferior Colliculus (Lat)'},
+    {flag: 'inc_lat_middle_cerebellar_peduncle',area:'Middle Cerebellar Peduncle (Lat)'},
+    {flag: 'inc_vent_medulla',                 area: 'Medulla (Vent)'},
+    {flag: 'inc_vent_rhinal_fissure',          area: 'Rhinal Fissure (Vent)'},
+    {flag: 'inc_vent_rhinencephalon',          area: 'Rhinencephalon (Vent)'},
+    {flag: 'inc_vent_medial_olfactory_tract',  area: 'Medial Olfactory Tract'},
+    {flag: 'inc_vent_olfactory_bulb',          area: 'Olfactory Bulb'},
+    {flag: 'inc_post_pineal_body',             area: 'Pineal Body (Post)'},
+    {flag: 'inc_post_superior_colliculus',     area: 'Superior Colliculus (Post)'},
+    {flag: 'inc_post_inferior_colliculus',     area: 'Inferior Colliculus (Post)'}
+  ],
+  'Coronal': [
+    {flag: 'inc_cor_internal_capsule',         area: 'Internal Capsule'},
+    {flag: 'inc_cor_caudate',                  area: 'Caudate'},
+    {flag: 'inc_cor_putamen',                  area: 'Putamen'},
+    {flag: 'inc_cor_lateral_ventricle',        area: 'Lateral Ventricle'},
+    {flag: 'inc_cor_septum_pellucidum',        area: 'Septum Pellucidum (Cor)'},
+    {flag: 'inc_cor_corona_radiata',           area: 'Corona Radiata'},
+    {flag: 'inc_cor_external_capsule',         area: 'External Capsule'},
+    {flag: 'inc_cor_claustrum',                area: 'Claustrum'},
+    {flag: 'inc_cor_cingulate_gyrus',          area: 'Cingulate Gyrus (Cor)'},
+    {flag: 'inc_cor_fornix',                   area: 'Fornix (Cor)'},
+    {flag: 'inc_cor_cingulum',                 area: 'Cingulum'},
+    {flag: 'inc_cor_third_ventricle',          area: 'Third Ventricle (Cor)'},
+    {flag: 'inc_cor_mammillothalamic_tract',   area: 'Mammillothalamic Tract'},
+    {flag: 'inc_cor_mammillary_bodies',        area: 'Mammillary Bodies (Cor)'},
+    {flag: 'inc_cor_hippocampus',              area: 'Hippocampus'},
+    {flag: 'inc_cor_coronal_cerebral_aqueduct',area: 'Cerebral Aqueduct (Cor)'},
+    {flag: 'inc_cor_corpus_callosum',          area: 'Corpus Callosum (Cor)'},
+    {flag: 'inc_cor_thalamus',                 area: 'Thalamus (Cor)'},
+    {flag: 'inc_cor_hypothalamus',             area: 'Hypothalamus (Cor)'},
+    {flag: 'inc_cor_optic_tracts',             area: 'Optic Tracts (Cor)'},
+    {flag: 'inc_cor_pineal_body',              area: 'Pineal Body (Cor)'},
+    {flag: 'inc_cor_lateral_geniculate',       area: 'Lateral Geniculate (Cor)'},
+    {flag: 'inc_cor_medial_geniculate',        area: 'Medial Geniculate (Cor)'},
+    {flag: 'inc_cor_cerebral_peduncles',       area: 'Cerebral Peduncles (Cor)'},
+    {flag: 'inc_cor_superior_colliculus',      area: 'Superior Colliculus (Cor)'},
+    {flag: 'inc_cor_tegmentum',                area: 'Tegmentum (Cor)'},
+    {flag: 'inc_cor_septal_nucleus',           area: 'Septal Nucleus'},
+    {flag: 'inc_cor_extreme_capsule',          area: 'Extreme Capsule'},
+    {flag: 'inc_cor_choroid_plexus',           area: 'Choroid Plexus'},
+    {flag: 'inc_cor_massa_intermedia',         area: 'Massa Intermedia'}
+  ]
+};
+
+// Flat list for lookup by flag
+const MID_AREAS = Object.values(ALL_AREAS).flat();
+
+const state = {
+  image: null,
+  markers: [],       // [{flag, area, text, target:{x,y}, label:{x,y}}]
+  selectedIdx: -1,
+  dragIdx: -1,
+  dragWhich: null    // 'target' | 'label'
+};
+
+const dropzone = document.getElementById('dropzone');
+const statusEl = document.getElementById('status');
+const flagSel = document.getElementById('flagSel');
+const displayInput = document.getElementById('displayText');
+const listEl = document.getElementById('list');
+const jsonOut = document.getElementById('jsonOut');
+const copiedMsg = document.getElementById('copiedMsg');
+const hideLabelsCb = document.getElementById('hideLabels');
+const hoverModeCb = document.getElementById('hoverMode');
+
+for (const [group, items] of Object.entries(ALL_AREAS)) {
+  const og = document.createElement('optgroup');
+  og.label = group;
+  for (const m of items) {
+    const opt = document.createElement('option');
+    opt.value = m.flag;
+    opt.textContent = m.flag ? `${m.area}  ·  ${m.flag}` : m.area;
+    og.appendChild(opt);
+  }
+  flagSel.appendChild(og);
+}
+// Default selection to the first real (non-empty flag) option for convenience
+flagSel.value = ALL_AREAS['Midsagittal'][0].flag;
+
+document.getElementById('imgFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) loadImageFile(file);
+});
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.style.background = '#eef4fc'; });
+dropzone.addEventListener('dragleave', () => dropzone.style.background = '');
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.style.background = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) loadImageFile(file);
+});
+
+function loadImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      state.image = {src: ev.target.result, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, filename: file.name};
+      renderStage();
+      statusEl.textContent = `${file.name} · ${img.naturalWidth}×${img.naturalHeight}`;
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateIW() {
+  const stage = document.getElementById('stage');
+  const img = document.getElementById('stageImg');
+  if (!stage || !img) return;
+  const w = img.clientWidth;
+  if (w > 0) stage.style.setProperty('--iw', w + 'px');
+}
+window.addEventListener('resize', updateIW);
+
+function renderStage() {
+  dropzone.classList.remove('empty');
+  dropzone.innerHTML = '';
+  if (!state.image) {
+    dropzone.classList.add('empty');
+    dropzone.textContent = 'Drop an image here or use the picker above.';
+    return;
+  }
+  const stage = document.createElement('div');
+  stage.className = 'stage';
+  stage.id = 'stage';
+  stage.classList.toggle('hide-labels', hideLabelsCb.checked);
+  stage.classList.toggle('hover-mode',  hoverModeCb.checked);
+
+  const imgEl = document.createElement('img');
+  imgEl.src = state.image.src;
+  imgEl.id = 'stageImg';
+  imgEl.addEventListener('click', onImgClick);
+  imgEl.addEventListener('dragstart', e => e.preventDefault());
+  imgEl.addEventListener('load', updateIW);
+  stage.appendChild(imgEl);
+
+  // SVG leader overlay
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'leaders');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  stage.appendChild(svg);
+
+  dropzone.appendChild(stage);
+  stage.addEventListener('mousedown', onStageMouseDown);
+
+  renderMarkers();
+}
+
+// Auto-place a label pill in nearest margin
+function autoPlaceLabel(target) {
+  const pad = 0.04;
+  // Decide whether label goes left or right based on target's x
+  const onLeft = target.x < 0.5;
+  const labelX = onLeft ? Math.max(pad, target.x - 0.18) : Math.min(1 - pad, target.x + 0.18);
+  // Keep vertical roughly aligned with target, but nudge toward middle of image a bit if very high/low
+  const labelY = Math.max(0.05, Math.min(0.95, target.y));
+  return {x: labelX, y: labelY};
+}
+
+function onImgClick(e) {
+  // Only treat as new-marker click if user didn't just finish a drag
+  if (state.dragJustEnded) { state.dragJustEnded = false; return; }
+  const img = e.currentTarget;
+  const rect = img.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+  const flag = flagSel.value;
+  const typed = displayInput.value.trim();
+  if (!flag && !typed) {
+    alert('For "Always visible" markers, type a label in the display-text field first.');
+    return;
+  }
+  const area = MID_AREAS.find(m => m.flag === flag)?.area || flag || typed;
+  const text = typed || area;
+  const target = {x, y};
+  const label  = autoPlaceLabel(target);
+  state.markers.push({flag, area, text, target, label});
+  state.selectedIdx = state.markers.length - 1;
+  displayInput.value = '';
+  renderMarkers();
+  updateJson();
+}
+
+function onStageMouseDown(e) {
+  const t = e.target;
+  let which = null, idx = -1;
+  if (t.classList.contains('marker')) { which = 'target'; idx = +t.dataset.idx; }
+  else if (t.classList.contains('label-pill')) { which = 'label'; idx = +t.dataset.idx; }
+  if (which === null) return;
+  e.preventDefault();
+  e.stopPropagation();
+  state.dragIdx = idx;
+  state.dragWhich = which;
+  state.selectedIdx = idx;
+  renderMarkers();
+  const move = ev => {
+    const img = document.getElementById('stageImg');
+    const rect = img.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+    state.markers[idx][which].x = x;
+    state.markers[idx][which].y = y;
+    renderMarkers();
+    updateJson();
+  };
+  const up = () => {
+    state.dragIdx = -1;
+    state.dragWhich = null;
+    state.dragJustEnded = true;
+    window.removeEventListener('mousemove', move);
+    window.removeEventListener('mouseup', up);
+    setTimeout(() => { state.dragJustEnded = false; }, 50);
+  };
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+}
+
+function renderMarkers() {
+  const stage = document.getElementById('stage');
+  if (!stage) return;
+  stage.querySelectorAll('.marker, .label-pill').forEach(n => n.remove());
+  const svg = stage.querySelector('svg.leaders');
+  if (svg) svg.innerHTML = '';
+  stage.classList.toggle('hide-labels', hideLabelsCb.checked);
+  stage.classList.toggle('hover-mode',  hoverModeCb.checked);
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  state.markers.forEach((m, i) => {
+    const sel = (i === state.selectedIdx);
+
+    // leader line (SVG)
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', m.target.x * 100);
+    line.setAttribute('y1', m.target.y * 100);
+    line.setAttribute('x2', m.label.x * 100);
+    line.setAttribute('y2', m.label.y * 100);
+    line.setAttribute('stroke', sel ? '#1e3a5f' : 'rgba(30, 58, 95, 0.7)');
+    line.setAttribute('stroke-width', sel ? '2.5' : '1.75');
+    line.setAttribute('vector-effect', 'non-scaling-stroke');
+    line.dataset.idx = i;
+    svg.appendChild(line);
+
+    // dot (target)
+    const dot = document.createElement('div');
+    dot.className = 'marker' + (sel ? ' selected' : '');
+    dot.dataset.idx = i;
+    dot.style.left = (m.target.x * 100) + '%';
+    dot.style.top  = (m.target.y * 100) + '%';
+    stage.appendChild(dot);
+
+    // pill (label)
+    const pill = document.createElement('div');
+    pill.className = 'label-pill' + (sel ? ' selected' : '');
+    pill.dataset.idx = i;
+    pill.style.left = (m.label.x * 100) + '%';
+    pill.style.top  = (m.label.y * 100) + '%';
+    pill.textContent = m.text;
+    stage.appendChild(pill);
+
+    // hover-mode: tie dot+pill+line together on hover
+    const enter = () => {
+      pill.classList.add('hovered');
+      line.classList.add('hovered');
+    };
+    const leave = () => {
+      pill.classList.remove('hovered');
+      line.classList.remove('hovered');
+    };
+    dot.addEventListener('mouseenter', enter);
+    dot.addEventListener('mouseleave', leave);
+    pill.addEventListener('mouseenter', enter);
+    pill.addEventListener('mouseleave', leave);
+  });
+  renderList();
+}
+
+function renderList() {
+  listEl.innerHTML = '';
+  if (state.markers.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'color:var(--muted);font-size:0.82rem;padding:10px 4px;';
+    empty.textContent = 'No markers yet. Pick a flag and click on the image.';
+    listEl.appendChild(empty);
+    return;
+  }
+  state.markers.forEach((m, i) => {
+    const row = document.createElement('div');
+    row.className = 'row' + (i === state.selectedIdx ? ' selected' : '');
+    row.innerHTML = `
+      <div>
+        <div class="name">${m.flag}</div>
+        <small>"${m.text}"  ·  target ${(m.target.x*100).toFixed(1)}%, ${(m.target.y*100).toFixed(1)}%  ·  label ${(m.label.x*100).toFixed(1)}%, ${(m.label.y*100).toFixed(1)}%</small>
+      </div>
+      <button data-del="${i}" title="Remove">✕</button>
+    `;
+    row.addEventListener('click', ev => {
+      if (ev.target.matches('[data-del]')) return;
+      state.selectedIdx = i;
+      renderMarkers();
+    });
+    listEl.appendChild(row);
+  });
+  listEl.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      const i = +ev.target.dataset.del;
+      state.markers.splice(i, 1);
+      if (state.selectedIdx === i) state.selectedIdx = -1;
+      else if (state.selectedIdx > i) state.selectedIdx--;
+      renderMarkers();
+      updateJson();
+    });
+  });
+}
+
+function updateJson() {
+  const payload = {
+    image: state.image ? {filename: state.image.filename, width: state.image.naturalWidth, height: state.image.naturalHeight} : null,
+    markers: state.markers.map(m => ({
+      flag: m.flag,
+      area: m.area,
+      text: m.text,
+      target: {x: +m.target.x.toFixed(4), y: +m.target.y.toFixed(4)},
+      label:  {x: +m.label.x.toFixed(4),  y: +m.label.y.toFixed(4)}
+    }))
+  };
+  jsonOut.value = JSON.stringify(payload, null, 2);
+}
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Remove all markers?')) return;
+  state.markers = [];
+  state.selectedIdx = -1;
+  renderMarkers();
+  updateJson();
+});
+
+document.getElementById('copyJson').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(jsonOut.value); }
+  catch { jsonOut.select(); document.execCommand('copy'); }
+  copiedMsg.textContent = 'Copied to clipboard';
+  copiedMsg.classList.add('show');
+  setTimeout(() => {
+    copiedMsg.classList.remove('show');
+    setTimeout(() => { copiedMsg.textContent = ''; }, 300);
+  }, 1400);
+});
+
+document.getElementById('downloadJson').addEventListener('click', () => {
+  const name = (state.image?.filename || 'atlas').replace(/\.[^.]+$/,'') + '.labels.json';
+  const blob = new Blob([jsonOut.value], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+});
+
+document.getElementById('loadJson').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        state.markers = (parsed.markers || []).map(m => {
+          // Migrate old schema (flat x,y) → new schema (target/label)
+          if (m.target && m.label) {
+            return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target: m.target, label: m.label};
+          }
+          const target = {x: m.x, y: m.y};
+          return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target, label: autoPlaceLabel(target)};
+        });
+        state.selectedIdx = -1;
+        renderMarkers();
+        updateJson();
+      } catch (err) { alert('Could not parse JSON: ' + err.message); }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+});
+
+hideLabelsCb.addEventListener('change', () => {
+  const stage = document.getElementById('stage');
+  if (stage) stage.classList.toggle('hide-labels', hideLabelsCb.checked);
+});
+hoverModeCb.addEventListener('change', () => {
+  const stage = document.getElementById('stage');
+  if (stage) stage.classList.toggle('hover-mode', hoverModeCb.checked);
+});
+
+updateJson();
+renderList();
+</script>
+</body>
+</html>

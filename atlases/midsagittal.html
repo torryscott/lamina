@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sheep Brain Atlas — Midsagittal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --bg-grad-a: #f7f9fc;
+    --bg-grad-b: #eef2f7;
+    --panel: #ffffff;
+    --ink: #1a1d29;
+    --ink-soft: #3c4050;
+    --muted: #6b7280;
+    --muted-soft: #9aa0ac;
+    --accent: #1e3a5f;
+    --accent-hover: #2a4e7a;
+    --accent-soft: #e8eef5;
+    --gold: #b48a3c;
+    --rule: #e3e7ee;
+    --rule-strong: #cfd5df;
+    --chip: #eef1f6;
+    --marker: #1e3a5f;
+    --marker-ring: rgba(30, 58, 95, 0.30);
+    --leader: rgba(30, 58, 95, 0.70);
+    --label-bg: rgba(255, 255, 255, 0.96);
+    --label-border: #c8cfdb;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(20, 20, 30, 0.04);
+    --shadow-md: 0 4px 18px rgba(20, 20, 30, 0.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(43, 77, 109, 0.06), transparent 60%),
+      radial-gradient(900px 420px at 0% 0%, rgba(30, 58, 95, 0.06), transparent 55%),
+      linear-gradient(180deg, var(--bg-grad-a), var(--bg-grad-b));
+    min-height: 100vh;
+  }
+
+  .hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 36px 24px 8px;
+  }
+  .hero-eyebrow {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.6rem, 2.2vw + 1rem, 2.3rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  .hero p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    max-width: 640px;
+  }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 16px 24px 48px; }
+
+  .controls-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin: 16px 0 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+  }
+  .controls-card .label-sm {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .mode-group {
+    display: inline-flex;
+    background: var(--chip);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .mode-group button {
+    border: none;
+    background: transparent;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .mode-group button:hover { color: var(--ink); }
+  .mode-group button.active {
+    background: var(--panel);
+    color: var(--accent);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .spacer { flex: 1; }
+  .count-chip {
+    font-size: 0.82rem;
+    color: var(--muted);
+    background: var(--chip);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+  .count-chip strong { color: var(--ink); font-weight: 600; }
+
+  .atlas-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-md);
+  }
+  .stage-wrap {
+    display: flex;
+    justify-content: center;
+  }
+  .stage {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+  }
+  .stage img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    border-radius: 6px;
+  }
+  .stage svg.leaders {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: clamp(6px, calc(var(--iw, 1000px) * 0.0072), 14px);
+    height: clamp(6px, calc(var(--iw, 1000px) * 0.0072), 14px);
+    border-radius: 50%;
+    background: var(--marker);
+    box-shadow: 0 0 0 3px var(--marker-ring), 0 1px 2px rgba(0,0,0,0.3);
+    border: 1.5px solid #fff;
+    z-index: 3;
+    transition: transform 0.15s;
+    padding: 0;
+  }
+  .marker:hover,
+  .marker:focus-visible { transform: translate(-50%, -50%) scale(1.4); cursor: pointer; }
+  .marker:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Visually-hidden helper for screen-reader-only content */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0);
+    white-space: nowrap; border: 0;
+  }
+
+  .label-pill {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: var(--label-bg);
+    border: 1px solid var(--label-border);
+    padding: 0.3em 0.8em;
+    border-radius: 14px;
+    font-size: clamp(0.8rem, calc(var(--iw, 1000px) * 0.014), 1.55rem);
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+    max-width: 12em;
+    text-align: center;
+    line-height: 1.15;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 2;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.15s, transform 0.15s, background 0.15s;
+    cursor: default;
+  }
+
+  /* Mode: hide-all */
+  .stage.mode-hide .label-pill { display: none; }
+  .stage.mode-hide .marker { display: none; }
+  .stage.mode-hide svg.leaders line { display: none; }
+
+  /* Mode: hover-reveal */
+  .stage.mode-hover .label-pill { opacity: 0; pointer-events: none; }
+  .stage.mode-hover svg.leaders line { opacity: 0; }
+  .stage.mode-hover .marker.hovered,
+  .stage.mode-hover .marker:hover { transform: translate(-50%, -50%) scale(1.4); }
+  .stage.mode-hover .label-pill.hovered {
+    opacity: 1;
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .stage.mode-hover svg.leaders line.hovered { opacity: 1; }
+
+  footer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px 28px;
+    text-align: center;
+    color: var(--muted-soft);
+    font-size: 0.78rem;
+  }
+
+  @media (max-width: 720px) {
+    .hero { padding: 24px 16px 4px; }
+    main { padding: 12px 16px 32px; }
+    .atlas-card { padding: 10px; }
+    .controls-card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+    .mode-group { justify-content: center; flex-wrap: wrap; }
+    .mode-group button { padding: 6px 10px; font-size: 0.8rem; }
+    .spacer { display: none; }
+    .count-chip { text-align: center; font-size: 0.78rem; }
+    .label-pill {
+      font-size: 0.6rem;
+      max-width: 8em;
+      padding: 0.2em 0.55em;
+      font-weight: 600;
+    }
+  }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-eyebrow">Sheep Brain Module · Atlas</div>
+  <h1>Midsagittal View</h1>
+  <p>Switch between study modes below. Your instructor's selection determines which structures are shown.</p>
+</section>
+
+<main>
+  <div class="controls-card">
+    <span class="label-sm" id="modeLabel">Study mode</span>
+    <div class="mode-group" role="radiogroup" aria-labelledby="modeLabel">
+      <button data-mode="show"  class="active" role="radio" aria-checked="true"  type="button">Show labels</button>
+      <button data-mode="hover"                role="radio" aria-checked="false" type="button">Hover to reveal</button>
+      <button data-mode="hide"                 role="radio" aria-checked="false" type="button">Hide markers</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="count-chip" aria-live="polite" aria-atomic="true">
+      <strong id="cntShown">0</strong> of <strong id="cntTotal">0</strong> structures shown
+    </span>
+  </div>
+
+  <div class="atlas-card">
+    <div class="stage-wrap">
+      <div class="stage mode-show" id="stage">
+        <img src="../images/clean/midsagittal.jpg"
+             alt="Midsagittal section of a preserved sheep brain. A list of labeled structures follows the image."
+             id="atlasImg">
+      </div>
+    </div>
+    <h2 class="sr-only">Labeled structures in this view</h2>
+    <ul id="srList" class="sr-only" aria-live="polite"></ul>
+  </div>
+</main>
+
+<footer>Sheep Brain Module · Midsagittal Atlas</footer>
+
+<script>
+
+const MARKERS = [
+  {flag:"inc_mid_habenula",             area:"Habenula",             text:"Habenula",             target:{x:0.4315,y:0.4555}, label:{x:0.4406,y:0.0663}},
+  {flag:"inc_mid_thalamus",             area:"Thalamus",             text:"Thalamus",             target:{x:0.3617,y:0.5241}, label:{x:0.3640,y:0.8002}},
+  {flag:"inc_mid_corpus_callosum",      area:"Corpus Callosum",      text:"Corpus Callosum",      target:{x:0.2241,y:0.4620}, label:{x:0.0684,y:0.7118}},
+  {flag:"inc_mid_arbor_vitae",          area:"Arbor Vitae",          text:"Arbor Vitae",          target:{x:0.8018,y:0.4880}, label:{x:0.9047,y:0.2781}},
+  {flag:"inc_mid_cerebral_aqueduct",    area:"Cerebral Aqueduct",    text:"Cerebral Aqueduct",    target:{x:0.5658,y:0.5515}, label:{x:0.8384,y:0.2118}},
+  {flag:"inc_mid_third_ventricle",      area:"Third Ventricle",      text:"Third Ventricle",      target:{x:0.3232,y:0.4959}, label:{x:0.3087,y:0.9006}},
+  {flag:"inc_mid_cingulate_gyrus",      area:"Cingulate Gyrus",      text:"Cingulate Gyrus",      target:{x:0.3267,y:0.3794}, label:{x:0.2990,y:0.0516}},
+  {flag:"inc_mid_hypothalamus",         area:"Hypothalamus",         text:"Hypothalamus",         target:{x:0.3779,y:0.6136}, label:{x:0.4275,y:0.8564}},
+  {flag:"inc_mid_optic_chiasm",         area:"Optic Chiasm",         text:"Optic Chiasm",         target:{x:0.2999,y:0.6699}, label:{x:0.2431,y:0.8379}},
+  {flag:"inc_mid_pineal_body",          area:"Pineal Body",          text:"Pineal Body",          target:{x:0.4851,y:0.4389}, label:{x:0.6077,y:0.1262}},
+  {flag:"inc_mid_superior_colliculus",  area:"Superior Colliculus",  text:"Superior Colliculus",  target:{x:0.5485,y:0.4375}, label:{x:0.7072,y:0.0543}},
+  {flag:"inc_mid_inferior_colliculus",  area:"Inferior Colliculus",  text:"Inferior Colliculus",  target:{x:0.5625,y:0.5053}, label:{x:0.7811,y:0.1252}},
+  {flag:"inc_mid_fornix",               area:"Fornix",               text:"Fornix",               target:{x:0.3674,y:0.4180}, label:{x:0.3619,y:0.1096}},
+  {flag:"inc_mid_septum_pellucidum",    area:"Septum Pellucidum",    text:"Septum Pellucidum",    target:{x:0.2472,y:0.5055}, label:{x:0.1008,y:0.8094}},
+  {flag:"inc_mid_posterior_commissure", area:"Posterior Commissure", text:"Posterior Commissure", target:{x:0.4559,y:0.4923}, label:{x:0.5580,y:0.0691}},
+  {flag:"inc_mid_anterior_commissure",  area:"Anterior Commissure",  text:"Anterior Commissure",  target:{x:0.3005,y:0.5638}, label:{x:0.1340,y:0.8996}},
+  {flag:"inc_mid_central_sulcus",       area:"Central Sulcus",       text:"Central Sulcus",       target:{x:0.1443,y:0.2781}, label:{x:0.1291,y:0.0645}},
+  {flag:"inc_mid_precentral_gyrus",     area:"Precentral Gyrus",     text:"Precentral Gyrus",     target:{x:0.1188,y:0.2947}, label:{x:0.0670,y:0.1851}},
+  {flag:"inc_mid_postcentral_gyrus",    area:"Postcentral Gyrus",    text:"Postcentral Gyrus",    target:{x:0.1644,y:0.2440}, label:{x:0.2079,y:0.1197}},
+  {flag:"inc_mid_mammillary_bodies",    area:"Mammillary Bodies",    text:"Mammillary Bodies",    target:{x:0.4137,y:0.6786}, label:{x:0.4765,y:0.7578}},
+  {flag:"inc_mid_pons",                 area:"Pons",                 text:"Pons",                 target:{x:0.6008,y:0.7192}, label:{x:0.6084,y:0.8214}},
+  {flag:"inc_mid_fourth_ventricle",     area:"Fourth Ventricle",     text:"Fourth Ventricle",     target:{x:0.7472,y:0.6492}, label:{x:0.8294,y:0.8444}},
+  {flag:"inc_mid_cerebellum",           area:"Cerebellum",           text:"Cerebellum",           target:{x:0.9102,y:0.4613}, label:{x:0.9434,y:0.3517}},
+  {flag:"inc_mid_tegmentum",            area:"Tegmentum",            text:"Tegmentum",            target:{x:0.5221,y:0.6133}, label:{x:0.5704,y:0.8831}},
+  {flag:"inc_mid_medulla",              area:"Medulla",              text:"Medulla",              target:{x:0.7403,y:0.7413}, label:{x:0.6913,y:0.8453}}
+];
+
+const stage    = document.getElementById('stage');
+const atlasImg = document.getElementById('atlasImg');
+const cntShown = document.getElementById('cntShown');
+const cntTotal = document.getElementById('cntTotal');
+
+// Read URL query params for flag state. Any `inc_foo=0` hides that flag; anything else = show.
+function readFlags() {
+  const params = new URLSearchParams(window.location.search);
+  const excluded = new Set();
+  for (const [k, v] of params.entries()) {
+    if (k.startsWith('inc_') && v === '0') excluded.add(k);
+  }
+  return excluded;
+}
+
+const srList = document.getElementById('srList');
+
+function render() {
+  // Remove any existing overlay content (keep the <img>)
+  stage.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'leaders');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');  // decorative; text alternative lives in srList
+  svg.setAttribute('focusable', 'false');
+  stage.appendChild(svg);
+
+  const excluded = readFlags();
+  const visible = MARKERS.filter(m => !excluded.has(m.flag));
+  cntShown.textContent = visible.length;
+  cntTotal.textContent = MARKERS.length;
+
+  // Screen-reader-only list of labeled structures
+  srList.innerHTML = '';
+  visible.forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = m.text;
+    srList.appendChild(li);
+  });
+
+  visible.forEach((m) => {
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', m.target.x * 100);
+    line.setAttribute('y1', m.target.y * 100);
+    line.setAttribute('x2', m.label.x * 100);
+    line.setAttribute('y2', m.label.y * 100);
+    line.setAttribute('stroke', 'rgba(30, 58, 95, 0.7)');
+    line.setAttribute('stroke-width', '1.75');
+    line.setAttribute('vector-effect', 'non-scaling-stroke');
+    svg.appendChild(line);
+
+    // Marker dot: a real <button> with an accessible name
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'marker';
+    dot.style.left = (m.target.x * 100) + '%';
+    dot.style.top  = (m.target.y * 100) + '%';
+    dot.dataset.flag = m.flag;
+    dot.setAttribute('aria-label', m.text);
+    stage.appendChild(dot);
+
+    // Label pill: decorative visual; the real accessible name is on the dot button.
+    // Hide the pill from assistive tech to avoid duplicate announcement.
+    const pill = document.createElement('div');
+    pill.className = 'label-pill';
+    pill.style.left = (m.label.x * 100) + '%';
+    pill.style.top  = (m.label.y * 100) + '%';
+    pill.textContent = m.text;
+    pill.dataset.flag = m.flag;
+    pill.setAttribute('aria-hidden', 'true');
+    stage.appendChild(pill);
+
+    // Hover / focus / touch all reveal the same way
+    const enter = () => {
+      dot.classList.add('hovered');
+      pill.classList.add('hovered');
+      line.classList.add('hovered');
+    };
+    const leave = () => {
+      dot.classList.remove('hovered');
+      pill.classList.remove('hovered');
+      line.classList.remove('hovered');
+    };
+    dot.addEventListener('mouseenter', enter);
+    dot.addEventListener('mouseleave', leave);
+    dot.addEventListener('focus', enter);
+    dot.addEventListener('blur', leave);
+    dot.addEventListener('touchstart', e => { e.preventDefault(); enter(); }, {passive: false});
+    dot.addEventListener('touchend', leave);
+    pill.addEventListener('mouseenter', enter);
+    pill.addEventListener('mouseleave', leave);
+  });
+}
+
+// Mode toggle
+document.querySelectorAll('.mode-group button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-group button').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-checked', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-checked', 'true');
+    stage.classList.remove('mode-show', 'mode-hover', 'mode-hide');
+    stage.classList.add('mode-' + btn.dataset.mode);
+  });
+});
+
+// Expose the image's rendered inline size as a CSS variable so label/dot
+// sizes scale proportionally with the display size of the image.
+function updateIW() {
+  const w = atlasImg.clientWidth;
+  if (w > 0) stage.style.setProperty('--iw', w + 'px');
+}
+
+if (atlasImg.complete) { render(); updateIW(); }
+else atlasImg.addEventListener('load', () => { render(); updateIW(); });
+window.addEventListener('resize', updateIW);
+
+// On narrow screens, default to "Hover to reveal" mode so the image
+// stays clean and students tap one dot at a time.
+if (window.matchMedia('(max-width: 720px)').matches) {
+  const hoverBtn = document.querySelector('.mode-group button[data-mode="hover"]');
+  if (hoverBtn) hoverBtn.click();
+}
+</script>
+</body>
+</html>

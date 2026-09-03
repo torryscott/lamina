@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sheep Brain Module — Link Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --bg-grad-a: #f7f9fc;
+    --bg-grad-b: #eef2f7;
+    --panel: #ffffff;
+    --panel-soft: #f7f9fc;
+    --ink: #1a1d29;
+    --ink-soft: #3c4050;
+    --muted: #6b7280;
+    --muted-soft: #9aa0ac;
+    --accent: #1e3a5f;
+    --accent-hover: #2a4e7a;
+    --accent-soft: #e8eef5;
+    --gold: #b48a3c;
+    --gold-soft: #f3ead3;
+    --rule: #e3e7ee;
+    --rule-strong: #cfd5df;
+    --chip: #eef1f6;
+    --success: #2f7a3d;
+    --success-soft: #e3f2e5;
+    --warn-bg: #fdf5e2;
+    --warn-ink: #6e4a15;
+    --warn-rule: #e9d8a8;
+    --view-gross: #6b8e5a;
+    --view-gross-soft: #eef3e7;
+    --view-cor: #2b4d6d;
+    --view-cor-soft: #e9eef5;
+    --view-mid: #a0593a;
+    --view-mid-soft: #f6e9e1;
+    --shadow-sm: 0 1px 2px rgba(20, 20, 30, 0.04);
+    --shadow-md: 0 4px 18px rgba(20, 20, 30, 0.06);
+    --shadow-lg: 0 8px 30px rgba(20, 20, 30, 0.10);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(43, 77, 109, 0.06), transparent 60%),
+      radial-gradient(900px 420px at 0% 0%, rgba(30, 58, 95, 0.06), transparent 55%),
+      linear-gradient(180deg, var(--bg-grad-a), var(--bg-grad-b));
+    min-height: 100vh;
+  }
+
+  .hero {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 44px 24px 8px;
+  }
+  .hero-eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.8rem, 2.6vw + 1rem, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+  .hero p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    max-width: 640px;
+  }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 20px 24px 56px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* URL builder card */
+  .url-card {
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.96);
+  }
+  .url-card .field-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--panel-soft);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+  textarea {
+    min-height: 76px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .url-card .base-row { margin-bottom: 14px; }
+
+  button {
+    padding: 9px 16px;
+    border: 1px solid var(--rule-strong);
+    background: var(--panel);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  button:hover { background: var(--chip); border-color: var(--muted-soft); }
+  button.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  button.ghost:hover { background: var(--chip); color: var(--ink); }
+
+  .actions-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  .copied {
+    color: var(--success);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-left: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .copied.show { opacity: 1; }
+
+  .summary-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .summary-line .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success);
+    display: inline-block;
+  }
+  .summary-line .dot.partial { background: var(--gold); }
+
+  /* Warn card */
+  .warn {
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    border: 1px solid var(--warn-rule);
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    margin: 18px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .warn::before {
+    content: "ⓘ";
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .warn code {
+    background: rgba(110, 74, 21, 0.09);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.82em;
+  }
+
+  /* View grid */
+  .views {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+  }
+  .view {
+    position: relative;
+    padding: 22px 22px 20px;
+    overflow: hidden;
+  }
+  .view::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--view-color, var(--accent));
+  }
+  .view[data-view="Gross"]       { --view-color: var(--view-gross); --view-soft: var(--view-gross-soft); }
+  .view[data-view="Coronal"]     { --view-color: var(--view-cor);   --view-soft: var(--view-cor-soft); }
+  .view[data-view="Midsagittal"] { --view-color: var(--view-mid);   --view-soft: var(--view-mid-soft); }
+
+  .view h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.35rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--ink);
+  }
+  .count {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--view-color);
+    background: var(--view-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  .view-actions {
+    display: flex;
+    gap: 4px;
+    margin: 10px 0 4px;
+  }
+  .view-actions button {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: transparent;
+    border-color: var(--rule);
+  }
+  .view-actions button:hover { color: var(--view-color); background: var(--view-soft); border-color: var(--view-color); }
+
+  .subgroup { margin: 14px 0 2px; }
+  .subgroup h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 10px 0 2px;
+    font-weight: 600;
+  }
+
+  .area {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 7px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .area:hover { background: var(--view-soft); }
+  .area label {
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.94rem;
+    color: var(--ink);
+    user-select: none;
+  }
+  .area::after {
+    content: attr(data-flag);
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%) translateX(4px);
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+    box-shadow: var(--shadow-md);
+    z-index: 5;
+  }
+  .area:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Custom checkbox */
+  .area input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background: #fff;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .area input[type="checkbox"]:hover { border-color: var(--view-color); }
+  .area input[type="checkbox"]:checked {
+    background: var(--view-color);
+    border-color: var(--view-color);
+  }
+  .area input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .area input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--view-color);
+    outline-offset: 3px;
+  }
+  button:focus-visible,
+  .mode-group button:focus-visible,
+  input[type="text"]:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Details / reference */
+  details { margin: 14px 0; }
+  details > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.95rem;
+    padding: 4px 0;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.15s;
+    color: var(--muted);
+    font-size: 0.8em;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details p { color: var(--muted); font-size: 0.9rem; margin: 8px 0 12px; }
+
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-top: 8px; }
+  .ref-table th, .ref-table td { text-align: left; padding: 8px 10px; }
+  .ref-table th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--rule);
+    background: var(--panel-soft);
+  }
+  .ref-table td { border-bottom: 1px solid var(--rule); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:hover td { background: var(--panel-soft); }
+  .ref-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    background: var(--chip);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .ref-table td.view-col { color: var(--muted); font-size: 0.8rem; }
+
+  details ul { font-size: 0.9rem; color: var(--muted); margin: 4px 0 0; padding-left: 20px; }
+  details ul li { margin: 6px 0; }
+  details ul li code {
+    background: var(--chip);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+  }
+
+  footer {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px 32px;
+    text-align: center;
+    color: var(--muted-soft);
+    font-size: 0.78rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 32px 20px 4px; }
+    main { padding: 16px 20px 40px; }
+    .card { padding: 16px 18px; }
+    .views { gap: 14px; }
+    .actions-row button { flex: 1 1 auto; }
+  }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-eyebrow">St. Mary's College of Maryland · Lab Practicum</div>
+  <h1>Sheep Brain Module — Assignment Link Builder</h1>
+  <p>Choose which brain areas your students should be tested on. Unselected areas are skipped for that assignment; leave everything selected to use the full module.</p>
+</section>
+
+<main>
+  <section class="card url-card">
+    <div class="base-row">
+      <label class="field-label" for="baseUrl">Survey base URL</label>
+      <input type="text" id="baseUrl" value="https://smcm.az1.qualtrics.com/jfe/form/SV_4ObpTizENb4ba6O">
+    </div>
+    <div>
+      <label class="field-label" for="finalUrl">Shareable student link</label>
+      <textarea id="finalUrl" readonly></textarea>
+      <div class="actions-row">
+        <button class="primary" id="copyBtn">Copy link</button>
+        <button id="openBtn">Open in new tab</button>
+        <button class="ghost" id="resetBtn">Select all</button>
+        <button class="ghost" id="clearBtn">Deselect all</button>
+        <span class="copied" id="copiedMsg" role="status" aria-live="polite"></span>
+      </div>
+      <div class="summary-line">
+        <span class="dot" id="statusDot" aria-hidden="true"></span>
+        <span id="summary" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="warn">
+    <div>
+      <strong>How this works.</strong> By default, this link shows the full module — all 61 brain areas across the
+      three views. Unchecking an area adds <code>inc_&lt;area&gt;=0</code> to the URL, which tells Qualtrics to skip
+      that block via block-level Display Logic. No configuration needed on your end beyond sharing the generated link.
+    </div>
+  </div>
+
+  <section id="views" class="views"></section>
+</main>
+
+<footer>Built for the SMCM Neurobiology lab practicum</footer>
+
+<script>
+const DATA = {
+  "Gross": [
+    {
+      "area": "Central Sulcus",
+      "label": "Dorsal - 1 Block (Central Sulcus)",
+      "flag": "inc_dorsal_central_sulcus",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Precentral Gyrus",
+      "label": "Dorsal - 2 Block (Precentral Gyrus)",
+      "flag": "inc_dorsal_precentral_gyrus",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Postcentral Gyrus",
+      "label": "Dorsal - 3 Block (Postcentral Gyrus)",
+      "flag": "inc_dorsal_postcentral_gyrus",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Longitudinal Fissure",
+      "label": "Dorsal - 4 Block (Longitudinal Fissure)",
+      "flag": "inc_dorsal_longitudinal_fissure",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Frontal Lobe",
+      "label": "Dorsal - 5 Block (Frontal Lobe)",
+      "flag": "inc_dorsal_frontal_lobe",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Occipital Lobe",
+      "label": "Dorsal - 6 Block (Occipital Lobe)",
+      "flag": "inc_dorsal_occipital_lobe",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Dorsomedian Fissure",
+      "label": "Dosal - 8 Block (Dorsomedian Fissure)",
+      "flag": "inc_dosal_dorsomedian_fissure",
+      "sub": "Dorsal"
+    },
+    {
+      "area": "Rhinencephalon",
+      "label": "Lat - 1 Block (Rhinencephalon)",
+      "flag": "inc_lat_rhinencephalon",
+      "sub": "Lat"
+    },
+    {
+      "area": "Rhinal Fissure",
+      "label": "Lat - 2 Block (Rhinal Fissure)",
+      "flag": "inc_lat_rhinal_fissure",
+      "sub": "Lat"
+    },
+    {
+      "area": "Insula",
+      "label": "Lat - 3 Block (Insula)",
+      "flag": "inc_lat_insula",
+      "sub": "Lat"
+    },
+    {
+      "area": "Vermis",
+      "label": "Post - 1 Block (Vermis)",
+      "flag": "inc_post_vermis",
+      "sub": "Post"
+    },
+    {
+      "area": "Cerebellar Hemispheres",
+      "label": "Post - 2 Block (Cerebellar Hemispheres)",
+      "flag": "inc_post_cerebellar_hemispheres",
+      "sub": "Post"
+    },
+    {
+      "area": "Fourth Ventricle",
+      "label": "Post - 3 Block (Fourth Ventricle)",
+      "flag": "inc_post_fourth_ventricle",
+      "sub": "Post"
+    },
+    {
+      "area": "Lateral Olfactory Tract",
+      "label": "Vent - 1 Block (Lateral Olfactory Tract)",
+      "flag": "inc_vent_lateral_olfactory_tract",
+      "sub": "Vent"
+    },
+    {
+      "area": "Optic Chiasm",
+      "label": "Vent - 2 Block (Optic Chiasm)",
+      "flag": "inc_vent_optic_chiasm",
+      "sub": "Vent"
+    },
+    {
+      "area": "Optic Tract",
+      "label": "Vent - 3 Block (Optic Tract)",
+      "flag": "inc_vent_optic_tract",
+      "sub": "Vent"
+    },
+    {
+      "area": "Pyramidal Tract",
+      "label": "Vent - 4 Block (Pyramidal Tract)",
+      "flag": "inc_vent_pyramidal_tract",
+      "sub": "Vent"
+    },
+    {
+      "area": "Trapezoid Body",
+      "label": "Vent - 5 Block (Trapezoid Body)",
+      "flag": "inc_vent_trapezoid_body",
+      "sub": "Vent"
+    },
+    {
+      "area": "Pons",
+      "label": "Vent - 6 Block (Pons)",
+      "flag": "inc_vent_pons",
+      "sub": "Vent"
+    },
+    {
+      "area": "Infundibulum",
+      "label": "Vent - 7 Block (Infundibulum)",
+      "flag": "inc_vent_infundibulum",
+      "sub": "Vent"
+    },
+    {
+      "area": "Cerebral Peduncles",
+      "label": "Vent - 8 Block (Cerebral Peduncles)",
+      "flag": "inc_vent_cerebral_peduncles",
+      "sub": "Vent"
+    },
+    {
+      "area": "Interpeduncular Cistern",
+      "label": "Vent - 9 Block (Interpeduncular Cistern)",
+      "flag": "inc_vent_interpeduncular_cistern",
+      "sub": "Vent"
+    },
+    {
+      "area": "Mammillary Bodies",
+      "label": "Vent - 10 Block (Mammillary Bodies)",
+      "flag": "inc_vent_mammillary_bodies",
+      "sub": "Vent"
+    },
+    {
+      "area": "Ventromedian Fissure",
+      "label": "Vent - 11 Block (Ventromedian Fissure)",
+      "flag": "inc_vent_ventromedian_fissure",
+      "sub": "Vent"
+    },
+    { "area": "Vermis",                      "label": "Dorsal - 7 Block (Vermis)",                                  "flag": "inc_dorsal_vermis",                "sub": "Dorsal" },
+    { "area": "Cerebellar Hemisphere",       "label": "Dorsal - 9 Block (Cerebellar Hemisphere)",                   "flag": "inc_dorsal_cerebellar_hemisphere", "sub": "Dorsal" },
+    { "area": "Occipital Pole",              "label": "Dorsal - 10 Block (Occipital Pole)",                         "flag": "inc_dorsal_occipital_pole",        "sub": "Dorsal" },
+    { "area": "Parietal Lobe",               "label": "Dorsal - 11 Block (Parietal Lobe)",                          "flag": "inc_dorsal_parietal_lobe",         "sub": "Dorsal" },
+    { "area": "Prefrontal Cortex",           "label": "Dorsal - 12 Block (Prefrontal Cortex)",                      "flag": "inc_dorsal_prefrontal_cortex",     "sub": "Dorsal" },
+    { "area": "Frontal Lobe",                "label": "Lat - 4 Block (Frontal Lobe)",                               "flag": "inc_lat_frontal_lobe",             "sub": "Lat" },
+    { "area": "Parietal Lobe",               "label": "Lat - 5 Block (Parietal Lobe)",                              "flag": "inc_lat_parietal_lobe",            "sub": "Lat" },
+    { "area": "Occipital Lobe",              "label": "Lat - 6 Block (Occipital Lobe)",                             "flag": "inc_lat_occipital_lobe",           "sub": "Lat" },
+    { "area": "Occipital Pole",              "label": "Lat - 7 Block (Occipital Pole)",                             "flag": "inc_lat_occipital_pole",           "sub": "Lat" },
+    { "area": "Cerebellum",                  "label": "Lat - 8 Block (Cerebellum)",                                 "flag": "inc_lat_cerebellum",               "sub": "Lat" },
+    { "area": "Temporal Lobe",               "label": "Lat - 9 Block (Temporal Lobe)",                              "flag": "inc_lat_temporal_lobe",            "sub": "Lat" },
+    { "area": "Pons",                        "label": "Lat - 10 Block (Pons)",                                      "flag": "inc_lat_pons",                     "sub": "Lat" },
+    { "area": "Medulla",                     "label": "Lat - 11 Block (Medulla)",                                   "flag": "inc_lat_medulla",                  "sub": "Lat" },
+    { "area": "Lateral Geniculate Nucleus",  "label": "Lat - 12 Block (Lateral Geniculate Nucleus)",                "flag": "inc_lat_lateral_geniculate_nucleus","sub": "Lat" },
+    { "area": "Medial Geniculate Nucleus",   "label": "Lat - 13 Block (Medial Geniculate Nucleus)",                 "flag": "inc_lat_medial_geniculate_nucleus","sub": "Lat" },
+    { "area": "Superior Colliculus",         "label": "Lat - 14 Block (Superior Colliculus)",                       "flag": "inc_lat_superior_colliculus",      "sub": "Lat" },
+    { "area": "Brachium of the Inferior Colliculus", "label": "Lat - 15 Block (Brachium of the Inferior Colliculus)", "flag": "inc_lat_brachium",           "sub": "Lat" },
+    { "area": "Middle Cerebellar Peduncle",  "label": "Lat - 16 Block (Middle Cerebellar Peduncle)",                "flag": "inc_lat_middle_cerebellar_peduncle","sub": "Lat" },
+    { "area": "Medulla",                     "label": "Vent - 12 Block (Medulla)",                                  "flag": "inc_vent_medulla",                 "sub": "Vent" },
+    { "area": "Rhinal Fissure",              "label": "Vent - 13 Block (Rhinal Fissure)",                           "flag": "inc_vent_rhinal_fissure",          "sub": "Vent" },
+    { "area": "Rhinencephalon",              "label": "Vent - 14 Block (Rhinencephalon)",                           "flag": "inc_vent_rhinencephalon",          "sub": "Vent" },
+    { "area": "Medial Olfactory Tract",      "label": "Vent - 15 Block (Medial Olfactory Tract)",                   "flag": "inc_vent_medial_olfactory_tract",  "sub": "Vent" },
+    { "area": "Olfactory Bulb",              "label": "Vent - 16 Block (Olfactory Bulb)",                           "flag": "inc_vent_olfactory_bulb",          "sub": "Vent" },
+    { "area": "Pineal Body",                 "label": "Post - 4 Block (Pineal Body)",                               "flag": "inc_post_pineal_body",             "sub": "Post" },
+    { "area": "Superior Colliculus",         "label": "Post - 5 Block (Superior Colliculus)",                       "flag": "inc_post_superior_colliculus",     "sub": "Post" },
+    { "area": "Inferior Colliculus",         "label": "Post - 6 Block (Inferior Colliculus)",                       "flag": "inc_post_inferior_colliculus",     "sub": "Post" }
+  ],
+  "Coronal": [
+    {
+      "area": "Internal Capsule",
+      "label": "Cor - 1 Block (Internal Capsule)",
+      "flag": "inc_cor_internal_capsule",
+      "sub": "Cor"
+    },
+    {
+      "area": "Caudate",
+      "label": "Cor - 2 Block (Caudate)",
+      "flag": "inc_cor_caudate",
+      "sub": "Cor"
+    },
+    {
+      "area": "Putamen",
+      "label": "Cor - 3 Block (Putamen)",
+      "flag": "inc_cor_putamen",
+      "sub": "Cor"
+    },
+    {
+      "area": "Lateral Ventricle",
+      "label": "Cor - 4 Block (Lateral Ventricle)",
+      "flag": "inc_cor_lateral_ventricle",
+      "sub": "Cor"
+    },
+    {
+      "area": "Septum Pellucidum",
+      "label": "Cor - 5 Block (Septum Pellucidum)",
+      "flag": "inc_cor_septum_pellucidum",
+      "sub": "Cor"
+    },
+    {
+      "area": "Corona Radiata",
+      "label": "Cor - 6 Block (Corona Radiata)",
+      "flag": "inc_cor_corona_radiata",
+      "sub": "Cor"
+    },
+    {
+      "area": "External Capsule",
+      "label": "Cor - 7 Block (External Capsule)",
+      "flag": "inc_cor_external_capsule",
+      "sub": "Cor"
+    },
+    {
+      "area": "Claustrum",
+      "label": "Cor - 8 Block (Claustrum)",
+      "flag": "inc_cor_claustrum",
+      "sub": "Cor"
+    },
+    {
+      "area": "Cingulate Gyrus",
+      "label": "Cor - 9 Block (Cingulate Gyrus)",
+      "flag": "inc_cor_cingulate_gyrus",
+      "sub": "Cor"
+    },
+    {
+      "area": "Fornix",
+      "label": "Cor - 10 Block (Fornix)",
+      "flag": "inc_cor_fornix",
+      "sub": "Cor"
+    },
+    {
+      "area": "Cingulum",
+      "label": "Cor - 11 Block (Cingulum)",
+      "flag": "inc_cor_cingulum",
+      "sub": "Cor"
+    },
+    {
+      "area": "Third Ventricle",
+      "label": "Cor - 12 Block (Third Ventricle)",
+      "flag": "inc_cor_third_ventricle",
+      "sub": "Cor"
+    },
+    {
+      "area": "Mammillothalamic Tract",
+      "label": "Cor - 13 Block (Mammillothalamic Tract)",
+      "flag": "inc_cor_mammillothalamic_tract",
+      "sub": "Cor"
+    },
+    {
+      "area": "Mammillary Bodies",
+      "label": "Cor - 14 Block (Mammillary Bodies)",
+      "flag": "inc_cor_mammillary_bodies",
+      "sub": "Cor"
+    },
+    {
+      "area": "Hippocampus",
+      "label": "Cor - 15 Block (Hippocampus)",
+      "flag": "inc_cor_hippocampus",
+      "sub": "Cor"
+    },
+    {
+      "area": "Coronal - Cerebral Aqueduct",
+      "label": "Coronal - Cerebral Aqueduct",
+      "flag": "inc_cor_coronal_cerebral_aqueduct",
+      "sub": "Cor"
+    },
+    { "area": "Corpus Callosum",     "label": "Cor - 16 Block (Corpus Callosum)",     "flag": "inc_cor_corpus_callosum",    "sub": "Cor" },
+    { "area": "Thalamus",            "label": "Cor - 17 Block (Thalamus)",            "flag": "inc_cor_thalamus",           "sub": "Cor" },
+    { "area": "Hypothalamus",        "label": "Cor - 18 Block (Hypothalamus)",        "flag": "inc_cor_hypothalamus",       "sub": "Cor" },
+    { "area": "Optic Tracts",        "label": "Cor - 19 Block (Optic Tracts)",        "flag": "inc_cor_optic_tracts",       "sub": "Cor" },
+    { "area": "Pineal Body",         "label": "Cor - 20 Block (Pineal Body)",         "flag": "inc_cor_pineal_body",        "sub": "Cor" },
+    { "area": "Lateral Geniculate",  "label": "Cor - 21 Block (Lateral Geniculate)",  "flag": "inc_cor_lateral_geniculate", "sub": "Cor" },
+    { "area": "Medial Geniculate",   "label": "Cor - 22 Block (Medial Geniculate)",   "flag": "inc_cor_medial_geniculate",  "sub": "Cor" },
+    { "area": "Cerebral Peduncles",  "label": "Cor - 23 Block (Cerebral Peduncles)",  "flag": "inc_cor_cerebral_peduncles", "sub": "Cor" },
+    { "area": "Superior Colliculus", "label": "Cor - 24 Block (Superior Colliculus)", "flag": "inc_cor_superior_colliculus","sub": "Cor" },
+    { "area": "Tegmentum",           "label": "Cor - 25 Block (Tegmentum)",           "flag": "inc_cor_tegmentum",          "sub": "Cor" },
+    { "area": "Septal Nucleus",      "label": "Cor - 26 Block (Septal Nucleus)",      "flag": "inc_cor_septal_nucleus",     "sub": "Cor" },
+    { "area": "Extreme Capsule",     "label": "Cor - 27 Block (Extreme Capsule)",     "flag": "inc_cor_extreme_capsule",    "sub": "Cor" },
+    { "area": "Choroid Plexus",      "label": "Cor - 28 Block (Choroid Plexus)",      "flag": "inc_cor_choroid_plexus",     "sub": "Cor" },
+    { "area": "Massa Intermedia",    "label": "Cor - 29 Block (Massa Intermedia)",    "flag": "inc_cor_massa_intermedia",   "sub": "Cor" }
+  ],
+  "Midsagittal": [
+    {
+      "area": "Habenula",
+      "label": "Mid - 1 Block (Habenula)",
+      "flag": "inc_mid_habenula",
+      "sub": "Mid"
+    },
+    {
+      "area": "Thalamus",
+      "label": "Mid - 2 Block (Thalamus)",
+      "flag": "inc_mid_thalamus",
+      "sub": "Mid"
+    },
+    {
+      "area": "Corpus Callosum",
+      "label": "Mid - 4 Block (Corpus Callosum)",
+      "flag": "inc_mid_corpus_callosum",
+      "sub": "Mid"
+    },
+    {
+      "area": "Arbor Vitae",
+      "label": "Mid - 6 Block (Arbor Vitae)",
+      "flag": "inc_mid_arbor_vitae",
+      "sub": "Mid"
+    },
+    {
+      "area": "Cerebral Aqueduct",
+      "label": "Mid - 7 Block (Cerebral Aqueduct)",
+      "flag": "inc_mid_cerebral_aqueduct",
+      "sub": "Mid"
+    },
+    {
+      "area": "Third Ventricle",
+      "label": "Mid - 8 Block (Third Ventricle)",
+      "flag": "inc_mid_third_ventricle",
+      "sub": "Mid"
+    },
+    {
+      "area": "Cingulate Gyrus",
+      "label": "Mid - 9 Block (Cingulate Gyrus)",
+      "flag": "inc_mid_cingulate_gyrus",
+      "sub": "Mid"
+    },
+    {
+      "area": "Hypothalamus",
+      "label": "Mid - 10 Block (Hypothalamus)",
+      "flag": "inc_mid_hypothalamus",
+      "sub": "Mid"
+    },
+    {
+      "area": "Optic Chiasm",
+      "label": "Mid - 11 Block (Optic Chiasm)",
+      "flag": "inc_mid_optic_chiasm",
+      "sub": "Mid"
+    },
+    {
+      "area": "Pineal Body",
+      "label": "Mid - 12 Block (Pineal Body)",
+      "flag": "inc_mid_pineal_body",
+      "sub": "Mid"
+    },
+    {
+      "area": "Superior Colliculus",
+      "label": "Mid - 13 Block (Superior Colliculus)",
+      "flag": "inc_mid_superior_colliculus",
+      "sub": "Mid"
+    },
+    {
+      "area": "Inferior Colliculus",
+      "label": "Mid - 14 Block (Inferior Colliculus)",
+      "flag": "inc_mid_inferior_colliculus",
+      "sub": "Mid"
+    },
+    {
+      "area": "Fornix",
+      "label": "Mid - 15 Block (Fornix)",
+      "flag": "inc_mid_fornix",
+      "sub": "Mid"
+    },
+    {
+      "area": "Septum Pellucidum",
+      "label": "Mid - 16 Block (Septum Pellucidum)",
+      "flag": "inc_mid_septum_pellucidum",
+      "sub": "Mid"
+    },
+    {
+      "area": "Posterior Commissure",
+      "label": "Mid - 17 Block (Posterior Commissure)",
+      "flag": "inc_mid_posterior_commissure",
+      "sub": "Mid"
+    },
+    {
+      "area": "Anterior Commissure",
+      "label": "Mid - 18 Block (Anterior Commissure)",
+      "flag": "inc_mid_anterior_commissure",
+      "sub": "Mid"
+    },
+    {
+      "area": "Brachium",
+      "label": "Mid-Lat - 1 Block (Brachium)",
+      "flag": "inc_mid_lat_brachium",
+      "sub": "Mid-Lat"
+    },
+    {
+      "area": "Lateral Geniculate Nucleus",
+      "label": "Mid-Lat - 2 Block (Lateral Geniculate Nucleus)",
+      "flag": "inc_mid_lat_lateral_geniculate_nucleus",
+      "sub": "Mid-Lat"
+    },
+    {
+      "area": "Medial Geniculate Nucleus",
+      "label": "Mid-Lat - 3 Block (Medial Geniculate Nucleus)",
+      "flag": "inc_mid_lat_medial_geniculate_nucleus",
+      "sub": "Mid-Lat"
+    },
+    {
+      "area": "Middle Cerebellar Peduncle",
+      "label": "Mid-Lat - 4 Block (Middle Cerebellar Peduncle)",
+      "flag": "inc_mid_lat_middle_cerebellar_peduncle",
+      "sub": "Mid-Lat"
+    },
+    {
+      "area": "Superior Colliculus",
+      "label": "Mid-Lat - 5 Block (Superior Colliculus)",
+      "flag": "inc_mid_lat_superior_colliculus",
+      "sub": "Mid-Lat"
+    },
+    { "area": "Cerebellum",        "label": "Mid - 19 Block (Cerebellum)",        "flag": "inc_mid_cerebellum",        "sub": "Mid" },
+    { "area": "Tegmentum",         "label": "Mid - 20 Block (Tegmentum)",         "flag": "inc_mid_tegmentum",         "sub": "Mid" },
+    { "area": "Medulla",           "label": "Mid - 21 Block (Medulla)",           "flag": "inc_mid_medulla",           "sub": "Mid" },
+    { "area": "Central Sulcus",    "label": "Mid - 22 Block (Central Sulcus)",    "flag": "inc_mid_central_sulcus",    "sub": "Mid" },
+    { "area": "Precentral Gyrus",  "label": "Mid - 23 Block (Precentral Gyrus)",  "flag": "inc_mid_precentral_gyrus",  "sub": "Mid" },
+    { "area": "Postcentral Gyrus", "label": "Mid - 24 Block (Postcentral Gyrus)", "flag": "inc_mid_postcentral_gyrus", "sub": "Mid" },
+    { "area": "Mammillary Bodies", "label": "Mid - 25 Block (Mammillary Bodies)", "flag": "inc_mid_mammillary_bodies", "sub": "Mid" },
+    { "area": "Pons",              "label": "Mid - 26 Block (Pons)",              "flag": "inc_mid_pons",              "sub": "Mid" },
+    { "area": "Fourth Ventricle",  "label": "Mid - 27 Block (Fourth Ventricle)",  "flag": "inc_mid_fourth_ventricle",  "sub": "Mid" }
+  ]
+};
+
+const viewsEl = document.getElementById('views');
+const baseUrlEl = document.getElementById('baseUrl');
+const finalUrlEl = document.getElementById('finalUrl');
+const summaryEl = document.getElementById('summary');
+const copiedMsg = document.getElementById('copiedMsg');
+
+// Build UI
+for (const view of Object.keys(DATA)) {
+  const rows = DATA[view];
+  const section = document.createElement('div');
+  section.className = 'view card';
+  section.dataset.view = view;
+
+  const h = document.createElement('h2');
+  h.innerHTML = `${view} <span class="count" data-count="${view}">0 of 0</span>`;
+  section.appendChild(h);
+
+  const actions = document.createElement('div');
+  actions.className = 'view-actions';
+  actions.innerHTML = `
+    <button data-action="all" data-view="${view}">All</button>
+    <button data-action="none" data-view="${view}">None</button>
+  `;
+  section.appendChild(actions);
+
+  // group by sub
+  const subs = {};
+  for (const r of rows) {
+    (subs[r.sub] ||= []).push(r);
+  }
+  for (const sub of Object.keys(subs)) {
+    const sg = document.createElement('div');
+    sg.className = 'subgroup';
+    const h3 = document.createElement('h3');
+    h3.textContent = sub;
+    sg.appendChild(h3);
+    for (const r of subs[sub]) {
+      const row = document.createElement('div');
+      row.className = 'area';
+      row.dataset.flag = r.flag;
+      const id = `cb_${r.flag}`;
+      row.innerHTML = `
+        <input type="checkbox" id="${id}" data-flag="${r.flag}" checked>
+        <label for="${id}">${r.area}</label>
+      `;
+      sg.appendChild(row);
+    }
+    section.appendChild(sg);
+  }
+  viewsEl.appendChild(section);
+}
+
+// Update logic
+function update() {
+  const base = baseUrlEl.value.trim();
+  const excluded = [];
+  let total = 0, selected = 0;
+  const perView = {};
+  for (const view of Object.keys(DATA)) {
+    perView[view] = { sel: 0, total: DATA[view].length };
+    for (const r of DATA[view]) {
+      total++;
+      const cb = document.querySelector(`input[data-flag="${r.flag}"]`);
+      if (cb.checked) {
+        selected++;
+        perView[view].sel++;
+      } else {
+        excluded.push(r.flag);
+      }
+    }
+  }
+  for (const view of Object.keys(perView)) {
+    const el = document.querySelector(`[data-count="${view}"]`);
+    el.textContent = `${perView[view].sel} of ${perView[view].total}`;
+  }
+  const params = excluded.map(f => `${encodeURIComponent(f)}=0`).join('&');
+  const url = params ? `${base}?${params}` : base;
+  finalUrlEl.value = url;
+  const off = total - selected;
+  const dot = document.getElementById('statusDot');
+  if (off === 0) {
+    summaryEl.textContent = `All ${total} areas included — default behavior, no URL parameters.`;
+    dot.classList.remove('partial');
+  } else if (selected === 0) {
+    summaryEl.textContent = `No areas selected — students will see no questions.`;
+    dot.classList.add('partial');
+  } else {
+    summaryEl.textContent = `${selected} of ${total} areas included · ${off} excluded · URL length: ${url.length} chars`;
+    dot.classList.add('partial');
+  }
+}
+
+// Events
+document.addEventListener('change', e => {
+  if (e.target.matches('input[type="checkbox"]')) update();
+});
+document.addEventListener('click', e => {
+  const act = e.target.dataset.action;
+  if (!act) return;
+  const view = e.target.dataset.view;
+  const boxes = document.querySelectorAll(`[data-view="${view}"] input[type="checkbox"], .view[data-view="${view}"] input[type="checkbox"]`);
+  // the selector above doesn't match inner checkboxes because .view wraps them; use container lookup instead:
+  const container = document.querySelector(`.view[data-view="${view}"]`);
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = (act === 'all');
+  });
+  update();
+});
+baseUrlEl.addEventListener('input', update);
+function flashCopied() {
+  copiedMsg.textContent = 'Copied to clipboard';
+  copiedMsg.classList.add('show');
+  setTimeout(() => {
+    copiedMsg.classList.remove('show');
+    // Clear text after transition so the next copy triggers a fresh announcement
+    setTimeout(() => { copiedMsg.textContent = ''; }, 300);
+  }, 1600);
+}
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(finalUrlEl.value);
+  } catch {
+    finalUrlEl.select();
+    document.execCommand('copy');
+  }
+  flashCopied();
+});
+document.getElementById('openBtn').addEventListener('click', () => {
+  window.open(finalUrlEl.value, '_blank');
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+  update();
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  update();
+});
+
+update();
+</script>
+</body>
+</html>

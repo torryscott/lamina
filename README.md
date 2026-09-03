@@ -1,0 +1,271 @@
+# Lamina
+
+**A customizable sheep brain neuroanatomy practicum for Qualtrics, with an interactive
+labeled atlas.**
+
+Students identify structures on photographs of a preserved sheep brain across three
+anatomical views. Instructors decide which structures are included **without editing
+or duplicating the survey**.
+
+Built for the Neurobiology lab practicum at St. Mary's College of Maryland, and released
+so other instructors can run it, adapt it, or extend it to their own specimens.
+
+> *lamina* — Latin, a plate or layer. Both the laminae of the cortex and the plate of an
+> anatomical atlas.
+
+---
+
+## Why this exists
+
+Most anatomy question banks are all-or-nothing: the survey tests every structure it contains,
+and narrowing it means duplicating and pruning the whole instrument. That doesn't survive
+contact with reality — different sections cover different material, and a midterm isn't a final.
+
+This module solves that with URL flags. Every structure has an `inc_*` flag, and every quiz
+block is gated on it. An instructor who doesn't cover the claustrum appends
+`?inc_cor_claustrum=0` and it disappears — from the quiz *and* from the interactive atlas.
+No Qualtrics account needed on their end, no forked copy to maintain.
+
+A companion **link builder** turns that into a checkbox interface, so nobody has to hand-write
+query strings.
+
+---
+
+## What's in the box
+
+| Piece | What it does |
+|---|---|
+| **Qualtrics survey** | The practicum itself — three views, randomized blocks, timed questions, auto-graded short answers with feedback |
+| **Link builder** | Instructor-facing page: check the structures you want, get a shareable student link |
+| **Interactive atlas** | Study mode with toggleable labels, leader lines, hover/tap reveal — filtered by the same flags |
+| **Coordinate capture tool** | Authoring tool for placing atlas labels on a new specimen photo |
+
+---
+
+## Quick start
+
+1. **Import the survey.** In Qualtrics: *Projects → Create project → Survey → Import a QSF file*,
+   and choose [`qualtrics/lamina.qsf`](qualtrics/lamina.qsf). Specimen photographs load from
+   GitHub Pages, so there's nothing to upload — it renders on import.
+2. **Note your new survey ID** — the `SV_…` string in the address bar.
+3. **Set the end-of-survey redirect.** Ships empty, because it has to contain *your* survey ID.
+   Open
+   [`qualtrics/end-of-survey-redirect.txt`](qualtrics/end-of-survey-redirect.txt), replace the
+   survey ID with yours, then paste it into *Survey options → Survey termination → Redirect to a URL*.
+   This is what preserves an instructor's structure selection when the module loops.
+4. **Point the link builder at your survey.** Open [`tools/link-builder.html`](tools/link-builder.html),
+   and change the default URL in the **Survey base URL** field (or edit the `value` attribute in the
+   file so it defaults correctly for everyone).
+5. **Host the link builder** anywhere that serves static files — GitHub Pages, institutional web
+   space, Netlify. It's a single self-contained file with no build step.
+
+That's the minimum. The survey works immediately; everything below is customization.
+
+---
+
+## How the flag system works
+
+Each structure gets a flag named `inc_<view>_<structure>`:
+
+```
+inc_mid_thalamus
+inc_cor_caudate
+inc_vent_optic_chiasm
+```
+
+Every question inside that structure's block carries Display Logic reading
+**"show if the flag is not equal to `0`"**. The `not equal` matters: an unset flag is not `0`,
+so the default with no URL parameters is *everything visible*. Instructors only ever
+specify what to **remove**.
+
+```
+https://YOUR-DOMAIN.qualtrics.com/jfe/form/SV_XXXX?inc_cor_caudate=0&inc_mid_fornix=0
+```
+
+Two structures excluded, the other 108 shown.
+
+### Why per-view flags
+
+The same structure gets a separate flag in each view it appears in — the pons is
+`inc_vent_pons` on the ventral surface, `inc_lat_pons` laterally, and `inc_mid_pons` in
+midsagittal section. They're different images, different spatial context, and arguably
+different learning targets, so they're independently toggleable.
+
+---
+
+## Repository layout
+
+```
+qualtrics/
+  lamina.qsf         Import this into Qualtrics
+  end-of-survey-redirect.txt     Redirect URL that preserves flag state
+  atlas-embeds/                  Paste-ready atlas code, per view
+    midsagittal.html               → question HTML source view
+    midsagittal.js                 → question JavaScript editor
+
+tools/
+  link-builder.html              Instructor UI for building student links
+  atlas-coord-capture.html       Authoring tool for placing atlas labels
+
+atlases/
+  midsagittal.html               Standalone atlas page (hostable on its own)
+
+images/
+  clean/                         Unlabeled plates — what the dynamic atlas needs
+  labeled/                       Original plates with labels burned in (reference)
+
+scripts/
+  image-map.json                 Plate → Pages URL → Qualtrics image ID mapping
+  build-variants.py              Regenerates the Qualtrics-hosted variant
+
+docs/
+  CONVENTIONS.md                 Block naming, display logic, matter types, atlas data format
+```
+
+---
+
+## Two variants
+
+The same survey ships twice. The only difference is where specimen photographs are fetched from.
+
+| File | Images from | Use it when |
+|---|---|---|
+| `lamina.qsf` | GitHub Pages | **Default.** Adopting the module, or any situation where you'd rather not upload twelve plates by hand. Works immediately on import. |
+| `lamina-qualtrics-hosted.qsf` | Your Qualtrics graphics library | Running a graded practicum. Keeps everything on one service, so an outage elsewhere can't put a broken image in front of a student mid-exam. |
+
+To build the second variant for your own account:
+
+1. Upload the plates from `images/clean/` to your Qualtrics graphics library.
+2. Paste each image's `IM_…` id into [`scripts/image-map.json`](scripts/image-map.json).
+3. Run:
+
+```bash
+python3 scripts/build-variants.py
+```
+
+The script swaps URLs and verifies the result is still valid JSON. Nothing else changes —
+the two files are byte-identical apart from the image addresses.
+
+---
+
+## Extending it
+
+### Adding a structure
+
+Each quiz block is five questions plus a page break:
+
+| Question | Type | Contents |
+|---|---|---|
+| Pic | Descriptive (graphic) | Specimen photo with an **X** on the structure |
+| Ans | Text entry | *"Identify the structure marked by the X"* + a matter-type hint |
+| Timer | Timing | 60-second countdown |
+| — | Page break | |
+| Pic (reveal) | Descriptive (graphic) | Answer-reveal image |
+| Feedback | Descriptive (text) | Student's answer vs. correct answer, plus a *"What is the …?"* explainer |
+
+To add one:
+
+1. Duplicate an existing block in the Qualtrics editor and rename it following the
+   `<View> - <N> Block (<Structure>)` pattern.
+2. Set Display Logic on **all five questions** to `inc_<view>_<structure>` **is not equal to** `0`.
+3. Add the block to that view's Block Randomizer in Survey Flow, and increase the randomizer's
+   subset count so it stays equal to the total.
+4. Add the flag to `tools/link-builder.html` and `tools/atlas-coord-capture.html` — both hold a
+   plain data array near the top of their `<script>` block.
+
+See [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) for the exact display-logic JSON if you're
+editing the QSF directly rather than clicking through the UI.
+
+### Building an atlas for a new view
+
+The atlas needs an **unlabeled** photograph. Labels are rendered as live HTML on top, which is
+what makes them filterable.
+
+1. Open [`tools/atlas-coord-capture.html`](tools/atlas-coord-capture.html) and load the clean plate.
+2. For each structure: pick its flag, click the anatomy, drag the label pill out to the margin.
+   A leader line connects the two automatically.
+3. Toggle **Preview hover mode** to check how it reads for students, and watch for label collisions.
+4. Export the JSON.
+5. Drop the marker array into a copy of `atlases/midsagittal.html` and the matching
+   `qualtrics/atlas-embeds/` pair, replacing the image URL and marker data.
+
+The exported format:
+
+```json
+{
+  "image": { "filename": "midsagittal.jpg", "width": 2000, "height": 1500 },
+  "markers": [
+    {
+      "flag":   "inc_mid_thalamus",
+      "text":   "Thalamus",
+      "target": { "x": 0.3617, "y": 0.5241 },
+      "label":  { "x": 0.3640, "y": 0.8002 }
+    }
+  ]
+}
+```
+
+Coordinates are fractions of image dimensions, so the atlas scales to any display size.
+`target` is the dot on the anatomy; `label` is where the text pill sits.
+
+### Adapting to a different specimen
+
+Nothing here is sheep-specific except the photographs and the structure list. Swap in your own
+plates, rename the flags, and the machinery works unchanged.
+
+---
+
+## Accessibility
+
+The atlas and link builder were built against WCAG 2.1 AA, which US public institutions are
+required to meet under the DOJ's 2024 ADA Title II web rule:
+
+- Atlas markers are real `<button>` elements — keyboard-focusable, with visible focus rings, and
+  labels that reveal on focus as well as hover
+- A visually-hidden list of visible structures gives screen readers a text equivalent of the map
+- Study-mode controls use `role="radiogroup"`, and structure counts announce through `aria-live`
+- Decorative leader lines are `aria-hidden`
+
+**Not automatic:** alt text on the specimen photographs you upload to Qualtrics. Fill in each
+graphic's description field.
+
+---
+
+## Status
+
+Actively in development. Working today:
+
+- Flag-based customization across all 110 structures
+- Link builder covering all three views
+- Midsagittal interactive atlas (25 labeled structures)
+
+In progress:
+
+- Quiz content for 49 recently-scaffolded blocks (logic is wired; images and feedback text pending)
+- Interactive atlases for the remaining 11 plates — **blocked on producing unlabeled versions**,
+  since the plates in `images/labeled/` have text baked into the pixels
+
+---
+
+## License
+
+Split, because code and photographs want different terms:
+
+- **Code** — MIT. See [`LICENSE`](LICENSE). Covers the HTML tools, JavaScript, and the QSF.
+- **Images** — CC BY 4.0. See [`images/LICENSE`](images/LICENSE). Reuse and adapt freely
+  with attribution.
+
+---
+
+## Citation
+
+If this is useful in your teaching or shows up in your scholarship, please cite it —
+see [`CITATION.cff`](CITATION.cff).
+
+---
+
+## Contributing
+
+Adaptations to other specimens, additional views, and accessibility fixes are all welcome.
+If you build an atlas for a species this doesn't cover, a pull request would be genuinely useful
+to other instructors.

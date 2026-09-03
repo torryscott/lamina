@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "Maps each atlas plate to its Pages URL and, optionally, the Qualtrics",
+    "graphics-library ID for the same image.",
+    "",
+    "build-variants.py reads this to generate the two QSF variants.",
+    "When you upload a plate to your Qualtrics graphics library, paste its",
+    "IM_ id here so the qualtrics-hosted variant can pick it up.",
+    "Leave qualtrics_im null for plates you haven't uploaded."
+  ],
+  "pages_base": "https://torryscott.github.io/lamina",
+  "qualtrics_base": "https://smcm.pdx1.qualtrics.com/CP/Graphic.php?IM=",
+  "plates": {
+    "midsagittal": {
+      "repo_path": "images/clean/midsagittal.jpg",
+      "qualtrics_im": "IM_2NUbxtEN4LRTaYA"
+    }
+  }
+}
