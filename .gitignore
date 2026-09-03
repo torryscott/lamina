@@ -15,3 +15,8 @@
 # Working copies of survey files (keep only the canonical one in qualtrics/)
 *_v[0-9].qsf
 *_v[0-9][0-9].qsf
+
+# Alpha-channel plate masters — kept locally, not in git.
+# The derived JPEGs in images/clean/ are what the atlas uses.
+# Regenerate them with: python3 scripts/prepare-plates.py
+images/clean/*.png
