@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sheep Brain Module — Link Builder</title>
+<title>Lamina — Link Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -444,16 +444,16 @@
 </head>
 <body>
 <section class="hero">
-  <div class="hero-eyebrow">St. Mary's College of Maryland · Lab Practicum</div>
-  <h1>Sheep Brain Module — Assignment Link Builder</h1>
+  <div class="hero-eyebrow">Lamina · For instructors</div>
+  <h1>Lamina — Assignment Link Builder</h1>
   <p>Choose which brain areas your students should be tested on. Unselected areas are skipped for that assignment; leave everything selected to use the full module.</p>
 </section>
 
 <main>
   <section class="card url-card">
     <div class="base-row">
-      <label class="field-label" for="baseUrl">Survey base URL</label>
-      <input type="text" id="baseUrl" value="https://smcm.az1.qualtrics.com/jfe/form/SV_4ObpTizENb4ba6O">
+      <label class="field-label" for="baseUrl">Lamina base URL</label>
+      <input type="text" id="baseUrl" value="https://torryscott.github.io/lamina/">
     </div>
     <div>
       <label class="field-label" for="finalUrl">Shareable student link</label>
@@ -474,16 +474,14 @@
 
   <div class="warn">
     <div>
-      <strong>How this works.</strong> By default, this link shows the full module — all 61 brain areas across the
-      three views. Unchecking an area adds <code>inc_&lt;area&gt;=0</code> to the URL, which tells Qualtrics to skip
-      that block via block-level Display Logic. No configuration needed on your end beyond sharing the generated link.
+      <strong>How this works.</strong> By default, this link opens Lamina with every structure available. Unchecking an area adds <code>inc_&lt;area&gt;=0</code> to the URL, and the atlas and quiz for every view hide that structure. Nothing to configure — share the link. Only views that have been mapped are live; the rest show as in progress.
     </div>
   </div>
 
   <section id="views" class="views"></section>
 </main>
 
-<footer>Built for the SMCM Neurobiology lab practicum</footer>
+<footer>Part of Lamina — open-source sheep brain neuroanatomy</footer>
 
 <script>
 const DATA = {
