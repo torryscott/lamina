@@ -797,7 +797,11 @@ document.getElementById('loadJson').addEventListener('click', () => {
     reader.onload = ev => {
       try {
         const parsed = JSON.parse(ev.target.result);
-        state.markers = (parsed.markers || []).map(m => {
+        // Accept this tool's own export ({markers}) or a Lamina data file
+        // ({structures}), so a draft data/<view>.json loads straight in.
+        const list = parsed.markers
+          || (parsed.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label}));
+        state.markers = list.map(m => {
           // Migrate old schema (flat x,y) → new schema (target/label)
           if (m.target && m.label) {
             return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target: m.target, label: m.label};
