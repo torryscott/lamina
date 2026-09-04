@@ -36,6 +36,10 @@ Qualtrics.SurveyEngine.addOnReady(function() {
   var cntShown = root.querySelector('#smcmCntShown');
   var cntTotal = root.querySelector('#smcmCntTotal');
   var srList   = root.querySelector('#smcmSrList');
+
+  /* A phone or tablet has no hover-capable pointer, so reveal becomes tap. */
+  var CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var pinned = null;
   var viewFull = root.querySelector('#smcmViewFull');
   if (viewFull && atlasImg) viewFull.href = atlasImg.src;
 
@@ -102,15 +106,31 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
       function enter(){ dot.classList.add('hovered'); pill.classList.add('hovered'); line.classList.add('hovered'); }
       function leave(){ dot.classList.remove('hovered'); pill.classList.remove('hovered'); line.classList.remove('hovered'); }
-      dot.addEventListener('mouseenter', enter);
-      dot.addEventListener('mouseleave', leave);
+      var entry = { enter: enter, leave: leave };
+
+      if (CAN_HOVER) {
+        dot.addEventListener('mouseenter', enter);
+        dot.addEventListener('mouseleave', function(){ if (pinned !== entry) leave(); });
+        pill.addEventListener('mouseenter', enter);
+        pill.addEventListener('mouseleave', function(){ if (pinned !== entry) leave(); });
+      }
+
       dot.addEventListener('focus', enter);
-      dot.addEventListener('blur', leave);
-      dot.addEventListener('touchstart', function(e){ e.preventDefault(); enter(); }, {passive:false});
-      dot.addEventListener('touchend', leave);
-      pill.addEventListener('mouseenter', enter);
-      pill.addEventListener('mouseleave', leave);
+      dot.addEventListener('blur', function(){ if (pinned !== entry) leave(); });
+
+      // Tap or click pins the label so it stays put. Tapping it again,
+      // tapping another dot, or tapping the image clears it.
+      dot.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if (pinned === entry) { clearPinned(); }
+        else { clearPinned(); enter(); pinned = entry; }
+      });
     });
+  }
+
+  function clearPinned() {
+    if (pinned) { pinned.leave(); pinned = null; }
   }
 
   var modeButtons = root.querySelectorAll('.mode-group button');
@@ -138,10 +158,15 @@ Qualtrics.SurveyEngine.addOnReady(function() {
   else atlasImg.addEventListener('load', function(){ render(); updateIW(); });
   window.addEventListener('resize', updateIW);
 
-  // On narrow screens, default to "Hover to reveal" mode so the image
-  // stays clean and students tap one dot at a time.
-  if (window.matchMedia('(max-width: 720px)').matches) {
-    var hoverBtn = root.querySelector('.mode-group button[data-mode="hover"]');
-    if (hoverBtn) hoverBtn.click();
+  // Tapping the image clears a pinned label.
+  atlasImg.addEventListener('click', clearPinned);
+
+  // Without a pointer, "hover" is the wrong word and the wrong default.
+  if (!CAN_HOVER) {
+    var revealBtn = root.querySelector('.mode-group button[data-mode="hover"]');
+    if (revealBtn) {
+      revealBtn.textContent = 'Tap to reveal';
+      revealBtn.click();
+    }
   }
 });

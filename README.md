@@ -102,6 +102,7 @@ qualtrics/
   atlas-embeds/                  Paste-ready atlas code, per view
     midsagittal.html               → question HTML source view
     midsagittal.js                 → question JavaScript editor
+    preview.html                   → preview the embed outside Qualtrics
 
 tools/
   link-builder.html              Instructor UI for building student links
@@ -116,7 +117,10 @@ images/
 
 scripts/
   image-map.json                 Plate → Pages URL → Qualtrics image ID mapping
+  prepare-plates.py              Background-removed PNGs → atlas-ready JPEGs
+  bake-atlas.py                  Embed sources → the survey file
   build-variants.py              Regenerates the Qualtrics-hosted variant
+  serve.py                       Local dev server
 
 docs/
   CONVENTIONS.md                 Block naming, display logic, matter types, atlas data format
@@ -145,6 +149,23 @@ python3 scripts/build-variants.py
 
 The script swaps URLs and verifies the result is still valid JSON. Nothing else changes —
 the two files are byte-identical apart from the image addresses.
+
+---
+
+## Working on the atlas
+
+The atlas exists twice: as a standalone page (`atlases/`) and as a Qualtrics embed
+(`qualtrics/atlas-embeds/`). After editing the embed sources, fold them back into the
+survey file so the QSF doesn't drift:
+
+```bash
+python3 scripts/bake-atlas.py        # embed sources -> lamina.qsf
+python3 scripts/build-variants.py    # regenerate the image-URL variant
+```
+
+To see the embed without pasting into Qualtrics, run `python3 scripts/serve.py` and open
+[`qualtrics/atlas-embeds/preview.html`](qualtrics/atlas-embeds/preview.html). It stubs the
+Qualtrics API and renders the embed inside a container of realistic width.
 
 ---
 

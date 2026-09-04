@@ -156,6 +156,18 @@
     transform: translate(-50%, -50%) scale(1.4);
     cursor: pointer;
   }
+  /* Invisible hit area — 44px is the platform minimum for a touch target. */
+  .smcm-atlas-mid .marker::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 44px; height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .smcm-atlas-mid .marker::after { width: 22px; height: 22px; }
+  }
+  .smcm-atlas-mid .label-pill.hovered { z-index: 4; }
   .smcm-atlas-mid .marker:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
@@ -208,10 +220,10 @@
     white-space: nowrap; border: 0;
   }
 
-  /* On narrow screens, force hover-reveal behavior regardless of which
-     mode button is active — otherwise 25 labels on a ~320px image is a mess.
+  /* Without a hover-capable pointer the reveal has to be tap-driven, and
+     25 labels at once on a phone is unreadable regardless of the chosen mode.
      "Hide markers" still hides everything (selector excludes it). */
-  @media (max-width: 720px) {
+  @media (hover: none), (pointer: coarse) {
     .smcm-atlas-mid .stage:not(.mode-hide) .label-pill {
       opacity: 0;
       pointer-events: none;
