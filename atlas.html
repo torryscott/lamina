@@ -331,7 +331,7 @@ const atlasImg = document.getElementById('atlasImg');
 const cntShown = document.getElementById('cntShown');
 const cntTotal = document.getElementById('cntTotal');
 
-// Which flags does the URL hide? codes.js resolves ?off=, ?on= and the long form.
+// Which flags does the URL hide? codes.js resolves ?off= and the long form.
 function readFlags() {
   return new Set(Object.keys(LAMINA.excludedMap()));
 }

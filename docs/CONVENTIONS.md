@@ -20,7 +20,7 @@ inc_<view>_<structure>
 ### Short codes
 
 Each flag also has a permanent short code in `codes.js`: view letter + number (`D1`,
-`L4`, `C12`). Student links use codes — `?off=D1.M3` hides, `?on=D1.D4` keeps only —
+`L4`, `C12`). Student links use codes — `?off=D1.M3` hides those structures —
 and the pages still honour `inc_<flag>=0`. Rules:
 
 - A code is assigned once and never changed or reused, even if the structure is removed.

@@ -23,8 +23,8 @@ contact with reality — different sections cover different material, and a midt
 
 This module solves that with URL flags. Every structure has a short code (`D1`, `M3` — see
 `codes.js`). An instructor who doesn't cover the claustrum appends `?off=C8` and it disappears —
-from the quiz *and* from the interactive atlas. Keeping only a few is `?on=D1.D4.M3`. The
-[link builder](tools/link-builder.html) writes these for you. No forked copy to maintain.
+from the quiz *and* from the interactive atlas. The [link builder](tools/link-builder.html)
+writes these for you. No forked copy to maintain.
 
 A companion **link builder** turns that into a checkbox interface, so nobody has to hand-write
 query strings.
@@ -72,7 +72,6 @@ name. Both live in `codes.js`; the code is what goes in links.
 
 ```
 ?off=D1.M3        hide these structures; everything else shown
-?on=D1.D4.M3      show only these
 ```
 
 Codes are case-insensitive and never reused. The long form is still honoured:

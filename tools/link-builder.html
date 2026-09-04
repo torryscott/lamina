@@ -440,8 +440,6 @@
     .views { gap: 14px; }
     .actions-row button { flex: 1 1 auto; }
   }
-  .code { font-family: ui-monospace, Menlo, monospace; font-size: .74rem; color: var(--muted, #6b7280);
-          background: #eef1f6; border-radius: 4px; padding: 1px 5px; margin-left: 8px; }
 </style>
 <script src="../codes.js"></script>
 </head>
@@ -477,7 +475,7 @@
 
   <div class="warn">
     <div>
-      <strong>How this works.</strong> Every structure has a short code — the grey tag beside its name. Unchecking areas adds their codes to the link as <code>?off=D1.M3</code>, or when you keep only a few, the link lists those instead as <code>?on=…</code>. The homepage, every atlas, and every quiz honour it. Nothing to configure — share the link. Only views that have been mapped are live; the rest show as in progress.
+      <strong>How this works.</strong> Unchecking areas adds their codes to the link, like <code>?off=D1.M3</code>; everything not listed stays visible. The homepage, every atlas, and every quiz honour it. Nothing to configure — share the link. Only views that have been mapped are live; the rest show as in progress.
     </div>
   </div>
 
@@ -954,7 +952,7 @@ for (const view of Object.keys(DATA)) {
       const id = `cb_${r.flag}`;
       row.innerHTML = `
         <input type="checkbox" id="${id}" data-flag="${r.flag}" checked>
-        <label for="${id}">${r.area}<code class="code">${LAMINA.FLAGS[r.flag] || ""}</code></label>
+        <label for="${id}">${r.area}</label>
       `;
       sg.appendChild(row);
     }
@@ -966,7 +964,7 @@ for (const view of Object.keys(DATA)) {
 // Update logic
 function update() {
   const base = baseUrlEl.value.trim();
-  const excluded = [], included = [];
+  const excluded = [];
   let total = 0, selected = 0;
   const perView = {};
   for (const view of Object.keys(DATA)) {
@@ -977,7 +975,6 @@ function update() {
       if (cb.checked) {
         selected++;
         perView[view].sel++;
-        included.push(r.flag);
       } else {
         excluded.push(r.flag);
       }
@@ -987,16 +984,12 @@ function update() {
     const el = document.querySelector(`[data-count="${view}"]`);
     el.textContent = `${perView[view].sel} of ${perView[view].total}`;
   }
-  // Short codes from codes.js; whichever list is shorter wins. A flag with
-  // no code (shouldn't happen — see scripts/check-codes.py) falls back to
-  // the long form.
+  // Short codes from codes.js. A flag with no code (shouldn't happen — see
+  // scripts/check-codes.py) falls back to the long form.
   const code = f => LAMINA.FLAGS[f];
   const offCodes = excluded.map(code).filter(Boolean);
-  const onCodes  = included.map(code).filter(Boolean);
   const longForm = excluded.filter(f => !code(f)).map(f => `${encodeURIComponent(f)}=0`);
-  let params = '';
-  if (excluded.length) params = offCodes.length <= onCodes.length ? `off=${offCodes.join('.')}` : `on=${onCodes.join('.')}`;
-  if (longForm.length) params = [params, ...longForm].filter(Boolean).join('&');
+  const params = [offCodes.length ? `off=${offCodes.join('.')}` : '', ...longForm].filter(Boolean).join('&');
   const url = params ? `${base}?${params}` : base;
   finalUrlEl.value = url;
   const off = total - selected;
@@ -1008,8 +1001,7 @@ function update() {
     summaryEl.textContent = `No areas selected — students will see no questions.`;
     dot.classList.add('partial');
   } else {
-    summaryEl.textContent = `${selected} of ${total} areas included · ${off} excluded · `
-      + (params.startsWith('on=') ? 'link lists what is kept' : 'link lists what is hidden') + ` · ${url.length} chars`;
+    summaryEl.textContent = `${selected} of ${total} areas included · ${off} excluded · URL length: ${url.length} chars`;
     dot.classList.add('partial');
   }
 }

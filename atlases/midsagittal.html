@@ -6,7 +6,7 @@
 <script>
   // The atlas is now one page driven by ?view=, so marker coordinates live in
   // data/<view>.json instead of being duplicated per page. Old links land
-  // here; carry the query string (?off=, ?on=, or inc_* flags) across.
+  // here; carry the query string (?off= or inc_* flags) across.
   (function () {
     var qs = window.location.search;                 // "" or "?inc_x=0&..."
     var extra = qs.length > 1 ? '&' + qs.slice(1) : '';

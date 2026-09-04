@@ -377,7 +377,7 @@
   ];
 
   var search = new URLSearchParams(window.location.search);
-  var excluded = LAMINA.excludedMap();   // honours ?off=, ?on= and the long form
+  var excluded = LAMINA.excludedMap();   // honours ?off= and the long form
   var excludedCount = Object.keys(excluded).length;
 
   function linkFor(page, id) {

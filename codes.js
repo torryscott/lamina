@@ -1,16 +1,15 @@
 /* Lamina — structure codes and URL flag resolution.
 
    Every structure has a permanent short code: a view letter and a number.
-   Student links use them:
+   A student link hides structures by listing their codes:
 
-     ?off=D1.M3      hide these structures (everything else shown)
-     ?on=D1.D4.M3    show only these structures
+     ?off=D1.M3
 
-   The long form ?inc_<flag>=0 is still honoured. Codes are case-insensitive
-   in the URL. They never change and are never reused: when a structure is
-   added, give it the next number in its view's run, wherever it sits in the
-   list. scripts/check-codes.py verifies this file against the builder and
-   the data files.
+   Everything not listed is shown. The long form ?inc_<flag>=0 is still
+   honoured. Codes are case-insensitive in the URL. They never change and
+   are never reused: when a structure is added, give it the next number in
+   its view's run, wherever it sits in the list. scripts/check-codes.py
+   verifies this file against the builder and the data files.
 
    Letters: D dorsal · L lateral · V ventral · P posterior · C coronal · M midsagittal */
 window.LAMINA = (function () {
@@ -131,29 +130,18 @@ window.LAMINA = (function () {
   for (var c in CODES) FLAGS[CODES[c]] = c;
 
   var q = new URLSearchParams(window.location.search);
-  function list(s) {
-    return (s || '').split(/[.,\s]+/).filter(Boolean).map(function (x) { return x.toUpperCase(); });
-  }
-  var mode = q.has('on') ? 'on' : 'off';
-  var set = {};                                   // flags named in the URL
-  if (mode === 'on') {
-    list(q.get('on')).forEach(function (c) { if (CODES[c]) set[CODES[c]] = true; });
-  } else {
-    list(q.get('off')).forEach(function (c) { if (CODES[c]) set[CODES[c]] = true; });
-    q.forEach(function (v, k) { if (k.indexOf('inc_') === 0 && v === '0') set[k] = true; });
-  }
+  var hidden = {};                                 // flag -> true
+  (q.get('off') || '').split(/[.,\s]+/).forEach(function (c) {
+    c = c.toUpperCase();
+    if (CODES[c]) hidden[CODES[c]] = true;
+  });
+  q.forEach(function (v, k) { if (k.indexOf('inc_') === 0 && v === '0') hidden[k] = true; });
 
-  function shown(flag) { return mode === 'on' ? !!set[flag] : !set[flag]; }
-
-  /* Map of every hidden flag -> true. In 'on' mode that is every known
-     structure not listed, so counts stay honest. */
+  function shown(flag) { return !hidden[flag]; }
   function excludedMap() {
     var out = {};
-    if (mode === 'on') { for (var f in FLAGS) if (!set[f]) out[f] = true; }
-    else { for (var g in set) out[g] = true; }
+    for (var f in hidden) out[f] = true;
     return out;
   }
-
-  return { CODES: CODES, FLAGS: FLAGS, shown: shown, excludedMap: excludedMap,
-           mode: function () { return mode; } };
+  return { CODES: CODES, FLAGS: FLAGS, shown: shown, excludedMap: excludedMap };
 })();
