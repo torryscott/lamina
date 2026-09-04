@@ -9,8 +9,8 @@
       "matter": "a Lobe",
       "about": "The most rostral lobe of the cerebrum, in front of the central sulcus. It houses the motor cortex and, at its rostral tip, the prefrontal areas involved in planning and the regulation of behavior.",
       "target": {
-        "x": 0.83,
-        "y": 0.38
+        "x": 0.8307,
+        "y": 0.396
       },
       "label": {
         "x": 0.93,
@@ -24,8 +24,8 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The rostral tip of the frontal lobe. It is small in sheep relative to primates, but serves the same broad role in planning, attention, and behavioral control.",
       "target": {
-        "x": 0.855,
-        "y": 0.61
+        "x": 0.8667,
+        "y": 0.6078
       },
       "label": {
         "x": 0.93,
@@ -60,8 +60,8 @@
       "matter": "a Groove",
       "about": "The transverse groove separating the frontal lobe from the parietal lobe, with motor cortex in front of it and somatosensory cortex behind. In veterinary nomenclature the sheep's equivalent is the cruciate sulcus.",
       "target": {
-        "x": 0.755,
-        "y": 0.43
+        "x": 0.7686,
+        "y": 0.4409
       },
       "label": {
         "x": 0.78,
@@ -80,8 +80,8 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The gyrus immediately caudal to the central sulcus. It is the primary somatosensory cortex, where touch, pressure, and proprioceptive information from the body is first processed.",
       "target": {
-        "x": 0.725,
-        "y": 0.43
+        "x": 0.7556,
+        "y": 0.4072
       },
       "label": {
         "x": 0.66,
@@ -99,8 +99,8 @@
       "matter": "a Groove",
       "about": "The deep midline groove that separates the two cerebral hemispheres. The corpus callosum lies at its floor, connecting them.",
       "target": {
-        "x": 0.56,
-        "y": 0.505
+        "x": 0.5739,
+        "y": 0.5205
       },
       "label": {
         "x": 0.48,
@@ -120,8 +120,8 @@
       "matter": "a Lobe",
       "about": "The lobe caudal to the central sulcus and rostral to the occipital lobe. It integrates somatosensory information and contributes to spatial awareness.",
       "target": {
-        "x": 0.65,
-        "y": 0.6
+        "x": 0.6699,
+        "y": 0.6078
       },
       "label": {
         "x": 0.6,
@@ -135,8 +135,8 @@
       "matter": "a Lobe",
       "about": "The most caudal lobe of the cerebrum, overlying the cerebellum. It contains the primary visual cortex.",
       "target": {
-        "x": 0.4,
-        "y": 0.33
+        "x": 0.3915,
+        "y": 0.3415
       },
       "label": {
         "x": 0.3,
@@ -150,8 +150,8 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The caudal tip of each cerebral hemisphere, where the occipital lobe ends above the cerebellum.",
       "target": {
-        "x": 0.33,
-        "y": 0.68
+        "x": 0.3471,
+        "y": 0.6683
       },
       "label": {
         "x": 0.36,
@@ -205,8 +205,8 @@
       "matter": "a Groove",
       "about": "The shallow midline groove on the dorsal surface of the medulla, continuous with the dorsal median sulcus of the spinal cord. It marks the boundary between the left and right dorsal columns.",
       "target": {
-        "x": 0.15,
-        "y": 0.52
+        "x": 0.1961,
+        "y": 0.5256
       },
       "label": {
         "x": 0.09,
