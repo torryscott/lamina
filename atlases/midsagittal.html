@@ -179,6 +179,19 @@
   }
   .marker:hover,
   .marker:focus-visible { transform: translate(-50%, -50%) scale(1.4); cursor: pointer; }
+
+  /* Invisible hit area so the dot is tappable without making it look bigger.
+     44px is the platform minimum for a touch target; a mouse needs far less. */
+  .marker::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 44px; height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .marker::after { width: 22px; height: 22px; }
+  }
   .marker:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
@@ -243,6 +256,9 @@
     color: var(--muted-soft);
     font-size: 0.78rem;
   }
+
+  /* A revealed label sits above its neighbours so it is never buried. */
+  .label-pill.hovered { z-index: 4; }
 
   @media (max-width: 720px) {
     .hero { padding: 24px 16px 4px; }
@@ -350,6 +366,10 @@ function readFlags() {
 
 const srList = document.getElementById('srList');
 
+/* Does this device have a real hover-capable pointer? A phone or tablet
+   does not, so hover-based reveal has to become tap-based there. */
+const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 function render() {
   // Remove any existing overlay content (keep the <img>)
   stage.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
@@ -408,7 +428,6 @@ function render() {
     pill.setAttribute('aria-hidden', 'true');
     stage.appendChild(pill);
 
-    // Hover / focus / touch all reveal the same way
     const enter = () => {
       dot.classList.add('hovered');
       pill.classList.add('hovered');
@@ -419,15 +438,35 @@ function render() {
       pill.classList.remove('hovered');
       line.classList.remove('hovered');
     };
-    dot.addEventListener('mouseenter', enter);
-    dot.addEventListener('mouseleave', leave);
+    const entry = { enter, leave };
+
+    // Pointer hover — only where hovering is actually possible.
+    if (CAN_HOVER) {
+      dot.addEventListener('mouseenter', enter);
+      dot.addEventListener('mouseleave', () => { if (pinned !== entry) leave(); });
+      pill.addEventListener('mouseenter', enter);
+      pill.addEventListener('mouseleave', () => { if (pinned !== entry) leave(); });
+    }
+
+    // Keyboard.
     dot.addEventListener('focus', enter);
-    dot.addEventListener('blur', leave);
-    dot.addEventListener('touchstart', e => { e.preventDefault(); enter(); }, {passive: false});
-    dot.addEventListener('touchend', leave);
-    pill.addEventListener('mouseenter', enter);
-    pill.addEventListener('mouseleave', leave);
+    dot.addEventListener('blur', () => { if (pinned !== entry) leave(); });
+
+    // Tap or click pins the label so it stays put. Tapping it again, tapping
+    // another dot, or tapping the image clears it. No holding required.
+    dot.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (pinned === entry) { clearPinned(); }
+      else { clearPinned(); enter(); pinned = entry; }
+    });
   });
+}
+
+/* Only one label is pinned at a time. */
+let pinned = null;
+function clearPinned() {
+  if (pinned) { pinned.leave(); pinned = null; }
 }
 
 // Mode toggle
@@ -455,11 +494,23 @@ if (atlasImg.complete) { render(); updateIW(); }
 else atlasImg.addEventListener('load', () => { render(); updateIW(); });
 window.addEventListener('resize', updateIW);
 
-// On narrow screens, default to "Hover to reveal" mode so the image
-// stays clean and students tap one dot at a time.
-if (window.matchMedia('(max-width: 720px)').matches) {
-  const hoverBtn = document.querySelector('.mode-group button[data-mode="hover"]');
-  if (hoverBtn) hoverBtn.click();
+// Tapping anywhere on the image clears a pinned label.
+atlasImg.addEventListener('click', clearPinned);
+
+// On devices that can't hover, the mode is "tap to reveal", not "hover" —
+// rename the control and make it the default. Keyed off input capability
+// rather than screen width, so a tablet is treated correctly.
+if (!CAN_HOVER) {
+  const revealBtn = document.querySelector('.mode-group button[data-mode="hover"]');
+  if (revealBtn) {
+    revealBtn.textContent = 'Tap to reveal';
+    revealBtn.click();
+  }
+  const blurb = document.querySelector('.hero p');
+  if (blurb) {
+    blurb.textContent = 'Tap a marker to name the structure. '
+      + "Your instructor's selection determines which structures are shown.";
+  }
 }
 </script>
 </body>
