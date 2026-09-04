@@ -51,8 +51,8 @@
         "corpus trapezoideum"
       ],
       "target": {
-        "x": 0.2891,
-        "y": 0.3931
+        "x": 0.2921,
+        "y": 0.3766
       },
       "label": {
         "x": 0.31,
@@ -70,8 +70,8 @@
         "infundibular stalk"
       ],
       "target": {
-        "x": 0.5323,
-        "y": 0.4404
+        "x": 0.5328,
+        "y": 0.4368
       },
       "label": {
         "x": 0.42,
@@ -157,7 +157,7 @@
         "bulbus olfactorius"
       ],
       "target": {
-        "x": 0.8402,
+        "x": 0.8372,
         "y": 0.4921
       },
       "label": {
@@ -248,8 +248,8 @@
         "corpora mammillaria"
       ],
       "target": {
-        "x": 0.4788,
-        "y": 0.4446
+        "x": 0.4804,
+        "y": 0.4591
       },
       "label": {
         "x": 0.4707,
