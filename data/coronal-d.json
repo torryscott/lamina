@@ -12,8 +12,8 @@
         "lateral ventricles"
       ],
       "target": {
-        "x": 0.4242,
-        "y": 0.432
+        "x": 0.424,
+        "y": 0.4207
       },
       "label": {
         "x": 0.42,
@@ -30,8 +30,8 @@
         "plexus"
       ],
       "target": {
-        "x": 0.4036,
-        "y": 0.4401
+        "x": 0.4034,
+        "y": 0.4287
       },
       "label": {
         "x": 0.26,
@@ -47,8 +47,8 @@
         "fornices"
       ],
       "target": {
-        "x": 0.5155,
-        "y": 0.4626
+        "x": 0.5152,
+        "y": 0.4508
       },
       "label": {
         "x": 0.74,
@@ -65,8 +65,8 @@
         "ventricle 3"
       ],
       "target": {
-        "x": 0.4845,
-        "y": 0.4994
+        "x": 0.4843,
+        "y": 0.487
       },
       "label": {
         "x": 0.58,
@@ -83,8 +83,8 @@
         "intermediate mass"
       ],
       "target": {
-        "x": 0.4888,
-        "y": 0.5928
+        "x": 0.4886,
+        "y": 0.5788
       },
       "label": {
         "x": 0.6333,
@@ -100,8 +100,8 @@
         "thalami"
       ],
       "target": {
-        "x": 0.4595,
-        "y": 0.626
+        "x": 0.4593,
+        "y": 0.6115
       },
       "label": {
         "x": 0.2333,
@@ -117,8 +117,8 @@
         "optic tract"
       ],
       "target": {
-        "x": 0.2994,
-        "y": 0.6494
+        "x": 0.2993,
+        "y": 0.6345
       },
       "label": {
         "x": 0.06,
@@ -132,8 +132,8 @@
       "about": "The region below the thalamus that governs autonomic function, hormone release, temperature, hunger, and thirst.",
       "accept": [],
       "target": {
-        "x": 0.4897,
-        "y": 0.7248
+        "x": 0.4894,
+        "y": 0.7087
       },
       "label": {
         "x": 0.7667,
@@ -150,8 +150,8 @@
         "mammillothalamic fasciculus"
       ],
       "target": {
-        "x": 0.4699,
-        "y": 0.7437
+        "x": 0.4696,
+        "y": 0.7272
       },
       "label": {
         "x": 0.3667,
@@ -168,8 +168,8 @@
         "mamillary bodies"
       ],
       "target": {
-        "x": 0.4845,
-        "y": 0.8137
+        "x": 0.4843,
+        "y": 0.7961
       },
       "label": {
         "x": 0.5,

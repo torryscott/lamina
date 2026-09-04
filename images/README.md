@@ -19,7 +19,7 @@ labels are drawn as live HTML on top, which is what makes them independently fil
 | `ventral.jpg` | Ventral surface | 2000 × 1419 |
 | `posterior-internal.jpg` | Posterior, internal | 2000 × 1850 |
 | `pulled-back-lateral.jpg` | Lateral, cerebellum retracted | 2000 × 1438 |
-| `coronal-a.jpg` … `coronal-f.jpg` | Coronal series, rostral → caudal | ~2000 × 1450–1540 |
+| `coronal-a.jpg` … `coronal-e.jpg` | Coronal series, rostral → caudal | ~2000 × 1450–1540 |
 
 All twelve views have clean plates.
 
@@ -68,7 +68,7 @@ for what each view is supposed to show, and as a fallback if clean versions neve
 | `ventral.jpg` | Ventral surface | 16 |
 | `posterior-internal.jpg` | Posterior, internal | 3 |
 | `pulled-back-lateral.jpg` | Lateral, cerebellum retracted | 5 |
-| `coronal-a.jpg` … `coronal-f.jpg` | Coronal series, rostral → caudal | 3–10 each |
+| `coronal-a.jpg` … `coronal-e.jpg` | Coronal series, rostral → caudal | 3–10 each |
 
 ---
 

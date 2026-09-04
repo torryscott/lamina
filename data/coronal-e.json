@@ -13,12 +13,12 @@
         "ammon's horn"
       ],
       "target": {
-        "x": 0.4115,
-        "y": 0.4427
+        "x": 0.413,
+        "y": 0.4547
       },
       "label": {
-        "x": 0.5,
-        "y": 0.05
+        "x": 0.06,
+        "y": 0.5
       }
     },
     {
@@ -31,8 +31,8 @@
         "epiphysis"
       ],
       "target": {
-        "x": 0.4888,
-        "y": 0.5221
+        "x": 0.4901,
+        "y": 0.5378
       },
       "label": {
         "x": 0.42,
@@ -50,8 +50,8 @@
         "lgn"
       ],
       "target": {
-        "x": 0.6573,
-        "y": 0.551
+        "x": 0.6582,
+        "y": 0.568
       },
       "label": {
         "x": 0.94,
@@ -65,12 +65,11 @@
       "about": "The narrow channel through the midbrain connecting the third and fourth ventricles.",
       "accept": [
         "aqueduct",
-        "aqueduct of sylvius",
-        "cerebral aqueducts"
+        "aqueduct of sylvius"
       ],
       "target": {
-        "x": 0.4953,
-        "y": 0.6223
+        "x": 0.4966,
+        "y": 0.6427
       },
       "label": {
         "x": 0.58,
@@ -88,8 +87,8 @@
         "mgn"
       ],
       "target": {
-        "x": 0.338,
-        "y": 0.6774
+        "x": 0.3396,
+        "y": 0.7003
       },
       "label": {
         "x": 0.26,
@@ -106,8 +105,8 @@
         "crus cerebri"
       ],
       "target": {
-        "x": 0.5756,
-        "y": 0.7713
+        "x": 0.5885,
+        "y": 0.8278
       },
       "label": {
         "x": 0.74,
