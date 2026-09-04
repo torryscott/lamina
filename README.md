@@ -21,10 +21,10 @@ Most anatomy question banks are all-or-nothing: the survey tests every structure
 and narrowing it means duplicating and pruning the whole instrument. That doesn't survive
 contact with reality — different sections cover different material, and a midterm isn't a final.
 
-This module solves that with URL flags. Every structure has an `inc_*` flag, and every quiz
-block is gated on it. An instructor who doesn't cover the claustrum appends
-`?inc_cor_claustrum=0` and it disappears — from the quiz *and* from the interactive atlas.
-No Qualtrics account needed on their end, no forked copy to maintain.
+This module solves that with URL flags. Every structure has a short code (`D1`, `M3` — see
+`codes.js`). An instructor who doesn't cover the claustrum appends `?off=C8` and it disappears —
+from the quiz *and* from the interactive atlas. Keeping only a few is `?on=D1.D4.M3`. The
+[link builder](tools/link-builder.html) writes these for you. No forked copy to maintain.
 
 A companion **link builder** turns that into a checkbox interface, so nobody has to hand-write
 query strings.
@@ -67,7 +67,15 @@ That's the minimum. The survey works immediately; everything below is customizat
 
 ## How the flag system works
 
-Each structure gets a flag named `inc_<view>_<structure>`:
+Each structure has a permanent short code — a view letter plus a number — and a long flag
+name. Both live in `codes.js`; the code is what goes in links.
+
+```
+?off=D1.M3        hide these structures; everything else shown
+?on=D1.D4.M3      show only these
+```
+
+Codes are case-insensitive and never reused. The long form is still honoured:
 
 ```
 inc_mid_thalamus

@@ -286,6 +286,7 @@
     }
   }
 </style>
+<script src="codes.js"></script>
 </head>
 <body>
 <section class="hero">
@@ -330,14 +331,9 @@ const atlasImg = document.getElementById('atlasImg');
 const cntShown = document.getElementById('cntShown');
 const cntTotal = document.getElementById('cntTotal');
 
-// Read URL query params for flag state. Any `inc_foo=0` hides that flag; anything else = show.
+// Which flags does the URL hide? codes.js resolves ?off=, ?on= and the long form.
 function readFlags() {
-  const params = new URLSearchParams(window.location.search);
-  const excluded = new Set();
-  for (const [k, v] of params.entries()) {
-    if (k.startsWith('inc_') && v === '0') excluded.add(k);
-  }
-  return excluded;
+  return new Set(Object.keys(LAMINA.excludedMap()));
 }
 
 const srList = document.getElementById('srList');

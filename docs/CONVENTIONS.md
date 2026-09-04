@@ -17,6 +17,18 @@ inc_<view>_<structure>
 - `<view>` — the anatomical view or sub-view the block belongs to.
 - `<structure>` — the structure name, lowercased, non-alphanumerics collapsed to underscores.
 
+### Short codes
+
+Each flag also has a permanent short code in `codes.js`: view letter + number (`D1`,
+`L4`, `C12`). Student links use codes — `?off=D1.M3` hides, `?on=D1.D4` keeps only —
+and the pages still honour `inc_<flag>=0`. Rules:
+
+- A code is assigned once and never changed or reused, even if the structure is removed.
+- A new structure takes the next number in its view's run, wherever it sits in the list.
+- Run `python3 scripts/check-codes.py` after touching `codes.js`, the builder, or a data file.
+
+Letters: `D` dorsal · `L` lateral · `V` ventral · `P` posterior · `C` coronal · `M` midsagittal.
+
 ### View prefixes
 
 | Prefix | View | Flags | Quiz branch |

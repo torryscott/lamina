@@ -745,16 +745,33 @@ function renderList() {
 }
 
 function updateJson() {
-  const payload = {
-    image: state.image ? {filename: state.image.filename, width: state.image.naturalWidth, height: state.image.naturalHeight} : null,
-    markers: state.markers.map(m => ({
-      flag: m.flag,
-      area: m.area,
-      text: m.text,
-      target: {x: +m.target.x.toFixed(4), y: +m.target.y.toFixed(4)},
-      label:  {x: +m.label.x.toFixed(4),  y: +m.label.y.toFixed(4)}
-    }))
-  };
+  const r4 = v => +v.toFixed(4);
+  let payload;
+  if (state.dataFile) {
+    // Data-file mode: emit the whole data file with coordinates updated, so
+    // the output drops straight into data/<view>.json. Structures keep their
+    // matter/about/accept; markers added here become new structures.
+    const byFlag = Object.fromEntries(state.markers.map(m => [m.flag, m]));
+    const seen = new Set();
+    const structures = state.dataFile.structures.map(s => {
+      const m = byFlag[s.flag]; seen.add(s.flag);
+      return m ? {...s, target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}} : s;
+    });
+    for (const m of state.markers) if (!seen.has(m.flag)) {
+      structures.push({flag: m.flag, name: m.text || m.area, matter: '', about: '', accept: [],
+                       target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}});
+    }
+    payload = {...state.dataFile, structures};
+  } else {
+    payload = {
+      image: state.image ? {filename: state.image.filename, width: state.image.naturalWidth, height: state.image.naturalHeight} : null,
+      markers: state.markers.map(m => ({
+        flag: m.flag, area: m.area, text: m.text,
+        target: {x: r4(m.target.x), y: r4(m.target.y)},
+        label:  {x: r4(m.label.x),  y: r4(m.label.y)}
+      }))
+    };
+  }
   jsonOut.value = JSON.stringify(payload, null, 2);
 }
 
@@ -778,7 +795,8 @@ document.getElementById('copyJson').addEventListener('click', async () => {
 });
 
 document.getElementById('downloadJson').addEventListener('click', () => {
-  const name = (state.image?.filename || 'atlas').replace(/\.[^.]+$/,'') + '.labels.json';
+  const name = state.dataFile ? `${state.dataFile.view}.json`
+             : (state.image?.filename || 'atlas').replace(/\.[^.]+$/,'') + '.labels.json';
   const blob = new Blob([jsonOut.value], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -797,6 +815,7 @@ document.getElementById('loadJson').addEventListener('click', () => {
     reader.onload = ev => {
       try {
         const parsed = JSON.parse(ev.target.result);
+        state.dataFile = parsed.structures ? parsed : null;   // export in the same format we loaded
         // Accept this tool's own export ({markers}) or a Lamina data file
         // ({structures}), so a draft data/<view>.json loads straight in.
         const list = parsed.markers
@@ -830,6 +849,33 @@ hoverModeCb.addEventListener('change', () => {
 
 updateJson();
 renderList();
+
+/* ---- ?view=<id>: open pre-loaded from the repo ----
+   tools/atlas-coord-capture.html?view=dorsal fetches ../data/dorsal.json and
+   its plate, so refining a view is: open, drag, copy JSON, paste back. */
+(function () {
+  const view = new URLSearchParams(location.search).get('view');
+  if (!view) return;
+  fetch(`../data/${view}.json`).then(r => { if (!r.ok) throw new Error(r.status + ' ' + r.statusText); return r.json(); })
+    .then(data => {
+      state.dataFile = data;
+      state.markers = (data.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label}));
+      state.selectedIdx = -1;
+      const url = '../' + data.image;
+      const img = new Image();
+      img.onload = () => {
+        state.image = {src: url, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, filename: data.image.split('/').pop()};
+        document.title = `Atlas Coord Capture — ${data.label}`;
+        renderStage();
+        renderMarkers();
+        updateJson();
+        statusEl.textContent = `${data.label} · ${state.markers.length} structures from data/${view}.json · ${img.naturalWidth}×${img.naturalHeight}`;
+      };
+      img.onerror = () => { statusEl.textContent = `Could not load ${url}`; };
+      img.src = url;
+    })
+    .catch(err => { statusEl.textContent = `Could not load data/${view}.json (${err.message}). Run scripts/serve.py or open from the hosted site.`; });
+})();
 </script>
 </body>
 </html>

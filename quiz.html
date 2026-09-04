@@ -226,6 +226,7 @@
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
+<script src="codes.js"></script>
 </head>
 <body>
 
@@ -340,13 +341,7 @@
   };
 
   /* ---------- flag filtering, same convention as the atlas ---------- */
-  function excludedFlags() {
-    var out = {};
-    new URLSearchParams(window.location.search).forEach(function (v, k) {
-      if (k.indexOf('inc_') === 0 && v === '0') out[k] = true;
-    });
-    return out;
-  }
+  function excludedFlags() { return LAMINA.excludedMap(); }   // ?off=, ?on=, or the long form
 
   /* ---------- answer matching ----------
      Two layers. Mechanical variants (ordinals, articles, plurals, punctuation)
