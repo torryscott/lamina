@@ -303,7 +303,7 @@
 </head>
 <body>
 <header>
-  <h1>Atlas Coord Capture — Midsagittal</h1>
+  <h1 id="pageTitle">Atlas Coord Capture — Midsagittal</h1>
   <p>Click to drop a labeled marker. Drag the dot or the pill to fine-tune target and label positions. The leader line updates automatically.</p>
 </header>
 
@@ -866,6 +866,8 @@ renderList();
       img.onload = () => {
         state.image = {src: url, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, filename: data.image.split('/').pop()};
         document.title = `Atlas Coord Capture — ${data.label}`;
+        const hEl = document.getElementById('pageTitle');
+        if (hEl) hEl.textContent = `Atlas Coord Capture — ${data.label}`;
         renderStage();
         renderMarkers();
         updateJson();
