@@ -40,8 +40,8 @@
       "about": "The caudal lobe of the cerebrum, overlying the cerebellum. It contains the primary visual cortex.",
       "accept": [],
       "target": {
-        "x": 0.668,
-        "y": 0.303
+        "x": 0.6585,
+        "y": 0.288
       },
       "label": {
         "x": 0.63,
@@ -92,8 +92,8 @@
         "island of reil"
       ],
       "target": {
-        "x": 0.345,
-        "y": 0.409
+        "x": 0.3415,
+        "y": 0.41
       },
       "label": {
         "x": 0.08,
@@ -107,8 +107,8 @@
       "about": "The ventrolateral lobe of the cerebrum, below the lateral sulcus. It carries auditory cortex and, deeper, the hippocampus.",
       "accept": [],
       "target": {
-        "x": 0.394,
-        "y": 0.506
+        "x": 0.4272,
+        "y": 0.4651
       },
       "label": {
         "x": 0.2,
@@ -145,8 +145,8 @@
         "fissura rhinalis"
       ],
       "target": {
-        "x": 0.487,
-        "y": 0.532
+        "x": 0.4821,
+        "y": 0.5273
       },
       "label": {
         "x": 0.53,
@@ -162,8 +162,8 @@
         "pons varolii"
       ],
       "target": {
-        "x": 0.604,
-        "y": 0.727
+        "x": 0.6086,
+        "y": 0.7547
       },
       "label": {
         "x": 0.66,
@@ -180,8 +180,8 @@
         "myelencephalon"
       ],
       "target": {
-        "x": 0.717,
-        "y": 0.735
+        "x": 0.7172,
+        "y": 0.7515
       },
       "label": {
         "x": 0.83,
