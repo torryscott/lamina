@@ -53,10 +53,12 @@ query strings.
    [`qualtrics/end-of-survey-redirect.txt`](qualtrics/end-of-survey-redirect.txt), replace the
    survey ID with yours, then paste it into *Survey options → Survey termination → Redirect to a URL*.
    This is what preserves an instructor's structure selection when the module loops.
-4. **Point the link builder at your survey.** Open [`tools/link-builder.html`](tools/link-builder.html),
+4. **Share `index.html`** with students — it lists every view and offers the atlas or the
+   practicum for each. Instructor flags carry through every link, including navigation back.
+5. **Point the link builder at your survey.** Open [`tools/link-builder.html`](tools/link-builder.html),
    and change the default URL in the **Survey base URL** field (or edit the `value` attribute in the
    file so it defaults correctly for everyone).
-5. **Host the link builder** anywhere that serves static files — GitHub Pages, institutional web
+6. **Host the link builder** anywhere that serves static files — GitHub Pages, institutional web
    space, Netlify. It's a single self-contained file with no build step.
 
 That's the minimum. The survey works immediately; everything below is customization.
@@ -108,8 +110,9 @@ tools/
   link-builder.html              Instructor UI for building student links
   atlas-coord-capture.html       Authoring tool for placing atlas labels
 
-atlas.html                       Interactive atlas — ?view=midsagittal
-quiz.html                        Practicum quiz
+index.html                       Entry point — pick a view and a mode
+atlas.html                       Interactive atlas — ?view=<view>
+quiz.html                        Practicum quiz  — ?view=<view>
 data/
   midsagittal.json               Structures for one view: coordinates,
                                  matter types, explanations, synonyms
@@ -228,8 +231,12 @@ coordinate is only ever written once:
 ```
 
 The atlas uses `name`, `target` and `label`. The quiz additionally uses `matter`, `about` and
-`accept`, and draws its X from the same `target`. Adding a view means adding one JSON file —
-no new HTML.
+`accept`, and draws its X from the same `target`.
+
+**Adding a view is one file.** Drop `data/<id>.json` in place and it appears on the index,
+with both modes wired up. Nothing else to edit — `index.html` probes for the file and shows
+the view as soon as it exists. Until then it renders as "Not yet available", so the index
+doubles as a progress board while you build the set out.
 
 ### Building an atlas for a new view
 

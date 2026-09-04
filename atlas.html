@@ -53,6 +53,9 @@
     margin: 0 auto;
     padding: 36px 24px 8px;
   }
+  .hero-eyebrow a { color: var(--accent); text-decoration: none; }
+  .hero-eyebrow a:hover { text-decoration: underline; }
+  .hero-eyebrow a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .hero-eyebrow {
     font-size: 0.76rem;
     text-transform: uppercase;
@@ -285,7 +288,7 @@
 </head>
 <body>
 <section class="hero">
-  <div class="hero-eyebrow">Lamina · Atlas</div>
+  <div class="hero-eyebrow">Lamina · Atlas · <a id="homeLink" href="index.html">all views</a></div>
   <h1 id="viewTitle">Atlas</h1>
   <p id="viewBlurb">Switch between study modes below. Your instructor's selection determines which structures are shown.</p>
 </section>
@@ -490,6 +493,15 @@ function failed(message, detail) {
 }
 
 const view = new URLSearchParams(window.location.search).get('view') || 'midsagittal';
+
+// Going back to the index must not drop the instructor's selection.
+(function () {
+  const p = new URLSearchParams(window.location.search);
+  p.delete('view');
+  const qs = p.toString();
+  const home = document.getElementById('homeLink');
+  if (home) home.href = 'index.html' + (qs ? '?' + qs : '');
+})();
 
 fetch('data/' + view + '.json')
   .then(function (r) {

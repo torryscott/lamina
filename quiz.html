@@ -61,6 +61,12 @@
     color: var(--muted); font-weight: 600;
   }
   .spacer { flex: 1; }
+  .homelink {
+    font-size: .9rem; color: var(--muted); text-decoration: none;
+    padding: 10px 4px;
+  }
+  .homelink:hover { color: var(--ink); text-decoration: underline; }
+  .homelink:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   /* ---------- shared card ---------- */
   .card {
@@ -228,6 +234,7 @@
   <div class="viewname" id="viewName">—</div>
   <span class="spacer"></span>
   <button class="ghost" id="atlasLink" type="button">Open atlas</button>
+  <a class="homelink" id="homeLink" href="index.html">All views</a>
 </header>
 
 <div class="wrap">
@@ -606,15 +613,27 @@
   });
   el('btnBegin').addEventListener('click', function () { run(state.allowed.slice()); });
 
+  // Going back to the index must not drop the instructor's selection.
+  (function () {
+    var p = new URLSearchParams(window.location.search);
+    p.delete('view');
+    var qs = p.toString();
+    var home = el('homeLink');
+    if (home) home.href = 'index.html' + (qs ? '?' + qs : '');
+  })();
+
   function openAtlas() {
-    var qs = window.location.search;
-    window.location.href = 'atlas.html' + (qs ? qs + '&' : '?') + 'view=midsagittal';
+    var params = new URLSearchParams(window.location.search);
+    params.set('view', VIEW);
+    window.location.href = 'atlas.html?' + params.toString();
   }
   el('atlasLink').addEventListener('click', openAtlas);
   el('btnAtlas2').addEventListener('click', openAtlas);
 
   /* ---------- boot ---------- */
-  fetch('data/midsagittal.json')
+  var VIEW = new URLSearchParams(window.location.search).get('view') || 'midsagittal';
+
+  fetch('data/' + VIEW + '.json')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -624,6 +643,7 @@
       var ex = excludedFlags();
       state.allowed = data.structures.filter(function (s) { return !ex[s.flag]; });
 
+      document.title = 'Lamina \u2014 ' + data.label + ' Practicum';
       el('viewName').textContent = data.label;
       el('startTitle').textContent = data.label + ' Practicum';
       el('startCount').textContent = state.allowed.length;
@@ -637,7 +657,7 @@
     .catch(function (err) {
       el('startTitle').textContent = 'Could not load the structure set';
       el('screenStart').querySelector('p').textContent =
-        'data/midsagittal.json failed to load (' + err.message + '). ' +
+        'data/' + VIEW + '.json failed to load (' + err.message + '). ' +
         'If you opened this file directly from disk, run a local server instead — ' +
         'browsers block fetch() on file:// URLs.';
       el('btnBegin').disabled = true;

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lamina — Sheep Brain Neuroanatomy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-a: #f7f9fc;
+    --bg-b: #eef2f7;
+    --panel: #ffffff;
+    --ink: #1a1d29;
+    --ink-soft: #3c4050;
+    --muted: #6b7280;
+    --muted-soft: #9aa0ac;
+    --accent: #1e3a5f;
+    --accent-hover: #2a4e7a;
+    --accent-soft: #e8eef5;
+    --gold: #b48a3c;
+    --gold-soft: #f5ecdc;
+    --rule: #e3e7ee;
+    --rule-strong: #cfd5df;
+    --chip: #eef1f6;
+    --radius: 14px;
+    --shadow-sm: 0 1px 2px rgba(20,20,30,.04);
+  }
+  * { box-sizing: border-box; }
+  /* A class that sets `display` outranks the UA rule for [hidden]. */
+  [hidden] { display: none !important; }
+  html, body { margin: 0; padding: 0; color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(43,77,109,.06), transparent 60%),
+      radial-gradient(900px 420px at 0% 0%, rgba(30,58,95,.06), transparent 55%),
+      linear-gradient(180deg, var(--bg-a), var(--bg-b));
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 64px; }
+
+  /* ---------- masthead ---------- */
+  header.top { max-width: 940px; margin: 0 auto; padding: 52px 24px 0; }
+  .brand {
+    font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 500;
+    letter-spacing: -.02em; margin: 0 0 6px;
+  }
+  .brand span { color: var(--gold); }
+  .tagline { margin: 0; color: var(--ink-soft); font-size: 1.05rem; max-width: 54ch; }
+  .gloss {
+    margin: 14px 0 0; padding-left: 14px; border-left: 2px solid var(--rule-strong);
+    color: var(--muted); font-size: .92rem; max-width: 52ch;
+  }
+  .gloss em { font-style: italic; color: var(--ink-soft); }
+
+  /* ---------- instructor-filter notice ---------- */
+  .filtered {
+    margin: 26px 0 0; padding: 13px 18px; border-radius: 10px;
+    background: var(--gold-soft); border: 1px solid #e8d5ae;
+    color: #6e4a15; font-size: .93rem;
+    display: flex; gap: 11px; align-items: flex-start;
+  }
+  .filtered::before { content: "◑"; font-size: 1rem; line-height: 1.3; }
+  .filtered b { font-weight: 600; }
+
+  /* ---------- groups ---------- */
+  .group { margin-top: 44px; }
+  .group > h2 {
+    font-size: .74rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--muted); font-weight: 600; margin: 0 0 4px;
+  }
+  .group > p {
+    margin: 0 0 16px; color: var(--muted); font-size: .92rem; max-width: 60ch;
+  }
+
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); gap: 12px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 16px 17px 14px; box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .card h3 {
+    font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.22rem;
+    margin: 0; letter-spacing: -.01em;
+  }
+  .card .meta {
+    font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums;
+    min-height: 1.3em;
+  }
+  .card .meta b { color: var(--ink); font-weight: 600; }
+  .card .acts { display: flex; gap: 8px; margin-top: 11px; }
+  .card a.act {
+    flex: 1; text-align: center; text-decoration: none;
+    font-size: .89rem; font-weight: 500; padding: 8px 10px; border-radius: 7px;
+    border: 1px solid var(--rule-strong); color: var(--ink); background: var(--panel);
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .card a.act:hover { background: var(--chip); border-color: var(--muted-soft); }
+  .card a.act.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .card a.act.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .card a.act:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .card.pending { background: #fbfcfd; border-style: dashed; }
+  .card.pending h3 { color: var(--muted); }
+  .card.pending .meta { color: var(--muted-soft); font-style: italic; }
+
+  /* ---------- footer ---------- */
+  footer {
+    max-width: 940px; margin: 0 auto; padding: 44px 24px 34px;
+    border-top: 1px solid var(--rule); margin-top: 48px;
+    color: var(--muted); font-size: .87rem;
+  }
+  footer p { margin: 0 0 7px; max-width: 62ch; }
+  footer a { color: var(--accent); }
+  footer .fine { color: var(--muted-soft); font-size: .82rem; margin-top: 12px; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  @media (max-width: 600px) {
+    header.top { padding: 34px 18px 0; }
+    .wrap { padding: 0 18px 44px; }
+    .brand { font-size: 2rem; }
+    footer { padding: 34px 18px 28px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1 class="brand">Lamina<span>.</span></h1>
+  <p class="tagline">Sheep brain neuroanatomy — an interactive atlas and a practicum quiz,
+     across twelve views of a dissected specimen.</p>
+  <p class="gloss"><em>lamina</em> — Latin, a plate or layer. Both the laminae of the cortex
+     and the plate of an anatomical atlas.</p>
+</header>
+
+<div class="wrap">
+  <div class="filtered" id="filterNotice" hidden></div>
+  <div id="groups"></div>
+</div>
+
+<footer>
+  <p><b>Instructors:</b> the <a href="tools/link-builder.html">link builder</a> generates a
+     student link covering exactly the structures you want. Everything here respects it.</p>
+  <p class="fine">Open source — code MIT, specimen photographs CC BY 4.0.
+     <a href="https://github.com/torryscott/lamina">github.com/torryscott/lamina</a></p>
+</footer>
+
+<p class="sr-only" role="status" aria-live="polite" id="srStatus"></p>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Every view the module covers. A view appears as soon as its data file
+     exists, so adding one means adding data/<id>.json and nothing else. */
+  var GROUPS = [
+    {
+      title: 'Surface views',
+      blurb: 'The intact brain from the outside, plus one dissection with the cerebellum drawn back.',
+      views: [
+        { id: 'dorsal',              label: 'Dorsal' },
+        { id: 'lateral',             label: 'Lateral' },
+        { id: 'ventral',             label: 'Ventral' },
+        { id: 'posterior-internal',  label: 'Posterior' },
+        { id: 'pulled-back-lateral', label: 'Lateral, retracted' }
+      ]
+    },
+    {
+      title: 'Sectioned views',
+      blurb: 'Cut surfaces. The coronal series runs rostral to caudal.',
+      views: [
+        { id: 'midsagittal', label: 'Midsagittal' },
+        { id: 'coronal-a',   label: 'Coronal A' },
+        { id: 'coronal-b',   label: 'Coronal B' },
+        { id: 'coronal-c',   label: 'Coronal C' },
+        { id: 'coronal-d',   label: 'Coronal D' },
+        { id: 'coronal-e',   label: 'Coronal E' },
+        { id: 'coronal-f',   label: 'Coronal F' }
+      ]
+    }
+  ];
+
+  var search = new URLSearchParams(window.location.search);
+
+  /* Which structures has the instructor switched off? */
+  var excluded = {};
+  search.forEach(function (v, k) {
+    if (k.indexOf('inc_') === 0 && v === '0') excluded[k] = true;
+  });
+  var excludedCount = Object.keys(excluded).length;
+
+  function linkFor(page, viewId) {
+    var p = new URLSearchParams(window.location.search);
+    p.set('view', viewId);
+    return page + '?' + p.toString();
+  }
+
+  function card(view, data) {
+    var el = document.createElement('div');
+    el.className = 'card' + (data ? '' : ' pending');
+
+    var h = document.createElement('h3');
+    h.textContent = view.label;
+    el.appendChild(h);
+
+    var meta = document.createElement('p');
+    meta.className = 'meta';
+    el.appendChild(meta);
+
+    if (!data) {
+      meta.textContent = 'Not yet available';
+      return el;
+    }
+
+    var total = data.structures.length;
+    var shown = data.structures.filter(function (s) { return !excluded[s.flag]; }).length;
+    meta.innerHTML = shown === total
+      ? '<b>' + total + '</b> structures'
+      : '<b>' + shown + '</b> of ' + total + ' structures';
+
+    var acts = document.createElement('div');
+    acts.className = 'acts';
+
+    var a1 = document.createElement('a');
+    a1.className = 'act';
+    a1.href = linkFor('atlas.html', view.id);
+    a1.textContent = 'Atlas';
+    a1.setAttribute('aria-label', 'Open the ' + view.label + ' atlas');
+
+    var a2 = document.createElement('a');
+    a2.className = 'act primary';
+    a2.href = linkFor('quiz.html', view.id);
+    a2.textContent = 'Practicum';
+    a2.setAttribute('aria-label', 'Start the ' + view.label + ' practicum');
+
+    acts.appendChild(a1);
+    acts.appendChild(a2);
+    el.appendChild(acts);
+    return el;
+  }
+
+  /* A view is live once its data file loads. Views not yet built 404 here —
+     that is expected, and the noise disappears as each data file lands. The
+     alternative, a manifest, is one more file to forget to update. */
+  function loadView(v) {
+    return fetch('data/' + v.id + '.json')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  var all = [];
+  GROUPS.forEach(function (g) { g.views.forEach(function (v) { all.push(v); }); });
+
+  Promise.all(all.map(loadView)).then(function (loaded) {
+    var byId = {};
+    all.forEach(function (v, i) { byId[v.id] = loaded[i]; });
+
+    var host = document.getElementById('groups');
+    GROUPS.forEach(function (g) {
+      var sec = document.createElement('section');
+      sec.className = 'group';
+
+      var h2 = document.createElement('h2');
+      h2.textContent = g.title;
+      sec.appendChild(h2);
+
+      var blurb = document.createElement('p');
+      blurb.textContent = g.blurb;
+      sec.appendChild(blurb);
+
+      var cards = document.createElement('div');
+      cards.className = 'cards';
+      g.views.forEach(function (v) { cards.appendChild(card(v, byId[v.id])); });
+      sec.appendChild(cards);
+      host.appendChild(sec);
+    });
+
+    var ready = loaded.filter(Boolean).length;
+    document.getElementById('srStatus').textContent =
+      ready + ' of ' + all.length + ' views available.';
+
+    if (excludedCount) {
+      var n = document.getElementById('filterNotice');
+      n.innerHTML = '<span><b>This link is customized.</b> Your instructor has narrowed the set — '
+        + excludedCount + ' structure' + (excludedCount === 1 ? '' : 's')
+        + ' excluded. Counts below reflect what you will actually be shown.</span>';
+      n.hidden = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
