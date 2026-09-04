@@ -131,44 +131,30 @@
   .stage { position: relative; display: inline-block; max-width: 100%; }
   .stage img { display: block; max-width: 100%; max-height: 84vh; height: auto; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
 
-  /* The target: a dot like the atlas markers, with a slow halo that pulses
-     outward so it reads at a glance on busy cortex. One beat every 2.4 s,
-     with a rest between beats, so it is findable without being a strobe.
-     Under reduced-motion the halo is static and the dot still stands out. */
+  /* The target: an X that breathes slightly (scale 1 to 1.1 over 2.4 s) so
+     it is findable on busy cortex without being a strobe. Sized off the
+     rendered image width, with a floor that keeps it legible on phones
+     (18 px) and a cap for large screens. Static under reduced-motion. */
   .xmark {
-    /* Everything scales with the rendered image width (--iw), so on a phone
-       the dot, its rings, and the halo all shrink together: ~11 px footprint
-       on a 350 px image, ~20 px at desktop size. */
-    --bw: clamp(1px, calc(var(--iw,1000px) * .002), 2px);
-    --halo: 3.2;
     position: absolute; transform: translate(-50%,-50%); z-index: 3;
-    width: clamp(7px, calc(var(--iw,1000px) * .012), 16px);
-    height: clamp(7px, calc(var(--iw,1000px) * .012), 16px);
-    border-radius: 50%;
-    background: var(--marker);
-    border: var(--bw) solid #fff;
-    box-shadow: 0 0 0 var(--bw) rgba(30,58,95,.35), 0 1px 3px rgba(0,0,0,.35);
+    width: clamp(18px, calc(var(--iw,1000px) * .026), 46px);
+    height: clamp(18px, calc(var(--iw,1000px) * .026), 46px);
     pointer-events: none;
     animation: xmark-breathe 2.4s ease-in-out infinite;
   }
-  .xmark::before {
-    content: ""; position: absolute; inset: calc(-1 * var(--bw)); border-radius: 50%;
-    border: var(--bw) solid var(--marker);
-    animation: xmark-ping 2.4s ease-out infinite;
+  .xmark::before, .xmark::after {
+    content: ""; position: absolute; left: 50%; top: 0;
+    width: clamp(2.5px, calc(var(--iw,1000px) * .0028), 5px); height: 100%;
+    background: var(--marker); border-radius: 2px;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.95);
   }
-  @media (max-width: 720px) { .xmark { --halo: 2.4; } }
+  .xmark::before { transform: translateX(-50%) rotate(45deg); }
+  .xmark::after  { transform: translateX(-50%) rotate(-45deg); }
   @keyframes xmark-breathe {
     0%, 100% { transform: translate(-50%,-50%) scale(1); }
-    50%      { transform: translate(-50%,-50%) scale(1.12); }
+    50%      { transform: translate(-50%,-50%) scale(1.1); }
   }
-  @keyframes xmark-ping {
-    0%        { transform: scale(1);   opacity: .7; }
-    70%, 100% { transform: scale(var(--halo)); opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .xmark, .xmark::before { animation: none; }
-    .xmark::before { transform: scale(2.2); opacity: .45; }
-  }
+  @media (prefers-reduced-motion: reduce) { .xmark { animation: none; } }
 
   /* reveal marker on the feedback screen */
   .revealdot {
@@ -266,7 +252,7 @@
   <!-- ============ START ============ -->
   <section class="card start" id="screenStart">
     <h1 id="startTitle">Midsagittal Practicum</h1>
-    <p>You'll be shown a structure marked with a <strong>dot</strong>. Type its name.
+    <p>You'll be shown a structure marked with an <strong>X</strong>. Type its name.
        Order is randomized each time.</p>
     <div class="count"><strong id="startCount">0</strong> structures in this set</div>
     <div class="actions">
@@ -293,7 +279,7 @@
 
     <!-- asking -->
     <div class="card answer" id="panelAsk">
-      <p class="prompt">Identify the structure marked by the <strong>dot</strong>.</p>
+      <p class="prompt">Identify the structure marked by the <strong>X</strong>.</p>
       <p class="matter">This is <b id="matterHint">—</b></p>
       <form class="answer-row" id="answerForm" autocomplete="off">
         <input type="text" id="answerInput" placeholder="Structure name"
@@ -500,7 +486,7 @@
     el('answerInput').focus();
 
     el('plate').alt = 'Sheep brain ' + state.data.label.toLowerCase()
-      + ' section with one structure marked by a dot';
+      + ' section with one structure marked by an X';
 
     startTimer();
   }
