@@ -1,0 +1,169 @@
+{
+  "view": "coronal-b",
+  "label": "Coronal B",
+  "image": "images/clean/coronal-b.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_corpus_callosum",
+      "name": "Corpus Callosum",
+      "matter": "White Matter",
+      "about": "The great commissure joining the two cerebral hemispheres, seen in section as a broad white band above the ventricles.",
+      "accept": [
+        "callosum"
+      ],
+      "target": {
+        "x": 0.5098,
+        "y": 0.507
+      },
+      "label": {
+        "x": 0.5,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_septum_pellucidum",
+      "name": "Septum Pellucidum",
+      "matter": "a thin piece of tissue",
+      "about": "The thin midline membrane separating the two lateral ventricles, stretched between the corpus callosum and the fornix.",
+      "accept": [
+        "septum"
+      ],
+      "target": {
+        "x": 0.5005,
+        "y": 0.5286
+      },
+      "label": {
+        "x": 0.3667,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_lateral_ventricle",
+      "name": "Lateral Ventricle",
+      "matter": "a Cavity",
+      "about": "The paired cerebrospinal fluid cavities within each cerebral hemisphere, curving beneath the corpus callosum.",
+      "accept": [
+        "lateral ventricles"
+      ],
+      "target": {
+        "x": 0.5241,
+        "y": 0.5295
+      },
+      "label": {
+        "x": 0.6333,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_caudate",
+      "name": "Caudate",
+      "matter": "Gray Matter",
+      "about": "One of the basal ganglia, bulging into the lateral ventricle. It contributes to the control of voluntary movement.",
+      "accept": [
+        "caudate nucleus",
+        "nucleus caudatus"
+      ],
+      "target": {
+        "x": 0.5799,
+        "y": 0.5228
+      },
+      "label": {
+        "x": 0.94,
+        "y": 0.38
+      }
+    },
+    {
+      "flag": "inc_cor_septal_nucleus",
+      "name": "Septal Nucleus",
+      "matter": "Gray Matter",
+      "about": "Gray matter at the base of the septum, a limbic center connected to the hippocampus through the fornix.",
+      "accept": [
+        "septal nuclei",
+        "septal area"
+      ],
+      "target": {
+        "x": 0.4988,
+        "y": 0.5628
+      },
+      "label": {
+        "x": 0.2333,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_internal_capsule",
+      "name": "Internal Capsule",
+      "matter": "White Matter",
+      "about": "The compact sheet of projection fibers between the caudate and thalamus medially and the lentiform nucleus laterally.",
+      "accept": [],
+      "target": {
+        "x": 0.6119,
+        "y": 0.6036
+      },
+      "label": {
+        "x": 0.7667,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_extreme_capsule",
+      "name": "Extreme Capsule",
+      "matter": "White Matter",
+      "about": "The outermost thin white lamina, between the claustrum and the insular cortex.",
+      "accept": [],
+      "target": {
+        "x": 0.2785,
+        "y": 0.6002
+      },
+      "label": {
+        "x": 0.06,
+        "y": 0.32
+      }
+    },
+    {
+      "flag": "inc_cor_external_capsule",
+      "name": "External Capsule",
+      "matter": "White Matter",
+      "about": "The thin white lamina between the putamen and the claustrum.",
+      "accept": [],
+      "target": {
+        "x": 0.308,
+        "y": 0.6086
+      },
+      "label": {
+        "x": 0.06,
+        "y": 0.5
+      }
+    },
+    {
+      "flag": "inc_cor_claustrum",
+      "name": "Claustrum",
+      "matter": "Gray Matter",
+      "about": "The thin sheet of gray matter between the external and extreme capsules.",
+      "accept": [],
+      "target": {
+        "x": 0.2878,
+        "y": 0.6244
+      },
+      "label": {
+        "x": 0.06,
+        "y": 0.68
+      }
+    },
+    {
+      "flag": "inc_cor_putamen",
+      "name": "Putamen",
+      "matter": "Gray Matter",
+      "about": "The lateral part of the lentiform nucleus, one of the basal ganglia involved in motor control.",
+      "accept": [],
+      "target": {
+        "x": 0.6795,
+        "y": 0.6152
+      },
+      "label": {
+        "x": 0.94,
+        "y": 0.62
+      }
+    }
+  ]
+}

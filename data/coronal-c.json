@@ -1,0 +1,58 @@
+{
+  "view": "coronal-c",
+  "label": "Coronal C",
+  "image": "images/clean/coronal-c.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_lateral_ventricle",
+      "name": "Lateral Ventricle",
+      "matter": "a Cavity",
+      "about": "The paired cerebrospinal fluid cavities within each cerebral hemisphere, curving beneath the corpus callosum.",
+      "accept": [
+        "lateral ventricles"
+      ],
+      "target": {
+        "x": 0.4162,
+        "y": 0.4474
+      },
+      "label": {
+        "x": 0.3667,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_corpus_callosum",
+      "name": "Corpus Callosum",
+      "matter": "White Matter",
+      "about": "The great commissure joining the two cerebral hemispheres, seen in section as a broad white band above the ventricles.",
+      "accept": [
+        "callosum"
+      ],
+      "target": {
+        "x": 0.4904,
+        "y": 0.4723
+      },
+      "label": {
+        "x": 0.6333,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_fornix",
+      "name": "Fornix",
+      "matter": "White Matter",
+      "about": "The arching fiber bundle carrying hippocampal output forward to the mammillary bodies and septal region.",
+      "accept": [
+        "fornices"
+      ],
+      "target": {
+        "x": 0.5199,
+        "y": 0.5248
+      },
+      "label": {
+        "x": 0.5,
+        "y": 0.95
+      }
+    }
+  ]
+}

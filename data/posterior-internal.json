@@ -1,0 +1,122 @@
+{
+  "view": "posterior-internal",
+  "label": "Posterior",
+  "image": "images/clean/posterior-internal.jpg",
+  "structures": [
+    {
+      "flag": "inc_post_pineal_body",
+      "name": "Pineal Body",
+      "matter": "Gray Matter",
+      "about": "The small midline gland on the roof of the diencephalon, just rostral to the superior colliculi. It secretes melatonin and tracks the light cycle.",
+      "accept": [
+        "pineal gland",
+        "epiphysis",
+        "epiphysis cerebri"
+      ],
+      "target": {
+        "x": 0.468,
+        "y": 0.415
+      },
+      "label": {
+        "x": 0.1,
+        "y": 0.38
+      }
+    },
+    {
+      "flag": "inc_post_superior_colliculus",
+      "name": "Superior Colliculus",
+      "matter": "Gray Matter",
+      "about": "The rostral pair of rounded swellings on the roof of the midbrain, involved in visual reflexes and orienting the eyes and head.",
+      "accept": [
+        "superior colliculi",
+        "rostral colliculus",
+        "rostral colliculi",
+        "optic tectum"
+      ],
+      "target": {
+        "x": 0.472,
+        "y": 0.471
+      },
+      "label": {
+        "x": 0.1,
+        "y": 0.5
+      }
+    },
+    {
+      "flag": "inc_post_inferior_colliculus",
+      "name": "Inferior Colliculus",
+      "matter": "Gray Matter",
+      "about": "The caudal pair of rounded swellings on the roof of the midbrain, a relay in the ascending auditory pathway.",
+      "accept": [
+        "inferior colliculi",
+        "caudal colliculus",
+        "caudal colliculi"
+      ],
+      "target": {
+        "x": 0.504,
+        "y": 0.552
+      },
+      "label": {
+        "x": 0.12,
+        "y": 0.62
+      }
+    },
+    {
+      "flag": "inc_post_fourth_ventricle",
+      "name": "Fourth Ventricle",
+      "matter": "a Cavity",
+      "about": "The cerebrospinal fluid space between the cerebellum and the brainstem, continuous with the cerebral aqueduct above and the central canal below.",
+      "accept": [
+        "4th ventricle",
+        "ventricle 4",
+        "fourth ventricles"
+      ],
+      "target": {
+        "x": 0.548,
+        "y": 0.505
+      },
+      "label": {
+        "x": 0.8,
+        "y": 0.3
+      }
+    },
+    {
+      "flag": "inc_post_vermis",
+      "name": "Vermis",
+      "matter": "Gray Matter (Be specific. What part of the cerebellum is it?)",
+      "about": "The narrow midline ridge of the cerebellum, between the two cerebellar hemispheres. It coordinates posture, balance, and movements of the trunk.",
+      "accept": [
+        "cerebellar vermis",
+        "vermis of the cerebellum",
+        "vermis cerebelli"
+      ],
+      "target": {
+        "x": 0.575,
+        "y": 0.63
+      },
+      "label": {
+        "x": 0.22,
+        "y": 0.8
+      }
+    },
+    {
+      "flag": "inc_post_cerebellar_hemispheres",
+      "name": "Cerebellar Hemispheres",
+      "matter": "Gray Matter (Be specific. What part of the cerebellum is it?)",
+      "about": "The lateral lobes of the cerebellum, on either side of the vermis. They coordinate skilled limb movements and contribute to motor planning.",
+      "accept": [
+        "cerebellar hemisphere",
+        "hemisphere of the cerebellum",
+        "lateral cerebellar hemisphere"
+      ],
+      "target": {
+        "x": 0.66,
+        "y": 0.68
+      },
+      "label": {
+        "x": 0.55,
+        "y": 0.92
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "view": "coronal-e",
+  "label": "Coronal E",
+  "image": "images/clean/coronal-e.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_hippocampus",
+      "name": "Hippocampus",
+      "matter": "Gray Matter",
+      "about": "The curved cortical structure in the floor of the lateral ventricle, essential to forming new memories.",
+      "accept": [
+        "hippocampi",
+        "ammon's horn"
+      ],
+      "target": {
+        "x": 0.4115,
+        "y": 0.4427
+      },
+      "label": {
+        "x": 0.5,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_pineal_body",
+      "name": "Pineal Body",
+      "matter": "Gray Matter",
+      "about": "The small midline gland on the roof of the diencephalon. It secretes melatonin and tracks the light cycle.",
+      "accept": [
+        "pineal gland",
+        "epiphysis"
+      ],
+      "target": {
+        "x": 0.4888,
+        "y": 0.5221
+      },
+      "label": {
+        "x": 0.42,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_lateral_geniculate",
+      "name": "Lateral Geniculate",
+      "matter": "Gray Matter",
+      "about": "The thalamic relay for vision, receiving the optic tract and projecting to the visual cortex.",
+      "accept": [
+        "lateral geniculate nucleus",
+        "lateral geniculate body",
+        "lgn"
+      ],
+      "target": {
+        "x": 0.6573,
+        "y": 0.551
+      },
+      "label": {
+        "x": 0.94,
+        "y": 0.5
+      }
+    },
+    {
+      "flag": "inc_cor_coronal_cerebral_aqueduct",
+      "name": "Cerebral Aqueduct",
+      "matter": "a Cavity",
+      "about": "The narrow channel through the midbrain connecting the third and fourth ventricles.",
+      "accept": [
+        "aqueduct",
+        "aqueduct of sylvius",
+        "cerebral aqueducts"
+      ],
+      "target": {
+        "x": 0.4953,
+        "y": 0.6223
+      },
+      "label": {
+        "x": 0.58,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_medial_geniculate",
+      "name": "Medial Geniculate",
+      "matter": "Gray Matter",
+      "about": "The thalamic relay for hearing, receiving from the inferior colliculus and projecting to the auditory cortex.",
+      "accept": [
+        "medial geniculate nucleus",
+        "medial geniculate body",
+        "mgn"
+      ],
+      "target": {
+        "x": 0.338,
+        "y": 0.6774
+      },
+      "label": {
+        "x": 0.26,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_cerebral_peduncles",
+      "name": "Cerebral Peduncles",
+      "matter": "White Matter",
+      "about": "The paired columns of descending fibers on the ventral midbrain carrying motor output toward the brainstem and cord.",
+      "accept": [
+        "cerebral peduncle",
+        "crus cerebri"
+      ],
+      "target": {
+        "x": 0.5756,
+        "y": 0.7713
+      },
+      "label": {
+        "x": 0.74,
+        "y": 0.95
+      }
+    }
+  ]
+}

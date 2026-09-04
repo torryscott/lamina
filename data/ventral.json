@@ -1,0 +1,298 @@
+{
+  "view": "ventral",
+  "label": "Ventral",
+  "image": "images/clean/ventral.jpg",
+  "structures": [
+    {
+      "flag": "inc_vent_ventromedian_fissure",
+      "name": "Ventromedian Fissure",
+      "matter": "a Groove",
+      "about": "The midline groove running along the ventral surface of the medulla, separating the left and right pyramidal tracts.",
+      "accept": [
+        "ventral median fissure",
+        "anterior median fissure",
+        "ventral median sulcus",
+        "median ventral fissure"
+      ],
+      "target": {
+        "x": 0.2252,
+        "y": 0.4492
+      },
+      "label": {
+        "x": 0.07,
+        "y": 0.3
+      }
+    },
+    {
+      "flag": "inc_vent_pyramidal_tract",
+      "name": "Pyramidal Tract",
+      "matter": "White Matter",
+      "about": "The paired bundles of descending motor fibers flanking the ventromedian fissure on the medulla, carrying cortical commands toward the spinal cord.",
+      "accept": [
+        "pyramidal tracts",
+        "pyramids",
+        "corticospinal tract"
+      ],
+      "target": {
+        "x": 0.2412,
+        "y": 0.4308
+      },
+      "label": {
+        "x": 0.2,
+        "y": 0.16
+      }
+    },
+    {
+      "flag": "inc_vent_trapezoid_body",
+      "name": "Trapezoid Body",
+      "matter": "Gray Matter",
+      "about": "The transverse band of auditory fibers crossing the ventral brainstem just caudal to the pons.",
+      "accept": [
+        "corpus trapezoideum"
+      ],
+      "target": {
+        "x": 0.3131,
+        "y": 0.3755
+      },
+      "label": {
+        "x": 0.31,
+        "y": 0.09
+      }
+    },
+    {
+      "flag": "inc_vent_infundibulum",
+      "name": "Infundibulum",
+      "matter": "white matter",
+      "about": "The stalk connecting the hypothalamus to the pituitary gland. The pituitary itself is usually lost when the brain is removed from the skull.",
+      "accept": [
+        "pituitary stalk",
+        "hypophyseal stalk",
+        "infundibular stalk"
+      ],
+      "target": {
+        "x": 0.445,
+        "y": 0.44
+      },
+      "label": {
+        "x": 0.42,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_vent_optic_tract",
+      "name": "Optic Tract",
+      "matter": "White Matter",
+      "about": "The band of visual fibers running caudolaterally from the optic chiasm toward the thalamus.",
+      "accept": [
+        "optic tracts"
+      ],
+      "target": {
+        "x": 0.5464,
+        "y": 0.3663
+      },
+      "label": {
+        "x": 0.55,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_vent_optic_chiasm",
+      "name": "Optic Chiasm",
+      "matter": "White Matter",
+      "about": "The X-shaped crossing of the optic nerves on the ventral surface, where fibers from the nasal retina cross to the opposite side.",
+      "accept": [
+        "optic chiasma",
+        "chiasma opticum"
+      ],
+      "target": {
+        "x": 0.5633,
+        "y": 0.4215
+      },
+      "label": {
+        "x": 0.67,
+        "y": 0.07
+      }
+    },
+    {
+      "flag": "inc_vent_lateral_olfactory_tract",
+      "name": "Lateral Olfactory Tract",
+      "matter": "White Matter",
+      "about": "The lateral branch carrying axons from the olfactory bulb back toward the rhinencephalon.",
+      "accept": [
+        "lateral olfactory stria"
+      ],
+      "target": {
+        "x": 0.6902,
+        "y": 0.2861
+      },
+      "label": {
+        "x": 0.86,
+        "y": 0.1
+      }
+    },
+    {
+      "flag": "inc_vent_medial_olfactory_tract",
+      "name": "Medial Olfactory Tract",
+      "matter": "White Matter",
+      "about": "The medial branch carrying axons from the olfactory bulb toward the septal and medial olfactory areas.",
+      "accept": [
+        "medial olfactory stria"
+      ],
+      "target": {
+        "x": 0.7274,
+        "y": 0.4998
+      },
+      "label": {
+        "x": 0.88,
+        "y": 0.84
+      }
+    },
+    {
+      "flag": "inc_vent_olfactory_bulb",
+      "name": "Olfactory Bulb",
+      "matter": "Gray Matter",
+      "about": "The paired swelling at the rostral tip of the brain that receives axons from the olfactory epithelium. It is strikingly large in sheep.",
+      "accept": [
+        "olfactory bulbs",
+        "bulbus olfactorius"
+      ],
+      "target": {
+        "x": 0.8567,
+        "y": 0.4906
+      },
+      "label": {
+        "x": 0.93,
+        "y": 0.72
+      }
+    },
+    {
+      "flag": "inc_vent_medulla",
+      "name": "Medulla",
+      "matter": "White Matter",
+      "about": "The most caudal part of the brainstem, continuous with the spinal cord. It houses centers for breathing, heart rate, and other vital reflexes.",
+      "accept": [
+        "medulla oblongata",
+        "myelencephalon"
+      ],
+      "target": {
+        "x": 0.2311,
+        "y": 0.5321
+      },
+      "label": {
+        "x": 0.07,
+        "y": 0.68
+      }
+    },
+    {
+      "flag": "inc_vent_pons",
+      "name": "Pons",
+      "matter": "Gray Matter",
+      "about": "The bulge on the ventral brainstem between the midbrain and the medulla. Its transverse fibers carry cortical information to the cerebellum.",
+      "accept": [
+        "pons varolii"
+      ],
+      "target": {
+        "x": 0.2708,
+        "y": 0.5966
+      },
+      "label": {
+        "x": 0.14,
+        "y": 0.8
+      }
+    },
+    {
+      "flag": "inc_vent_interpeduncular_cistern",
+      "name": "Interpeduncular Cistern",
+      "matter": "a Cavity",
+      "about": "The cerebrospinal fluid space in the hollow between the two cerebral peduncles.",
+      "accept": [
+        "interpeduncular fossa",
+        "cisterna interpeduncularis"
+      ],
+      "target": {
+        "x": 0.3478,
+        "y": 0.4354
+      },
+      "label": {
+        "x": 0.2,
+        "y": 0.88
+      }
+    },
+    {
+      "flag": "inc_vent_cerebral_peduncles",
+      "name": "Cerebral Peduncles",
+      "matter": "White Matter",
+      "about": "The paired columns of descending fibers on the ventral midbrain, carrying motor output from the cerebrum toward the brainstem and cord.",
+      "accept": [
+        "cerebral peduncle",
+        "crus cerebri",
+        "basis pedunculi"
+      ],
+      "target": {
+        "x": 0.4365,
+        "y": 0.5137
+      },
+      "label": {
+        "x": 0.31,
+        "y": 0.94
+      }
+    },
+    {
+      "flag": "inc_vent_mammillary_bodies",
+      "name": "Mammillary Bodies",
+      "matter": "Gray Matter",
+      "about": "The paired rounded swellings on the ventral hypothalamus, caudal to the infundibulum. They relay hippocampal output through the fornix.",
+      "accept": [
+        "mammillary body",
+        "mamillary bodies",
+        "corpora mammillaria"
+      ],
+      "target": {
+        "x": 0.4788,
+        "y": 0.4446
+      },
+      "label": {
+        "x": 0.45,
+        "y": 0.96
+      }
+    },
+    {
+      "flag": "inc_vent_rhinal_fissure",
+      "name": "Rhinal Fissure",
+      "matter": "a Groove",
+      "about": "The groove along the ventrolateral surface separating the rhinencephalon from the neocortex.",
+      "accept": [
+        "rhinal sulcus",
+        "fissura rhinalis"
+      ],
+      "target": {
+        "x": 0.538,
+        "y": 0.7347
+      },
+      "label": {
+        "x": 0.6,
+        "y": 0.94
+      }
+    },
+    {
+      "flag": "inc_vent_rhinencephalon",
+      "name": "Rhinencephalon",
+      "matter": "Gray Matter",
+      "about": "The olfactory brain: the ventrolateral cortex ventral to the rhinal fissure, prominent in sheep and other macrosmatic animals.",
+      "accept": [
+        "pyriform lobe",
+        "piriform lobe",
+        "olfactory cortex",
+        "pyriform cortex"
+      ],
+      "target": {
+        "x": 0.5185,
+        "y": 0.6518
+      },
+      "label": {
+        "x": 0.75,
+        "y": 0.91
+      }
+    }
+  ]
+}

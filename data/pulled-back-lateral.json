@@ -1,0 +1,102 @@
+{
+  "view": "pulled-back-lateral",
+  "label": "Lateral, retracted",
+  "image": "images/clean/pulled-back-lateral.jpg",
+  "structures": [
+    {
+      "flag": "inc_mid_lat_lateral_geniculate_nucleus",
+      "name": "Lateral Geniculate Nucleus",
+      "matter": "Gray Matter",
+      "about": "The thalamic relay for vision. Fibers of the optic tract end here, and its output goes on to the primary visual cortex.",
+      "accept": [
+        "lateral geniculate",
+        "lateral geniculate body",
+        "lgn"
+      ],
+      "target": {
+        "x": 0.3217,
+        "y": 0.5595
+      },
+      "label": {
+        "x": 0.3,
+        "y": 0.2
+      }
+    },
+    {
+      "flag": "inc_mid_lat_superior_colliculus",
+      "name": "Superior Colliculus",
+      "matter": "Gray Matter",
+      "about": "The rostral pair of rounded swellings on the roof of the midbrain, involved in visual reflexes and orienting the eyes and head.",
+      "accept": [
+        "superior colliculi",
+        "rostral colliculus",
+        "rostral colliculi",
+        "optic tectum"
+      ],
+      "target": {
+        "x": 0.4454,
+        "y": 0.5705
+      },
+      "label": {
+        "x": 0.55,
+        "y": 0.2
+      }
+    },
+    {
+      "flag": "inc_mid_lat_medial_geniculate_nucleus",
+      "name": "Medial Geniculate Nucleus",
+      "matter": "Gray Matter",
+      "about": "The thalamic relay for hearing, receiving from the inferior colliculus and projecting on to the auditory cortex.",
+      "accept": [
+        "medial geniculate",
+        "medial geniculate body",
+        "mgn"
+      ],
+      "target": {
+        "x": 0.3521,
+        "y": 0.6591
+      },
+      "label": {
+        "x": 0.2,
+        "y": 0.85
+      }
+    },
+    {
+      "flag": "inc_mid_lat_brachium",
+      "name": "Brachium of the Inferior Colliculus",
+      "matter": "White Matter",
+      "about": "The fiber bundle carrying auditory information from the inferior colliculus forward to the medial geniculate nucleus.",
+      "accept": [
+        "brachium",
+        "brachium of inferior colliculus",
+        "inferior brachium"
+      ],
+      "target": {
+        "x": 0.419,
+        "y": 0.6734
+      },
+      "label": {
+        "x": 0.42,
+        "y": 0.9
+      }
+    },
+    {
+      "flag": "inc_mid_lat_middle_cerebellar_peduncle",
+      "name": "Middle Cerebellar Peduncle",
+      "matter": "White Matter",
+      "about": "The largest of the three cerebellar peduncles, carrying fibers from the pons into the cerebellum.",
+      "accept": [
+        "middle peduncle",
+        "brachium pontis"
+      ],
+      "target": {
+        "x": 0.5186,
+        "y": 0.6836
+      },
+      "label": {
+        "x": 0.65,
+        "y": 0.85
+      }
+    }
+  ]
+}

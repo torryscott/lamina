@@ -1,0 +1,93 @@
+{
+  "view": "coronal-a",
+  "label": "Coronal A",
+  "image": "images/clean/coronal-a.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_corona_radiata",
+      "name": "Corona Radiata",
+      "matter": "White Matter",
+      "about": "The fan of projection fibers radiating from the internal capsule up into the cerebral cortex.",
+      "accept": [
+        "coronal radiata"
+      ],
+      "target": {
+        "x": 0.3934,
+        "y": 0.301
+      },
+      "label": {
+        "x": 0.3,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_cingulate_gyrus",
+      "name": "Cingulate Gyrus",
+      "matter": "Gray Matter",
+      "about": "The cortical gyrus arching directly above the corpus callosum, part of the limbic system.",
+      "accept": [
+        "cingulate cortex",
+        "gyrus cinguli"
+      ],
+      "target": {
+        "x": 0.525,
+        "y": 0.4401
+      },
+      "label": {
+        "x": 0.5,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_cingulum",
+      "name": "Cingulum",
+      "matter": "White Matter",
+      "about": "The bundle of association fibers running lengthwise inside the cingulate gyrus.",
+      "accept": [
+        "cingulum bundle"
+      ],
+      "target": {
+        "x": 0.5413,
+        "y": 0.4819
+      },
+      "label": {
+        "x": 0.7,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_corpus_callosum",
+      "name": "Corpus Callosum",
+      "matter": "White Matter",
+      "about": "The great commissure joining the two cerebral hemispheres, seen in section as a broad white band above the ventricles.",
+      "accept": [
+        "callosum"
+      ],
+      "target": {
+        "x": 0.4769,
+        "y": 0.5422
+      },
+      "label": {
+        "x": 0.6333,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_lateral_ventricle",
+      "name": "Lateral Ventricle",
+      "matter": "a Cavity",
+      "about": "The paired cerebrospinal fluid cavities within each cerebral hemisphere, curving beneath the corpus callosum.",
+      "accept": [
+        "lateral ventricles"
+      ],
+      "target": {
+        "x": 0.4732,
+        "y": 0.5811
+      },
+      "label": {
+        "x": 0.3667,
+        "y": 0.95
+      }
+    }
+  ]
+}

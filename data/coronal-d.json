@@ -1,0 +1,180 @@
+{
+  "view": "coronal-d",
+  "label": "Coronal D",
+  "image": "images/clean/coronal-d.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_lateral_ventricle",
+      "name": "Lateral Ventricle",
+      "matter": "a Cavity",
+      "about": "The paired cerebrospinal fluid cavities within each cerebral hemisphere, curving beneath the corpus callosum.",
+      "accept": [
+        "lateral ventricles"
+      ],
+      "target": {
+        "x": 0.4242,
+        "y": 0.432
+      },
+      "label": {
+        "x": 0.42,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_choroid_plexus",
+      "name": "Choroid Plexus",
+      "matter": "spongy tissue",
+      "about": "The spongy vascular tissue within the ventricles that produces cerebrospinal fluid.",
+      "accept": [
+        "choroid plexuses",
+        "plexus"
+      ],
+      "target": {
+        "x": 0.4036,
+        "y": 0.4401
+      },
+      "label": {
+        "x": 0.26,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_fornix",
+      "name": "Fornix",
+      "matter": "White Matter",
+      "about": "The arching fiber bundle carrying hippocampal output forward to the mammillary bodies and septal region.",
+      "accept": [
+        "fornices"
+      ],
+      "target": {
+        "x": 0.5155,
+        "y": 0.4626
+      },
+      "label": {
+        "x": 0.74,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_third_ventricle",
+      "name": "Third Ventricle",
+      "matter": "a Cavity",
+      "about": "The narrow midline cavity between the two halves of the thalamus.",
+      "accept": [
+        "3rd ventricle",
+        "ventricle 3"
+      ],
+      "target": {
+        "x": 0.4845,
+        "y": 0.4994
+      },
+      "label": {
+        "x": 0.58,
+        "y": 0.05
+      }
+    },
+    {
+      "flag": "inc_cor_massa_intermedia",
+      "name": "Massa Intermedia",
+      "matter": "Gray Matter",
+      "about": "The bridge of gray matter crossing the third ventricle and joining the two halves of the thalamus.",
+      "accept": [
+        "interthalamic adhesion",
+        "intermediate mass"
+      ],
+      "target": {
+        "x": 0.4888,
+        "y": 0.5928
+      },
+      "label": {
+        "x": 0.6333,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_thalamus",
+      "name": "Thalamus",
+      "matter": "Gray Matter",
+      "about": "The large paired mass of gray matter that relays nearly all sensory information on its way to the cortex.",
+      "accept": [
+        "thalami"
+      ],
+      "target": {
+        "x": 0.4595,
+        "y": 0.626
+      },
+      "label": {
+        "x": 0.2333,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_optic_tracts",
+      "name": "Optic Tracts",
+      "matter": "White Matter",
+      "about": "The bands of visual fibers running back from the optic chiasm toward the lateral geniculate nucleus.",
+      "accept": [
+        "optic tract"
+      ],
+      "target": {
+        "x": 0.2994,
+        "y": 0.6494
+      },
+      "label": {
+        "x": 0.06,
+        "y": 0.5
+      }
+    },
+    {
+      "flag": "inc_cor_hypothalamus",
+      "name": "Hypothalamus",
+      "matter": "Gray Matter",
+      "about": "The region below the thalamus that governs autonomic function, hormone release, temperature, hunger, and thirst.",
+      "accept": [],
+      "target": {
+        "x": 0.4897,
+        "y": 0.7248
+      },
+      "label": {
+        "x": 0.7667,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_mammillothalamic_tract",
+      "name": "Mammillothalamic Tract",
+      "matter": "White Matter",
+      "about": "The bundle carrying fibers from the mammillary bodies up to the anterior thalamus, part of the limbic circuit.",
+      "accept": [
+        "mamillothalamic tract",
+        "mammillothalamic fasciculus"
+      ],
+      "target": {
+        "x": 0.4699,
+        "y": 0.7437
+      },
+      "label": {
+        "x": 0.3667,
+        "y": 0.95
+      }
+    },
+    {
+      "flag": "inc_cor_mammillary_bodies",
+      "name": "Mammillary Bodies",
+      "matter": "Gray Matter",
+      "about": "The paired rounded nuclei on the ventral hypothalamus that receive hippocampal output through the fornix.",
+      "accept": [
+        "mammillary body",
+        "mamillary bodies"
+      ],
+      "target": {
+        "x": 0.4845,
+        "y": 0.8137
+      },
+      "label": {
+        "x": 0.5,
+        "y": 0.95
+      }
+    }
+  ]
+}
