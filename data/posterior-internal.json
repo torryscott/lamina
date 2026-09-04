@@ -60,44 +60,6 @@
         "x": 0.12,
         "y": 0.62
       }
-    },
-    {
-      "flag": "inc_post_vermis",
-      "name": "Vermis",
-      "matter": "Gray Matter (Be specific. What part of the cerebellum is it?)",
-      "about": "The narrow midline ridge of the cerebellum, between the two cerebellar hemispheres. It coordinates posture, balance, and movements of the trunk.",
-      "accept": [
-        "cerebellar vermis",
-        "vermis of the cerebellum",
-        "vermis cerebelli"
-      ],
-      "target": {
-        "x": 0.7211,
-        "y": 0.6459
-      },
-      "label": {
-        "x": 0.7944,
-        "y": 0.9116
-      }
-    },
-    {
-      "flag": "inc_post_cerebellar_hemispheres",
-      "name": "Cerebellar Hemispheres",
-      "matter": "Gray Matter (Be specific. What part of the cerebellum is it?)",
-      "about": "The lateral lobes of the cerebellum, on either side of the vermis. They coordinate skilled limb movements and contribute to motor planning.",
-      "accept": [
-        "cerebellar hemisphere",
-        "hemisphere of the cerebellum",
-        "lateral cerebellar hemisphere"
-      ],
-      "target": {
-        "x": 0.5603,
-        "y": 0.7108
-      },
-      "label": {
-        "x": 0.373,
-        "y": 0.9199
-      }
     }
   ]
 }
