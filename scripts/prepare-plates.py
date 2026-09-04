@@ -15,9 +15,10 @@ import pathlib
 import sys
 
 try:
+    import numpy as np
     from PIL import Image
 except ImportError:
-    sys.exit("Pillow is required:  python3 -m pip install Pillow")
+    sys.exit("Pillow and NumPy are required:  python3 -m pip install Pillow numpy")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "images" / "clean"
@@ -41,6 +42,7 @@ PLATES = {
     "Gross Lateral View.png":       "lateral",
     "Gross Posterior Internal.png": "posterior-internal",
     "Gross Ventral View.png":       "ventral",
+    "Pulled Back Lateral View.png": "pulled-back-lateral",
     # "Midsagittal.png":            "midsagittal",   # see note below
 }
 
@@ -55,12 +57,25 @@ ROTATE = {
 
 def prepare(src: pathlib.Path, dst: pathlib.Path, margin: float, max_dim: int, quality: int,
             rotate: int = 0):
-    im = Image.open(src).convert("RGBA")
+    im = Image.open(src)
 
-    # Trim to the opaque region — the specimen
-    bbox = im.getchannel("A").getbbox()
-    if bbox is None:
-        raise ValueError("image is fully transparent")
+    # Masters come two ways: with the background cut to transparency, or with it
+    # already painted white. Trim to whichever marks the specimen.
+    if "A" in im.getbands() and im.getchannel("A").getextrema()[0] < 255:
+        im = im.convert("RGBA")
+        bbox = im.getchannel("A").getbbox()
+        if bbox is None:
+            raise ValueError("image is fully transparent")
+    else:
+        im = im.convert("RGB")
+        a = np.asarray(im).astype(int)
+        content = ~((a > 244).all(2))
+        cols = np.nonzero(content.any(0))[0]
+        rows = np.nonzero(content.any(1))[0]
+        if not len(cols) or not len(rows):
+            raise ValueError("image is entirely background")
+        bbox = (int(cols[0]), int(rows[0]), int(cols[-1]) + 1, int(rows[-1]) + 1)
+        im = im.convert("RGBA")
     im = im.crop(bbox)
 
     # Uniform margin, sized off the long edge so plates look consistent
