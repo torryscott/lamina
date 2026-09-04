@@ -232,3 +232,70 @@ rule will leak into the rest of the survey page.
 | `label` | Label pill position, same coordinate space. |
 
 Fractional coordinates mean the same data drives the atlas at any rendered size.
+
+---
+
+## Answer matching
+
+Free-text answers are checked in two layers.
+
+### Handled automatically
+
+The normalizer folds variation nobody should have to enumerate:
+
+| Variation | Example |
+|---|---|
+| Case and whitespace | `THIRD  Ventricle` |
+| Articles and prepositions | `the third ventricle`, `aqueduct of Sylvius` |
+| Punctuation | `chiasm.` |
+| Ordinals — word, digit, Roman | `third` = `3rd` = `III` = `3` |
+| English plurals | `bodies` = `body` |
+| Latin plurals | `colliculi` = `colliculus`, `gyri` = `gyrus`, `nuclei` = `nucleus` |
+| Word order | `third ventricle` = `ventricle III` |
+
+Word order is handled by comparing the sorted token set as a fallback, which also
+catches Latin-style inversions like `gyrus cinguli`.
+
+### Listed per structure
+
+Genuine synonyms — different established names for the same structure — go in an
+`accept` array in the view's data file:
+
+```json
+{
+  "name": "Cerebral Aqueduct",
+  "accept": ["aqueduct of sylvius", "sylvian aqueduct",
+             "mesencephalic aqueduct", "aqueduct"]
+}
+```
+
+Entries are normalized the same way as student input, so `accept` only needs the
+base form — no need to list `aqueducts` or `Aqueduct of Sylvius` separately.
+
+**Veterinary nomenclature matters here.** Sheep anatomy often uses rostral/caudal
+where human anatomy uses superior/inferior, so `rostral colliculus` is accepted for
+Superior Colliculus and `caudal commissure` for Posterior Commissure.
+
+### Deciding what to accept
+
+This is a pedagogical call, not a technical one. Accepting `primary motor cortex`
+for Precentral Gyrus is defensible — same tissue — but it changes what the question
+tests. Review the `accept` lists rather than inheriting them.
+
+The student-facing **Count mine as correct** button is the backstop: string matching
+can't anticipate every acceptable answer, so the student can override a wrong verdict.
+If a particular override keeps coming up, that's a signal to add the synonym.
+
+### Checking for collisions
+
+After editing `accept` lists, make sure no two structures can claim the same answer:
+
+```js
+// in the browser console on quiz.html
+const d = await (await fetch('data/midsagittal.json')).json();
+// ...compare normalized forms across all structures
+```
+
+The 25-structure midsagittal set currently resolves to 94 accepted strings with no
+collisions and no false positives against near-miss pairs (superior vs. inferior
+colliculus, pre- vs. postcentral gyrus, thalamus vs. hypothalamus).

@@ -341,23 +341,62 @@
     return out;
   }
 
-  /* ---------- answer matching ---------- */
+  /* ---------- answer matching ----------
+     Two layers. Mechanical variants (ordinals, articles, plurals, punctuation)
+     are folded here so nobody has to enumerate "3rd ventricle". Genuine
+     synonyms live in each structure's `accept` list in the data file. */
+
+  var ORDINALS = {
+    first: '1', '1st': '1', i: '1',
+    second: '2', '2nd': '2', ii: '2',
+    third: '3', '3rd': '3', iii: '3',
+    fourth: '4', '4th': '4', iv: '4',
+    fifth: '5', '5th': '5', v: '5'
+  };
+  var DROP = { the: 1, of: 1, a: 1, an: 1 };
+
   function normalize(s) {
-    return (s || '')
+    var toks = (s || '')
       .toLowerCase()
-      .replace(/[‘’']/g, '')
+      .replace(/[\u2018\u2019']/g, '')
       .replace(/[^a-z0-9 ]+/g, ' ')
-      .replace(/\bthe\b/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+      .split(/\s+/);
+
+    var out = [];
+    for (var i = 0; i < toks.length; i++) {
+      var w = toks[i];
+      if (!w || DROP[w]) continue;
+      if (Object.prototype.hasOwnProperty.call(ORDINALS, w)) { out.push(ORDINALS[w]); continue; }
+      out.push(stem(w));
+    }
+    return out.join(' ');
   }
-  function isCorrect(given, expected) {
-    var a = normalize(given), b = normalize(expected);
+
+  /* Fold English and Latin number: colliculus/colliculi, gyrus/gyri,
+     nucleus/nuclei, body/bodies all collapse to one stem. */
+  function stem(w) {
+    if (/ies$/.test(w))                       return w.replace(/ies$/, 'y');
+    if (/us$/.test(w)  && w.length > 3)       return w.slice(0, -2);
+    if (/i$/.test(w)   && w.length > 3)       return w.slice(0, -1);
+    if (/[^s]s$/.test(w))                     return w.slice(0, -1);
+    return w;
+  }
+
+  /* Word order varies — "third ventricle" and "ventricle III" are the same
+     answer — so fall back to comparing the token set. */
+  function sortedKey(s) { return normalize(s).split(' ').sort().join(' '); }
+
+  /* structure is the whole record, so we can consult its accept list */
+  function isCorrect(given, structure) {
+    var a = normalize(given);
     if (!a) return false;
-    if (a === b) return true;
-    // tolerate singular/plural on the final word
-    var depl = function (t) { return t.replace(/(ies)$/, 'y').replace(/s$/, ''); };
-    return depl(a) === depl(b);
+    var aSorted = a.split(' ').sort().join(' ');
+    var candidates = [structure.name].concat(structure.accept || []);
+    for (var i = 0; i < candidates.length; i++) {
+      if (a === normalize(candidates[i])) return true;
+      if (aSorted === sortedKey(candidates[i])) return true;
+    }
+    return false;
   }
 
   function shuffle(n) {
@@ -447,7 +486,7 @@
     stopTimer();
 
     var s = current();
-    var ok = !timedOut && isCorrect(given, s.name);
+    var ok = !timedOut && isCorrect(given, s);
     if (ok) state.score++;
     else state.missed.push({ name: s.name, gave: (given || '').trim(), timedOut: !!timedOut });
 

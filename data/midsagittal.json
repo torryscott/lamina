@@ -15,7 +15,11 @@
       "label": {
         "x": 0.4406,
         "y": 0.0663
-      }
+      },
+      "accept": [
+        "habenular nucleus",
+        "habenular complex"
+      ]
     },
     {
       "flag": "inc_mid_thalamus",
@@ -29,7 +33,10 @@
       "label": {
         "x": 0.364,
         "y": 0.8002
-      }
+      },
+      "accept": [
+        "dorsal thalamus"
+      ]
     },
     {
       "flag": "inc_mid_corpus_callosum",
@@ -43,7 +50,10 @@
       "label": {
         "x": 0.0684,
         "y": 0.7118
-      }
+      },
+      "accept": [
+        "callosum"
+      ]
     },
     {
       "flag": "inc_mid_arbor_vitae",
@@ -57,7 +67,11 @@
       "label": {
         "x": 0.9047,
         "y": 0.2781
-      }
+      },
+      "accept": [
+        "arbor vitae cerebelli",
+        "cerebellar white matter"
+      ]
     },
     {
       "flag": "inc_mid_cerebral_aqueduct",
@@ -71,7 +85,13 @@
       "label": {
         "x": 0.8384,
         "y": 0.2118
-      }
+      },
+      "accept": [
+        "aqueduct of sylvius",
+        "sylvian aqueduct",
+        "mesencephalic aqueduct",
+        "aqueduct"
+      ]
     },
     {
       "flag": "inc_mid_third_ventricle",
@@ -99,7 +119,10 @@
       "label": {
         "x": 0.299,
         "y": 0.0516
-      }
+      },
+      "accept": [
+        "gyrus cinguli"
+      ]
     },
     {
       "flag": "inc_mid_hypothalamus",
@@ -127,7 +150,12 @@
       "label": {
         "x": 0.2431,
         "y": 0.8379
-      }
+      },
+      "accept": [
+        "optic chiasma",
+        "chiasma opticum",
+        "chiasm"
+      ]
     },
     {
       "flag": "inc_mid_pineal_body",
@@ -141,7 +169,12 @@
       "label": {
         "x": 0.6077,
         "y": 0.1262
-      }
+      },
+      "accept": [
+        "pineal gland",
+        "pineal",
+        "epiphysis cerebri"
+      ]
     },
     {
       "flag": "inc_mid_superior_colliculus",
@@ -155,7 +188,10 @@
       "label": {
         "x": 0.7072,
         "y": 0.0543
-      }
+      },
+      "accept": [
+        "rostral colliculus"
+      ]
     },
     {
       "flag": "inc_mid_inferior_colliculus",
@@ -169,7 +205,10 @@
       "label": {
         "x": 0.7811,
         "y": 0.1252
-      }
+      },
+      "accept": [
+        "caudal colliculus"
+      ]
     },
     {
       "flag": "inc_mid_fornix",
@@ -197,7 +236,11 @@
       "label": {
         "x": 0.1008,
         "y": 0.8094
-      }
+      },
+      "accept": [
+        "septum lucidum",
+        "pellucid septum"
+      ]
     },
     {
       "flag": "inc_mid_posterior_commissure",
@@ -211,7 +254,11 @@
       "label": {
         "x": 0.558,
         "y": 0.0691
-      }
+      },
+      "accept": [
+        "caudal commissure",
+        "epithalamic commissure"
+      ]
     },
     {
       "flag": "inc_mid_anterior_commissure",
@@ -225,7 +272,10 @@
       "label": {
         "x": 0.134,
         "y": 0.8996
-      }
+      },
+      "accept": [
+        "rostral commissure"
+      ]
     },
     {
       "flag": "inc_mid_central_sulcus",
@@ -239,7 +289,12 @@
       "label": {
         "x": 0.1291,
         "y": 0.0645
-      }
+      },
+      "accept": [
+        "central fissure",
+        "fissure of rolando",
+        "rolandic fissure"
+      ]
     },
     {
       "flag": "inc_mid_precentral_gyrus",
@@ -253,7 +308,12 @@
       "label": {
         "x": 0.067,
         "y": 0.1851
-      }
+      },
+      "accept": [
+        "primary motor cortex",
+        "motor cortex",
+        "m1"
+      ]
     },
     {
       "flag": "inc_mid_postcentral_gyrus",
@@ -267,7 +327,12 @@
       "label": {
         "x": 0.2079,
         "y": 0.1197
-      }
+      },
+      "accept": [
+        "primary somatosensory cortex",
+        "somatosensory cortex",
+        "s1"
+      ]
     },
     {
       "flag": "inc_mid_mammillary_bodies",
@@ -281,7 +346,11 @@
       "label": {
         "x": 0.4765,
         "y": 0.7578
-      }
+      },
+      "accept": [
+        "mamillary bodies",
+        "corpora mammillaria"
+      ]
     },
     {
       "flag": "inc_mid_pons",
@@ -295,7 +364,10 @@
       "label": {
         "x": 0.6084,
         "y": 0.8214
-      }
+      },
+      "accept": [
+        "pons varolii"
+      ]
     },
     {
       "flag": "inc_mid_fourth_ventricle",
@@ -337,7 +409,11 @@
       "label": {
         "x": 0.5704,
         "y": 0.8831
-      }
+      },
+      "accept": [
+        "midbrain tegmentum",
+        "mesencephalic tegmentum"
+      ]
     },
     {
       "flag": "inc_mid_medulla",
@@ -351,7 +427,10 @@
       "label": {
         "x": 0.6913,
         "y": 0.8453
-      }
+      },
+      "accept": [
+        "medulla oblongata"
+      ]
     }
   ]
 }
