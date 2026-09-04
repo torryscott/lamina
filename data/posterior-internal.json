@@ -62,25 +62,6 @@
       }
     },
     {
-      "flag": "inc_post_fourth_ventricle",
-      "name": "Fourth Ventricle",
-      "matter": "a Cavity",
-      "about": "The cerebrospinal fluid space between the cerebellum and the brainstem, continuous with the cerebral aqueduct above and the central canal below.",
-      "accept": [
-        "4th ventricle",
-        "ventricle 4",
-        "fourth ventricles"
-      ],
-      "target": {
-        "x": 0.5649,
-        "y": 0.5271
-      },
-      "label": {
-        "x": 0.8239,
-        "y": 0.2883
-      }
-    },
-    {
       "flag": "inc_post_vermis",
       "name": "Vermis",
       "matter": "Gray Matter (Be specific. What part of the cerebellum is it?)",
