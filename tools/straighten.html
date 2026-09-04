@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Straighten a plate — Lamina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-a:#f7f9fc; --bg-b:#eef2f7; --panel:#fff; --ink:#1a1d29; --ink-soft:#3c4050;
+    --muted:#6b7280; --accent:#1e3a5f; --accent-hover:#2a4e7a; --rule:#e3e7ee;
+    --rule-strong:#cfd5df; --gold:#b48a3c; --radius:12px;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; color:var(--ink); font-family:'Inter',system-ui,sans-serif; line-height:1.5;
+    background:linear-gradient(180deg,var(--bg-a),var(--bg-b)); min-height:100vh;
+  }
+  header { max-width:1180px; margin:0 auto; padding:34px 24px 0; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:1.9rem; margin:0 0 4px; }
+  header p { margin:0; color:var(--muted); max-width:66ch; font-size:.95rem; }
+  main { max-width:1180px; margin:0 auto; padding:22px 24px 60px; display:grid;
+         grid-template-columns:minmax(0,1fr) 320px; gap:22px; align-items:start; }
+  @media (max-width:900px) { main { grid-template-columns:1fr; } }
+
+  .stagewrap { background:var(--panel); border:1px solid var(--rule); border-radius:var(--radius);
+               padding:14px; box-shadow:0 1px 2px rgba(20,20,30,.04); }
+  .stage { position:relative; overflow:hidden; border-radius:8px; background:#fff; }
+  .stage canvas { display:block; width:100%; height:auto; }
+  .guides { position:absolute; inset:0; pointer-events:none; }
+  .guides .v { position:absolute; top:0; bottom:0; width:1px; background:rgba(30,58,95,.85); }
+  .guides .v.mid { width:2px; }
+  .guides .h { position:absolute; left:0; right:0; height:1px; background:rgba(30,58,95,.28); }
+  .status { margin-top:10px; font-size:.85rem; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap; }
+
+  .panel { background:var(--panel); border:1px solid var(--rule); border-radius:var(--radius);
+           padding:18px; box-shadow:0 1px 2px rgba(20,20,30,.04); position:sticky; top:22px; }
+  .panel h2 { font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+              margin:0 0 12px; font-weight:600; }
+  .angle { font-family:'Fraunces',Georgia,serif; font-size:2.6rem; line-height:1; margin:0 0 2px;
+           font-variant-numeric:tabular-nums; }
+  .angle span { font-size:1.1rem; color:var(--muted); }
+  .hint { font-size:.83rem; color:var(--muted); margin:0 0 16px; }
+  input[type=range] { width:100%; accent-color:var(--accent); }
+  .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  button {
+    font:inherit; font-size:.9rem; padding:8px 13px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--rule-strong); background:var(--panel); color:var(--ink);
+  }
+  button:hover { background:#eef1f6; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
+  button:focus-visible, input:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+  label.check { display:flex; gap:8px; align-items:center; font-size:.9rem; color:var(--ink-soft);
+                margin-top:12px; cursor:pointer; }
+  .sep { height:1px; background:var(--rule); margin:18px 0; }
+  .out { font-family:ui-monospace,Menlo,monospace; font-size:.82rem; background:#f4f6f9;
+         border:1px solid var(--rule); border-radius:8px; padding:9px 11px; word-break:break-all; }
+  .note { font-size:.8rem; color:var(--muted); margin-top:10px; }
+  .copied { color:#2f6b44; font-size:.83rem; margin-top:8px; min-height:1.2em; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="title">Straighten a plate</h1>
+  <p>Drag the slider until the specimen sits square. The mirror overlay folds the
+     image left over right, so when the two halves line up the slice is straight.
+     Send me the angle and I will rebuild the plate from the original photograph
+     at that rotation, so nothing is resampled twice.</p>
+</header>
+
+<main>
+  <div class="stagewrap">
+    <div class="stage" id="stage">
+      <canvas id="cv"></canvas>
+      <div class="guides" id="guides"></div>
+    </div>
+    <div class="status">
+      <span id="fileName">loading…</span>
+      <span id="dims"></span>
+      <span id="symScore"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Extra rotation</h2>
+    <p class="angle"><span id="sign">+</span><span id="angleNum">0.0</span><span>°</span></p>
+    <p class="hint" id="dirHint">0 keeps the plate exactly as it is now.</p>
+    <input type="range" id="slider" min="-15" max="15" step="0.1" value="0">
+    <div class="row">
+      <button id="minus1">−1°</button>
+      <button id="minus01">−0.1°</button>
+      <button id="plus01">+0.1°</button>
+      <button id="plus1">+1°</button>
+    </div>
+    <div class="row">
+      <button id="auto" class="primary">Suggest</button>
+      <button id="reset">Reset</button>
+    </div>
+    <p class="note">Suggest picks the angle whose mirror overlap is highest.</p>
+
+    <label class="check"><input type="checkbox" id="mirror" checked> Mirror overlay</label>
+    <label class="check"><input type="checkbox" id="grid" checked> Midline and grid</label>
+
+    <div class="sep"></div>
+    <h2>Send me this</h2>
+    <div class="out" id="out">rotate coronal-f by +0.0</div>
+    <div class="row"><button id="copy">Copy</button></div>
+    <p class="copied" id="copied"></p>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var view = new URLSearchParams(location.search).get('view') || 'coronal-f';
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  var img = new Image(), angle = 0, loaded = false;
+
+  var el = function (id) { return document.getElementById(id); };
+
+  fetch('../data/' + view + '.json')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (d) {
+      document.title = 'Straighten ' + d.label + ' — Lamina';
+      el('title').textContent = 'Straighten ' + d.label;
+      img.onload = function () {
+        loaded = true;
+        el('fileName').textContent = d.image.split('/').pop();
+        el('dims').textContent = img.naturalWidth + ' × ' + img.naturalHeight;
+        sizeCanvas(); draw();
+      };
+      img.onerror = function () { el('fileName').textContent = 'could not load ' + d.image; };
+      img.src = '../' + d.image;
+    })
+    .catch(function (e) {
+      el('fileName').textContent = 'could not load data/' + view + '.json (' + e.message + ')';
+    });
+
+  /* Rotating about the centre needs a canvas big enough for the corners. */
+  function sizeCanvas() {
+    var w = img.naturalWidth, h = img.naturalHeight;
+    var d = Math.ceil(Math.sqrt(w * w + h * h));
+    cv.width = d; cv.height = d;
+  }
+
+  function draw() {
+    if (!loaded) return;
+    var d = cv.width;
+    ctx.save();
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, d, d);
+    ctx.translate(d / 2, d / 2);
+    ctx.rotate(angle * Math.PI / 180);
+    ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+    ctx.restore();
+    if (el('mirror').checked) {
+      ctx.save();
+      ctx.globalAlpha = 0.45;
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.translate(d, 0); ctx.scale(-1, 1);
+      ctx.drawImage(cv, 0, 0);
+      ctx.restore();
+    }
+    paintGuides();
+    el('symScore').textContent = 'mirror overlap ' + (symmetry(angle) * 100).toFixed(1) + '%';
+  }
+
+  function paintGuides() {
+    var g = el('guides');
+    g.innerHTML = '';
+    if (!el('grid').checked) return;
+    var mid = document.createElement('div');
+    mid.className = 'v mid'; mid.style.left = 'calc(50% - 1px)';
+    g.appendChild(mid);
+    [0.25, 0.75].forEach(function (f) {
+      var v = document.createElement('div');
+      v.className = 'v'; v.style.left = (f * 100) + '%'; g.appendChild(v);
+    });
+    [0.25, 0.5, 0.75].forEach(function (f) {
+      var h = document.createElement('div');
+      h.className = 'h'; h.style.top = (f * 100) + '%'; g.appendChild(h);
+    });
+  }
+
+  /* Mirror overlap of the specimen silhouette, measured on a small offscreen copy. */
+  var work = document.createElement('canvas'), wctx = work.getContext('2d', { willReadFrequently: true });
+  var N = 220;
+  function silhouette(a) {
+    work.width = N; work.height = N;
+    wctx.fillStyle = '#fff'; wctx.fillRect(0, 0, N, N);
+    var s = N / Math.ceil(Math.sqrt(img.naturalWidth * img.naturalWidth + img.naturalHeight * img.naturalHeight));
+    wctx.save();
+    wctx.translate(N / 2, N / 2); wctx.rotate(a * Math.PI / 180); wctx.scale(s, s);
+    wctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+    wctx.restore();
+    var px = wctx.getImageData(0, 0, N, N).data;
+    var m = new Uint8Array(N * N);
+    for (var i = 0, p = 0; i < m.length; i++, p += 4) {
+      m[i] = (px[p] > 245 && px[p + 1] > 245 && px[p + 2] > 245) ? 0 : 1;
+    }
+    return m;
+  }
+  function symmetry(a) {
+    if (!loaded) return 0;
+    var m = silhouette(a);
+    var minx = N, maxx = -1, miny = N, maxy = -1;
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) if (m[y * N + x]) {
+      if (x < minx) minx = x; if (x > maxx) maxx = x;
+      if (y < miny) miny = y; if (y > maxy) maxy = y;
+    }
+    if (maxx < 0) return 0;
+    var inter = 0, uni = 0;
+    for (var yy = miny; yy <= maxy; yy++) for (var xx = minx; xx <= maxx; xx++) {
+      var a1 = m[yy * N + xx], b1 = m[yy * N + (minx + maxx - xx)];
+      if (a1 && b1) inter++;
+      if (a1 || b1) uni++;
+    }
+    return uni ? inter / uni : 0;
+  }
+
+  function setAngle(a) {
+    angle = Math.max(-15, Math.min(15, Math.round(a * 10) / 10));
+    el('slider').value = angle;
+    el('sign').textContent = angle < 0 ? '−' : '+';
+    el('angleNum').textContent = Math.abs(angle).toFixed(1);
+    el('dirHint').textContent = angle === 0 ? '0 keeps the plate exactly as it is now.'
+      : (angle > 0 ? 'turns the plate anticlockwise' : 'turns the plate clockwise');
+    el('out').textContent = 'rotate ' + view + ' by ' + (angle < 0 ? '' : '+') + angle.toFixed(1);
+    draw();
+  }
+
+  el('slider').addEventListener('input', function () { setAngle(parseFloat(this.value)); });
+  el('minus1').addEventListener('click', function () { setAngle(angle - 1); });
+  el('plus1').addEventListener('click', function () { setAngle(angle + 1); });
+  el('minus01').addEventListener('click', function () { setAngle(angle - 0.1); });
+  el('plus01').addEventListener('click', function () { setAngle(angle + 0.1); });
+  el('reset').addEventListener('click', function () { setAngle(0); });
+  el('mirror').addEventListener('change', draw);
+  el('grid').addEventListener('change', function () { paintGuides(); });
+
+  el('auto').addEventListener('click', function () {
+    if (!loaded) return;
+    var best = 0, bestScore = -1, a;
+    for (a = -12; a <= 12.001; a += 0.5) {
+      var s = symmetry(a);
+      if (s > bestScore) { bestScore = s; best = a; }
+    }
+    for (a = best - 0.6; a <= best + 0.601; a += 0.1) {
+      var s2 = symmetry(a);
+      if (s2 > bestScore) { bestScore = s2; best = a; }
+    }
+    setAngle(best);
+  });
+
+  el('copy').addEventListener('click', function () {
+    var t = el('out').textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject())
+      .then(function () { el('copied').textContent = 'Copied'; })
+      .catch(function () { el('copied').textContent = 'Select the text above and copy it'; });
+    setTimeout(function () { el('copied').textContent = ''; }, 1800);
+  });
+
+  setAngle(0);
+})();
+</script>
+</body>
+</html>
