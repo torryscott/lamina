@@ -99,8 +99,8 @@
       "matter": "Cavity",
       "about": "The third ventricle is a more narrow cavity spanning the midline in the area around the thalamus",
       "target": {
-        "x": 0.3232,
-        "y": 0.4959
+        "x": 0.3265,
+        "y": 0.4867
       },
       "label": {
         "x": 0.3087,
@@ -230,8 +230,8 @@
       "matter": "thin tissue",
       "about": "The septum pellucidum is a thin membrane located at the midline. It separates the lateral ventricles from each other.",
       "target": {
-        "x": 0.2472,
-        "y": 0.5055
+        "x": 0.2545,
+        "y": 0.5093
       },
       "label": {
         "x": 0.1008,
