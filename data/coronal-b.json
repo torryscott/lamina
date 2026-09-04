@@ -12,12 +12,12 @@
         "callosum"
       ],
       "target": {
-        "x": 0.5098,
-        "y": 0.507
+        "x": 0.5069,
+        "y": 0.5439
       },
       "label": {
-        "x": 0.5,
-        "y": 0.95
+        "x": 0.6585,
+        "y": 0.1468
       }
     },
     {
@@ -29,12 +29,12 @@
         "septum"
       ],
       "target": {
-        "x": 0.5005,
-        "y": 0.5286
+        "x": 0.4891,
+        "y": 0.5727
       },
       "label": {
-        "x": 0.3667,
-        "y": 0.95
+        "x": 0.2809,
+        "y": 0.1564
       }
     },
     {
@@ -46,12 +46,12 @@
         "lateral ventricles"
       ],
       "target": {
-        "x": 0.5241,
-        "y": 0.5295
+        "x": 0.5033,
+        "y": 0.5754
       },
       "label": {
-        "x": 0.6333,
-        "y": 0.95
+        "x": 0.5664,
+        "y": 0.9218
       }
     },
     {
@@ -64,8 +64,8 @@
         "nucleus caudatus"
       ],
       "target": {
-        "x": 0.5799,
-        "y": 0.5228
+        "x": 0.5705,
+        "y": 0.572
       },
       "label": {
         "x": 0.94,
@@ -82,12 +82,12 @@
         "septal area"
       ],
       "target": {
-        "x": 0.4988,
-        "y": 0.5628
+        "x": 0.483,
+        "y": 0.6056
       },
       "label": {
-        "x": 0.2333,
-        "y": 0.95
+        "x": 0.3384,
+        "y": 0.9156
       }
     },
     {
@@ -97,12 +97,12 @@
       "about": "The compact sheet of projection fibers between the caudate and thalamus medially and the lentiform nucleus laterally.",
       "accept": [],
       "target": {
-        "x": 0.6119,
-        "y": 0.6036
+        "x": 0.6158,
+        "y": 0.6241
       },
       "label": {
-        "x": 0.7667,
-        "y": 0.95
+        "x": 0.8478,
+        "y": 0.7997
       }
     },
     {
@@ -112,12 +112,12 @@
       "about": "The outermost thin white lamina, between the claustrum and the insular cortex.",
       "accept": [],
       "target": {
-        "x": 0.2785,
-        "y": 0.6002
+        "x": 0.2641,
+        "y": 0.6104
       },
       "label": {
-        "x": 0.06,
-        "y": 0.32
+        "x": 0.0743,
+        "y": 0.5418
       }
     },
     {
@@ -127,12 +127,12 @@
       "about": "The thin white lamina between the putamen and the claustrum.",
       "accept": [],
       "target": {
-        "x": 0.308,
-        "y": 0.6086
+        "x": 0.284,
+        "y": 0.6735
       },
       "label": {
-        "x": 0.06,
-        "y": 0.5
+        "x": 0.1766,
+        "y": 0.8333
       }
     },
     {
@@ -142,12 +142,12 @@
       "about": "The thin sheet of gray matter between the external and extreme capsules.",
       "accept": [],
       "target": {
-        "x": 0.2878,
-        "y": 0.6244
+        "x": 0.2677,
+        "y": 0.6413
       },
       "label": {
-        "x": 0.06,
-        "y": 0.68
+        "x": 0.0784,
+        "y": 0.6838
       }
     },
     {
@@ -157,12 +157,12 @@
       "about": "The lateral part of the lentiform nucleus, one of the basal ganglia involved in motor control.",
       "accept": [],
       "target": {
-        "x": 0.6795,
-        "y": 0.6152
+        "x": 0.5883,
+        "y": 0.7003
       },
       "label": {
-        "x": 0.94,
-        "y": 0.62
+        "x": 0.7186,
+        "y": 0.8951
       }
     }
   ]
