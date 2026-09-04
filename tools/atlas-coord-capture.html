@@ -750,13 +750,16 @@ function updateJson() {
   if (state.dataFile) {
     // Data-file mode: emit the whole data file with coordinates updated, so
     // the output drops straight into data/<view>.json. Structures keep their
-    // matter/about/accept; markers added here become new structures.
+    // matter/about/accept; markers added here become new structures, and a
+    // marker removed here is dropped from the output.
     const byFlag = Object.fromEntries(state.markers.map(m => [m.flag, m]));
     const seen = new Set();
-    const structures = state.dataFile.structures.map(s => {
-      const m = byFlag[s.flag]; seen.add(s.flag);
-      return m ? {...s, target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}} : s;
-    });
+    const structures = state.dataFile.structures
+      .filter(s => byFlag[s.flag])
+      .map(s => {
+        const m = byFlag[s.flag]; seen.add(s.flag);
+        return {...s, target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}};
+      });
     for (const m of state.markers) if (!seen.has(m.flag)) {
       structures.push({flag: m.flag, name: m.text || m.area, matter: '', about: '', accept: [],
                        target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}});
