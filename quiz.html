@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lamina — Practicum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-a: #f7f9fc;
+    --bg-b: #eef2f7;
+    --panel: #ffffff;
+    --ink: #1a1d29;
+    --ink-soft: #3c4050;
+    --muted: #6b7280;
+    --muted-soft: #9aa0ac;
+    --accent: #1e3a5f;
+    --accent-hover: #2a4e7a;
+    --accent-soft: #e8eef5;
+    --gold: #b48a3c;
+    --rule: #e3e7ee;
+    --rule-strong: #cfd5df;
+    --chip: #eef1f6;
+    --right: #2f6b44;
+    --right-soft: #e4efe7;
+    --wrong: #a33f3a;
+    --wrong-soft: #f7e8e7;
+    --marker: #1e3a5f;
+    --radius: 14px;
+    --shadow-sm: 0 1px 2px rgba(20,20,30,.04);
+    --shadow-md: 0 4px 18px rgba(20,20,30,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(43,77,109,.06), transparent 60%),
+      radial-gradient(900px 420px at 0% 0%, rgba(30,58,95,.06), transparent 55%),
+      linear-gradient(180deg, var(--bg-a), var(--bg-b));
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 56px; }
+
+  header.top {
+    max-width: 1180px; margin: 0 auto; padding: 30px 24px 0;
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  .brand {
+    font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; font-weight: 500;
+    letter-spacing: -.01em;
+  }
+  .brand span { color: var(--gold); }
+  .viewname {
+    font-size: .74rem; text-transform: uppercase; letter-spacing: .13em;
+    color: var(--muted); font-weight: 600;
+  }
+  .spacer { flex: 1; }
+
+  /* ---------- shared card ---------- */
+  .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+
+  /* ---------- start screen ---------- */
+  .start { padding: 44px 40px; margin-top: 26px; text-align: center; }
+  .start h1 {
+    font-family: 'Fraunces', Georgia, serif; font-weight: 500;
+    font-size: clamp(1.7rem, 3vw + 1rem, 2.4rem); margin: 0 0 10px;
+    letter-spacing: -.015em;
+  }
+  .start p { color: var(--ink-soft); max-width: 46ch; margin: 0 auto 8px; }
+  .start .count {
+    display: inline-block; margin: 18px 0 26px; padding: 7px 16px;
+    background: var(--chip); border-radius: 999px; font-size: .9rem;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .start .count strong { font-weight: 600; }
+
+  /* ---------- buttons ---------- */
+  button {
+    font-family: inherit; font-size: .94rem; font-weight: 500; cursor: pointer;
+    border-radius: 8px; border: 1px solid var(--rule-strong);
+    background: var(--panel); color: var(--ink); padding: 10px 18px;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  button:hover { background: var(--chip); }
+  button.primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+    padding: 12px 26px; font-size: 1rem;
+  }
+  button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  button.ghost:hover { background: var(--chip); color: var(--ink); }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  button[disabled] { opacity: .45; cursor: not-allowed; }
+
+  /* ---------- quiz layout ---------- */
+  .quizbar {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 13px 18px; margin: 22px 0 16px;
+  }
+  .progress-text {
+    font-size: .86rem; color: var(--muted); font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .progress-text strong { color: var(--ink); font-weight: 600; }
+  .track { flex: 1 1 160px; height: 5px; background: var(--chip); border-radius: 3px; overflow: hidden; min-width: 120px; }
+  .track > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width .3s ease; }
+  .timer {
+    font-variant-numeric: tabular-nums; font-size: .9rem; font-weight: 600;
+    color: var(--muted); background: var(--chip); padding: 5px 12px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .timer.low { color: var(--wrong); background: var(--wrong-soft); }
+
+  .stage-card { padding: 16px; }
+  .stage-wrap { display: flex; justify-content: center; }
+  .stage { position: relative; display: inline-block; max-width: 100%; }
+  .stage img { display: block; max-width: 100%; height: auto; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
+
+  /* the X marker */
+  .xmark {
+    position: absolute; transform: translate(-50%,-50%);
+    width: clamp(22px, calc(var(--iw,1000px) * .026), 46px);
+    height: clamp(22px, calc(var(--iw,1000px) * .026), 46px);
+    pointer-events: none;
+  }
+  .xmark::before, .xmark::after {
+    content: ""; position: absolute; left: 50%; top: 0;
+    width: clamp(3px, calc(var(--iw,1000px) * .0028), 5px); height: 100%;
+    background: var(--marker); border-radius: 2px;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.95);
+  }
+  .xmark::before { transform: translateX(-50%) rotate(45deg); }
+  .xmark::after  { transform: translateX(-50%) rotate(-45deg); }
+
+  /* reveal marker on the feedback screen */
+  .revealdot {
+    position: absolute; transform: translate(-50%,-50%);
+    width: clamp(9px, calc(var(--iw,1000px) * .008), 15px);
+    height: clamp(9px, calc(var(--iw,1000px) * .008), 15px);
+    border-radius: 50%; background: var(--right); border: 2px solid #fff;
+    box-shadow: 0 0 0 4px rgba(47,107,68,.28); pointer-events: none;
+  }
+  .revealpill {
+    position: absolute; transform: translate(-50%,-50%);
+    background: var(--right); color: #fff; font-weight: 700;
+    padding: .3em .8em; border-radius: 14px; white-space: normal;
+    max-width: 12em; text-align: center; line-height: 1.15;
+    font-size: clamp(.65rem, calc(var(--iw,1000px) * .011), 1.3rem);
+    box-shadow: 0 2px 6px rgba(0,0,0,.18); pointer-events: none;
+  }
+  .revealline { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  /* ---------- answer panel ---------- */
+  .answer { padding: 20px 22px; margin-top: 16px; }
+  .prompt { font-size: 1.06rem; margin: 0 0 4px; font-weight: 500; }
+  .matter { color: var(--muted); font-size: .92rem; margin: 0 0 14px; }
+  .matter b { color: var(--ink-soft); font-weight: 600; }
+
+  .answer-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  input[type="text"] {
+    flex: 1 1 260px; padding: 12px 14px; font-family: inherit; font-size: 1rem;
+    border: 1px solid var(--rule-strong); border-radius: 8px; background: #fff; color: var(--ink);
+  }
+  input[type="text"]:focus { outline: 3px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+
+  /* ---------- feedback ---------- */
+  .verdict {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 1.02rem; margin-bottom: 12px;
+  }
+  .verdict .badge {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .09em;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .verdict.right .badge { background: var(--right-soft); color: var(--right); }
+  .verdict.wrong .badge { background: var(--wrong-soft); color: var(--wrong); }
+
+  .answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .answers div { background: var(--panel); padding: 11px 14px; }
+  .answers dt { font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+  .answers dd { margin: 0; font-size: 1.02rem; }
+  .answers dd.yours { color: var(--ink-soft); }
+  .answers dd.correct { color: var(--right); font-weight: 600; }
+
+  .about { color: var(--ink-soft); font-size: .95rem; margin: 0 0 16px; max-width: 68ch; }
+
+  /* ---------- results ---------- */
+  .results { padding: 40px; margin-top: 26px; text-align: center; }
+  .results h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 2rem; margin: 0 0 6px; }
+  .score { font-family: 'Fraunces', Georgia, serif; font-size: 3.4rem; line-height: 1; margin: 18px 0 4px; font-variant-numeric: tabular-nums; }
+  .score small { font-size: 1.3rem; color: var(--muted); }
+  .pct { color: var(--muted); margin: 0 0 26px; }
+  .missed { text-align: left; max-width: 560px; margin: 0 auto 24px; }
+  .missed h2 { font-size: .74rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; margin: 0 0 8px; }
+  .missed ul { list-style: none; margin: 0; padding: 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .missed li { padding: 9px 14px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; font-size: .94rem; }
+  .missed li:last-child { border-bottom: none; }
+  .missed li span.gave { color: var(--muted); font-style: italic; }
+  .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  [hidden] { display: none !important; }
+
+  footer.foot { max-width: 1180px; margin: 0 auto; padding: 0 24px 30px; color: var(--muted-soft); font-size: .8rem; text-align: center; }
+
+  @media (max-width: 640px) {
+    header.top { padding: 22px 16px 0; }
+    .wrap { padding: 0 16px 40px; }
+    .start, .results { padding: 30px 22px; }
+    .stage-card { padding: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Lamina<span>.</span></div>
+  <div class="viewname" id="viewName">—</div>
+  <span class="spacer"></span>
+  <button class="ghost" id="atlasLink" type="button">Open atlas</button>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ START ============ -->
+  <section class="card start" id="screenStart">
+    <h1 id="startTitle">Midsagittal Practicum</h1>
+    <p>You'll be shown a structure marked with an <strong>X</strong>. Type its name.
+       Order is randomized each time.</p>
+    <div class="count"><strong id="startCount">0</strong> structures in this set</div>
+    <div class="actions">
+      <button class="primary" id="btnBegin" type="button">Begin</button>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <div id="screenQuiz" hidden>
+    <div class="card quizbar">
+      <span class="progress-text">Question <strong id="qNum">1</strong> of <strong id="qTotal">0</strong></span>
+      <span class="track"><i id="trackFill"></i></span>
+      <span class="progress-text">Correct <strong id="qScore">0</strong></span>
+      <span class="timer" id="timer">1:00</span>
+    </div>
+
+    <div class="card stage-card">
+      <div class="stage-wrap">
+        <div class="stage" id="stage">
+          <img id="plate" alt="" >
+        </div>
+      </div>
+    </div>
+
+    <!-- asking -->
+    <div class="card answer" id="panelAsk">
+      <p class="prompt">Identify the structure marked by the <strong>X</strong>.</p>
+      <p class="matter">This is <b id="matterHint">—</b></p>
+      <form class="answer-row" id="answerForm" autocomplete="off">
+        <input type="text" id="answerInput" placeholder="Structure name"
+               aria-label="Structure name" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button class="primary" type="submit" id="btnSubmit">Submit</button>
+        <button class="ghost" type="button" id="btnSkip">Skip</button>
+      </form>
+    </div>
+
+    <!-- feedback -->
+    <div class="card answer" id="panelFeedback" hidden>
+      <div class="verdict" id="verdict">
+        <span class="badge" id="verdictBadge">—</span>
+        <span id="verdictText"></span>
+      </div>
+      <dl class="answers">
+        <div><dt>Your answer</dt><dd class="yours" id="yourAnswer">—</dd></div>
+        <div><dt>Correct answer</dt><dd class="correct" id="correctAnswer">—</dd></div>
+      </dl>
+      <p class="about" id="aboutText"></p>
+      <div class="answer-row">
+        <button class="primary" id="btnNext" type="button">Next</button>
+        <button class="ghost" id="btnOverride" type="button">Count mine as correct</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="card results" id="screenResults" hidden>
+    <h1>Set complete</h1>
+    <div class="score"><span id="finalScore">0</span><small> / <span id="finalTotal">0</span></small></div>
+    <p class="pct" id="finalPct">—</p>
+
+    <div class="missed" id="missedWrap" hidden>
+      <h2>Structures to review</h2>
+      <ul id="missedList"></ul>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="btnRetryMissed" type="button" hidden>Retry missed only</button>
+      <button id="btnRestart" type="button">Start over</button>
+      <button class="ghost" id="btnAtlas2" type="button">Open atlas</button>
+    </div>
+  </section>
+
+  <p class="sr-only" role="status" aria-live="polite" id="srStatus"></p>
+</div>
+
+<footer class="foot">Lamina · Sheep brain neuroanatomy practicum</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var QUESTION_SECONDS = 60;
+
+  var el = function (id) { return document.getElementById(id); };
+  var state = {
+    data: null,
+    pool: [],        // structures in play this run
+    order: [],       // shuffled indices into pool
+    at: 0,
+    score: 0,
+    missed: [],
+    answered: false,
+    tick: null,
+    remaining: QUESTION_SECONDS
+  };
+
+  /* ---------- flag filtering, same convention as the atlas ---------- */
+  function excludedFlags() {
+    var out = {};
+    new URLSearchParams(window.location.search).forEach(function (v, k) {
+      if (k.indexOf('inc_') === 0 && v === '0') out[k] = true;
+    });
+    return out;
+  }
+
+  /* ---------- answer matching ---------- */
+  function normalize(s) {
+    return (s || '')
+      .toLowerCase()
+      .replace(/[‘’']/g, '')
+      .replace(/[^a-z0-9 ]+/g, ' ')
+      .replace(/\bthe\b/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function isCorrect(given, expected) {
+    var a = normalize(given), b = normalize(expected);
+    if (!a) return false;
+    if (a === b) return true;
+    // tolerate singular/plural on the final word
+    var depl = function (t) { return t.replace(/(ies)$/, 'y').replace(/s$/, ''); };
+    return depl(a) === depl(b);
+  }
+
+  function shuffle(n) {
+    var a = Array.from({ length: n }, function (_, i) { return i; });
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* ---------- plate sizing so markers scale with the image ---------- */
+  function syncPlateWidth() {
+    var img = el('plate'), stage = el('stage');
+    if (img && stage && img.clientWidth) stage.style.setProperty('--iw', img.clientWidth + 'px');
+  }
+  window.addEventListener('resize', syncPlateWidth);
+
+  /* ---------- screens ---------- */
+  function show(which) {
+    el('screenStart').hidden   = which !== 'start';
+    el('screenQuiz').hidden    = which !== 'quiz';
+    el('screenResults').hidden = which !== 'results';
+  }
+
+  /* ---------- timer ---------- */
+  function stopTimer() { if (state.tick) { clearInterval(state.tick); state.tick = null; } }
+  function startTimer() {
+    stopTimer();
+    state.remaining = QUESTION_SECONDS;
+    paintTimer();
+    state.tick = setInterval(function () {
+      state.remaining--;
+      paintTimer();
+      if (state.remaining <= 0) { stopTimer(); grade(el('answerInput').value, true); }
+    }, 1000);
+  }
+  function paintTimer() {
+    var m = Math.floor(Math.max(state.remaining, 0) / 60);
+    var s = Math.max(state.remaining, 0) % 60;
+    var t = el('timer');
+    t.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    t.classList.toggle('low', state.remaining <= 10);
+  }
+
+  /* ---------- question rendering ---------- */
+  function clearOverlays() {
+    var stage = el('stage');
+    stage.querySelectorAll('.xmark,.revealdot,.revealpill,.revealline').forEach(function (n) { n.remove(); });
+  }
+
+  function current() { return state.pool[state.order[state.at]]; }
+
+  function renderQuestion() {
+    var s = current();
+    state.answered = false;
+    clearOverlays();
+
+    var x = document.createElement('div');
+    x.className = 'xmark';
+    x.style.left = (s.target.x * 100) + '%';
+    x.style.top  = (s.target.y * 100) + '%';
+    el('stage').appendChild(x);
+
+    el('qNum').textContent   = state.at + 1;
+    el('qTotal').textContent = state.pool.length;
+    el('qScore').textContent = state.score;
+    el('trackFill').style.width = ((state.at) / state.pool.length * 100) + '%';
+    el('matterHint').textContent = s.matter || 'part of the specimen';
+
+    el('panelAsk').hidden = false;
+    el('panelFeedback').hidden = true;
+    el('answerInput').value = '';
+    el('answerInput').disabled = false;
+    el('btnSubmit').disabled = false;
+    el('answerInput').focus();
+
+    el('plate').alt = 'Sheep brain ' + state.data.label.toLowerCase()
+      + ' section with one structure marked by an X';
+
+    startTimer();
+  }
+
+  function grade(given, timedOut) {
+    if (state.answered) return;
+    state.answered = true;
+    stopTimer();
+
+    var s = current();
+    var ok = !timedOut && isCorrect(given, s.name);
+    if (ok) state.score++;
+    else state.missed.push({ name: s.name, gave: (given || '').trim(), timedOut: !!timedOut });
+
+    // reveal where it was
+    var dot = document.createElement('div');
+    dot.className = 'revealdot';
+    dot.style.left = (s.target.x * 100) + '%';
+    dot.style.top  = (s.target.y * 100) + '%';
+    el('stage').appendChild(dot);
+
+    var pill = document.createElement('div');
+    pill.className = 'revealpill';
+    pill.style.left = (s.label.x * 100) + '%';
+    pill.style.top  = (s.label.y * 100) + '%';
+    pill.textContent = s.name;
+    el('stage').appendChild(pill);
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'revealline');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    var line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', s.target.x * 100); line.setAttribute('y1', s.target.y * 100);
+    line.setAttribute('x2', s.label.x * 100);  line.setAttribute('y2', s.label.y * 100);
+    line.setAttribute('stroke', 'rgba(47,107,68,.8)');
+    line.setAttribute('stroke-width', '1.75');
+    line.setAttribute('vector-effect', 'non-scaling-stroke');
+    svg.appendChild(line);
+    el('stage').appendChild(svg);
+
+    // feedback panel
+    var v = el('verdict');
+    v.className = 'verdict ' + (ok ? 'right' : 'wrong');
+    el('verdictBadge').textContent = ok ? 'Correct' : (timedOut ? 'Time up' : 'Not quite');
+    el('verdictText').textContent = ok
+      ? 'That’s the one.'
+      : (timedOut ? 'The clock ran out on this one.' : 'Here’s where it was.');
+    el('yourAnswer').textContent = (given || '').trim() || (timedOut ? '(no answer)' : '(blank)');
+    el('correctAnswer').textContent = s.name;
+    el('aboutText').textContent = s.about || '';
+    el('btnOverride').hidden = ok;
+
+    el('qScore').textContent = state.score;
+    el('panelAsk').hidden = true;
+    el('panelFeedback').hidden = false;
+    el('btnNext').focus();
+    el('srStatus').textContent = (ok ? 'Correct. ' : 'Incorrect. ') + 'The answer is ' + s.name + '.';
+  }
+
+  function next() {
+    state.at++;
+    if (state.at >= state.pool.length) { finish(); return; }
+    renderQuestion();
+  }
+
+  function finish() {
+    stopTimer();
+    clearOverlays();
+    el('trackFill').style.width = '100%';
+    el('finalScore').textContent = state.score;
+    el('finalTotal').textContent = state.pool.length;
+    var pct = state.pool.length ? Math.round(state.score / state.pool.length * 100) : 0;
+    el('finalPct').textContent = pct + '% correct';
+
+    var wrap = el('missedWrap'), list = el('missedList');
+    list.innerHTML = '';
+    if (state.missed.length) {
+      wrap.hidden = false;
+      state.missed.forEach(function (m) {
+        var li = document.createElement('li');
+        var n = document.createElement('span'); n.textContent = m.name;
+        var g = document.createElement('span'); g.className = 'gave';
+        g.textContent = m.timedOut ? 'no answer' : (m.gave ? '“' + m.gave + '”' : 'blank');
+        li.appendChild(n); li.appendChild(g);
+        list.appendChild(li);
+      });
+      el('btnRetryMissed').hidden = false;
+    } else {
+      wrap.hidden = true;
+      el('btnRetryMissed').hidden = true;
+    }
+    show('results');
+  }
+
+  function run(pool) {
+    state.pool = pool;
+    state.order = shuffle(pool.length);
+    state.at = 0; state.score = 0; state.missed = [];
+    show('quiz');
+    syncPlateWidth();
+    renderQuestion();
+  }
+
+  /* ---------- wiring ---------- */
+  el('answerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    grade(el('answerInput').value, false);
+  });
+  el('btnSkip').addEventListener('click', function () { grade('', false); });
+  el('btnNext').addEventListener('click', next);
+  el('btnOverride').addEventListener('click', function () {
+    // string matching can't know every acceptable synonym — let the student decide
+    var last = state.missed.pop();
+    if (last) { state.score++; el('qScore').textContent = state.score; }
+    el('btnOverride').hidden = true;
+    var v = el('verdict'); v.className = 'verdict right';
+    el('verdictBadge').textContent = 'Counted';
+    el('verdictText').textContent = 'Marked correct.';
+  });
+  el('btnRestart').addEventListener('click', function () { show('start'); });
+  el('btnRetryMissed').addEventListener('click', function () {
+    var names = {};
+    state.missed.forEach(function (m) { names[m.name] = true; });
+    run(state.pool.filter(function (s) { return names[s.name]; }));
+  });
+  el('btnBegin').addEventListener('click', function () { run(state.allowed.slice()); });
+
+  function openAtlas() {
+    window.location.href = 'atlases/midsagittal.html' + window.location.search;
+  }
+  el('atlasLink').addEventListener('click', openAtlas);
+  el('btnAtlas2').addEventListener('click', openAtlas);
+
+  /* ---------- boot ---------- */
+  fetch('data/midsagittal.json')
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      state.data = data;
+      var ex = excludedFlags();
+      state.allowed = data.structures.filter(function (s) { return !ex[s.flag]; });
+
+      el('viewName').textContent = data.label;
+      el('startTitle').textContent = data.label + ' Practicum';
+      el('startCount').textContent = state.allowed.length;
+      el('plate').src = data.image;
+      el('plate').addEventListener('load', syncPlateWidth);
+      el('btnBegin').disabled = state.allowed.length === 0;
+      if (!state.allowed.length) {
+        el('startCount').textContent = '0';
+      }
+    })
+    .catch(function (err) {
+      el('startTitle').textContent = 'Could not load the structure set';
+      el('screenStart').querySelector('p').textContent =
+        'data/midsagittal.json failed to load (' + err.message + '). ' +
+        'If you opened this file directly from disk, run a local server instead — ' +
+        'browsers block fetch() on file:// URLs.';
+      el('btnBegin').disabled = true;
+    });
+})();
+</script>
+</body>
+</html>

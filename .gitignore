@@ -20,3 +20,6 @@
 # The derived JPEGs in images/clean/ are what the atlas uses.
 # Regenerate them with: python3 scripts/prepare-plates.py
 images/clean/*.png
+
+# Local dev server logs
+*.log
