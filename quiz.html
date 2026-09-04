@@ -131,21 +131,38 @@
   .stage { position: relative; display: inline-block; max-width: 100%; }
   .stage img { display: block; max-width: 100%; max-height: 84vh; height: auto; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
 
-  /* the X marker */
+  /* The target: a dot like the atlas markers, with a slow halo that pulses
+     outward so it reads at a glance on busy cortex. One beat every 2.4 s,
+     with a rest between beats, so it is findable without being a strobe.
+     Under reduced-motion the halo is static and the dot still stands out. */
   .xmark {
     position: absolute; transform: translate(-50%,-50%); z-index: 3;
-    width: clamp(22px, calc(var(--iw,1000px) * .026), 46px);
-    height: clamp(22px, calc(var(--iw,1000px) * .026), 46px);
+    width: clamp(10px, calc(var(--iw,1000px) * .013), 18px);
+    height: clamp(10px, calc(var(--iw,1000px) * .013), 18px);
+    border-radius: 50%;
+    background: var(--marker);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px rgba(30,58,95,.35), 0 1px 3px rgba(0,0,0,.35);
     pointer-events: none;
+    animation: xmark-breathe 2.4s ease-in-out infinite;
   }
-  .xmark::before, .xmark::after {
-    content: ""; position: absolute; left: 50%; top: 0;
-    width: clamp(3px, calc(var(--iw,1000px) * .0028), 5px); height: 100%;
-    background: var(--marker); border-radius: 2px;
-    box-shadow: 0 0 0 1.5px rgba(255,255,255,.95);
+  .xmark::before {
+    content: ""; position: absolute; inset: -2px; border-radius: 50%;
+    border: 2px solid var(--marker);
+    animation: xmark-ping 2.4s ease-out infinite;
   }
-  .xmark::before { transform: translateX(-50%) rotate(45deg); }
-  .xmark::after  { transform: translateX(-50%) rotate(-45deg); }
+  @keyframes xmark-breathe {
+    0%, 100% { transform: translate(-50%,-50%) scale(1); }
+    50%      { transform: translate(-50%,-50%) scale(1.12); }
+  }
+  @keyframes xmark-ping {
+    0%        { transform: scale(1);   opacity: .7; }
+    70%, 100% { transform: scale(3.2); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .xmark, .xmark::before { animation: none; }
+    .xmark::before { transform: scale(2.2); opacity: .45; }
+  }
 
   /* reveal marker on the feedback screen */
   .revealdot {
@@ -492,7 +509,8 @@
     if (ok) state.score++;
     else state.missed.push({ name: s.name, gave: (given || '').trim(), timedOut: !!timedOut });
 
-    // reveal where it was
+    // reveal where it was: the pulsing target gives way to the reveal dot
+    el('stage').querySelectorAll('.xmark').forEach(function (n) { n.remove(); });
     var dot = document.createElement('div');
     dot.className = 'revealdot';
     dot.style.left = (s.target.x * 100) + '%';
