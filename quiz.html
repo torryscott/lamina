@@ -607,7 +607,8 @@
   el('btnBegin').addEventListener('click', function () { run(state.allowed.slice()); });
 
   function openAtlas() {
-    window.location.href = 'atlases/midsagittal.html' + window.location.search;
+    var qs = window.location.search;
+    window.location.href = 'atlas.html' + (qs ? qs + '&' : '?') + 'view=midsagittal';
   }
   el('atlasLink').addEventListener('click', openAtlas);
   el('btnAtlas2').addEventListener('click', openAtlas);

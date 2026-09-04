@@ -108,8 +108,14 @@ tools/
   link-builder.html              Instructor UI for building student links
   atlas-coord-capture.html       Authoring tool for placing atlas labels
 
+atlas.html                       Interactive atlas — ?view=midsagittal
+quiz.html                        Practicum quiz
+data/
+  midsagittal.json               Structures for one view: coordinates,
+                                 matter types, explanations, synonyms
+
 atlases/
-  midsagittal.html               Standalone atlas page (hostable on its own)
+  midsagittal.html               Redirect to atlas.html (old links)
 
 images/
   clean/                         Unlabeled plates — what the dynamic atlas needs
@@ -197,6 +203,34 @@ To add one:
 See [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) for the exact display-logic JSON if you're
 editing the QSF directly rather than clicking through the UI.
 
+### One data file per view
+
+`data/<view>.json` is the single source of truth. Both the atlas and the quiz read it, so a
+coordinate is only ever written once:
+
+```json
+{
+  "view": "midsagittal",
+  "label": "Midsagittal",
+  "image": "images/clean/midsagittal.jpg",
+  "structures": [
+    {
+      "flag":   "inc_mid_thalamus",
+      "name":   "Thalamus",
+      "matter": "Gray Matter",
+      "about":  "The thalamus is a relay for sensory and motor signals.",
+      "accept": ["dorsal thalamus"],
+      "target": { "x": 0.3617, "y": 0.5241 },
+      "label":  { "x": 0.3640, "y": 0.8002 }
+    }
+  ]
+}
+```
+
+The atlas uses `name`, `target` and `label`. The quiz additionally uses `matter`, `about` and
+`accept`, and draws its X from the same `target`. Adding a view means adding one JSON file —
+no new HTML.
+
 ### Building an atlas for a new view
 
 The atlas needs an **unlabeled** photograph. Labels are rendered as live HTML on top, which is
@@ -207,8 +241,9 @@ what makes them filterable.
    A leader line connects the two automatically.
 3. Toggle **Preview hover mode** to check how it reads for students, and watch for label collisions.
 4. Export the JSON.
-5. Drop the marker array into a copy of `atlases/midsagittal.html` and the matching
-   `qualtrics/atlas-embeds/` pair, replacing the image URL and marker data.
+5. Save the export as `data/<view>.json`, adding `matter`, `about` and any `accept`
+   synonyms per structure. Both `atlas.html?view=<view>` and the quiz pick it up —
+   no new pages to write.
 
 The exported format:
 
