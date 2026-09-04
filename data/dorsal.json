@@ -9,12 +9,12 @@
       "matter": "a Lobe",
       "about": "The most rostral lobe of the cerebrum, in front of the central sulcus. It houses the motor cortex and, at its rostral tip, the prefrontal areas involved in planning and the regulation of behavior.",
       "target": {
-        "x": 0.38,
-        "y": 0.17
+        "x": 0.83,
+        "y": 0.38
       },
       "label": {
-        "x": 0.11,
-        "y": 0.13
+        "x": 0.93,
+        "y": 0.26
       },
       "accept": []
     },
@@ -24,12 +24,12 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The rostral tip of the frontal lobe. It is small in sheep relative to primates, but serves the same broad role in planning, attention, and behavioral control.",
       "target": {
-        "x": 0.61,
-        "y": 0.145
+        "x": 0.855,
+        "y": 0.61
       },
       "label": {
-        "x": 0.88,
-        "y": 0.1
+        "x": 0.93,
+        "y": 0.76
       },
       "accept": [
         "prefrontal area"
@@ -41,12 +41,12 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The gyrus immediately rostral to the central sulcus. It is the primary motor cortex, the origin of descending motor commands to the body.",
       "target": {
-        "x": 0.41,
-        "y": 0.215
+        "x": 0.785,
+        "y": 0.41
       },
       "label": {
-        "x": 0.09,
-        "y": 0.2
+        "x": 0.84,
+        "y": 0.09
       },
       "accept": [
         "primary motor cortex",
@@ -60,12 +60,12 @@
       "matter": "a Groove",
       "about": "The transverse groove separating the frontal lobe from the parietal lobe, with motor cortex in front of it and somatosensory cortex behind. In veterinary nomenclature the sheep's equivalent is the cruciate sulcus.",
       "target": {
-        "x": 0.43,
-        "y": 0.245
+        "x": 0.755,
+        "y": 0.43
       },
       "label": {
-        "x": 0.09,
-        "y": 0.265
+        "x": 0.78,
+        "y": 0.91
       },
       "accept": [
         "central fissure",
@@ -80,12 +80,12 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The gyrus immediately caudal to the central sulcus. It is the primary somatosensory cortex, where touch, pressure, and proprioceptive information from the body is first processed.",
       "target": {
-        "x": 0.43,
-        "y": 0.275
+        "x": 0.725,
+        "y": 0.43
       },
       "label": {
-        "x": 0.09,
-        "y": 0.33
+        "x": 0.66,
+        "y": 0.09
       },
       "accept": [
         "primary somatosensory cortex",
@@ -99,12 +99,12 @@
       "matter": "a Groove",
       "about": "The deep midline groove that separates the two cerebral hemispheres. The corpus callosum lies at its floor, connecting them.",
       "target": {
-        "x": 0.505,
-        "y": 0.44
+        "x": 0.56,
+        "y": 0.505
       },
       "label": {
-        "x": 0.5,
-        "y": 0.06
+        "x": 0.48,
+        "y": 0.09
       },
       "accept": [
         "longitudinal cerebral fissure",
@@ -120,12 +120,12 @@
       "matter": "a Lobe",
       "about": "The lobe caudal to the central sulcus and rostral to the occipital lobe. It integrates somatosensory information and contributes to spatial awareness.",
       "target": {
-        "x": 0.6,
-        "y": 0.35
+        "x": 0.65,
+        "y": 0.6
       },
       "label": {
-        "x": 0.91,
-        "y": 0.34
+        "x": 0.6,
+        "y": 0.91
       },
       "accept": []
     },
@@ -135,12 +135,12 @@
       "matter": "a Lobe",
       "about": "The most caudal lobe of the cerebrum, overlying the cerebellum. It contains the primary visual cortex.",
       "target": {
-        "x": 0.33,
-        "y": 0.6
+        "x": 0.4,
+        "y": 0.33
       },
       "label": {
-        "x": 0.1,
-        "y": 0.58
+        "x": 0.3,
+        "y": 0.09
       },
       "accept": []
     },
@@ -150,12 +150,12 @@
       "matter": "Gray Matter (Not a Lobe)",
       "about": "The caudal tip of each cerebral hemisphere, where the occipital lobe ends above the cerebellum.",
       "target": {
-        "x": 0.68,
-        "y": 0.67
+        "x": 0.33,
+        "y": 0.68
       },
       "label": {
-        "x": 0.92,
-        "y": 0.62
+        "x": 0.36,
+        "y": 0.91
       },
       "accept": [
         "caudal pole"
@@ -167,12 +167,12 @@
       "matter": "Gray Matter",
       "about": "The narrow midline ridge of the cerebellum, between the two cerebellar hemispheres. It coordinates posture, balance, and movements of the trunk and limbs.",
       "target": {
-        "x": 0.5,
-        "y": 0.71
+        "x": 0.29,
+        "y": 0.5
       },
       "label": {
-        "x": 0.18,
-        "y": 0.76
+        "x": 0.11,
+        "y": 0.74
       },
       "accept": [
         "cerebellar vermis",
@@ -186,12 +186,12 @@
       "matter": "Gray Matter",
       "about": "The lateral lobes of the cerebellum, on either side of the vermis. They coordinate skilled limb movements and contribute to motor planning.",
       "target": {
-        "x": 0.63,
-        "y": 0.72
+        "x": 0.28,
+        "y": 0.63
       },
       "label": {
-        "x": 0.9,
-        "y": 0.76
+        "x": 0.19,
+        "y": 0.91
       },
       "accept": [
         "cerebellar hemispheres",
@@ -205,12 +205,12 @@
       "matter": "a Groove",
       "about": "The shallow midline groove on the dorsal surface of the medulla, continuous with the dorsal median sulcus of the spinal cord. It marks the boundary between the left and right dorsal columns.",
       "target": {
-        "x": 0.52,
-        "y": 0.85
+        "x": 0.15,
+        "y": 0.52
       },
       "label": {
-        "x": 0.79,
-        "y": 0.92
+        "x": 0.09,
+        "y": 0.28
       },
       "accept": [
         "dorsal median fissure",

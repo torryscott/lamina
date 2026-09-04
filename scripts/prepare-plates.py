@@ -41,8 +41,17 @@ PLATES = {
     # "Midsagittal.png":            "midsagittal",   # see note below
 }
 
+# Degrees clockwise to rotate a plate after trimming. The dorsal photograph
+# was taken rostral-up; the teaching atlas shows it rostral-right, so the
+# plate is rotated to match. Coordinates in data/<view>.json are in the
+# rotated frame — changing a rotation means re-placing that view's markers.
+ROTATE = {
+    "dorsal": 90,
+}
 
-def prepare(src: pathlib.Path, dst: pathlib.Path, margin: float, max_dim: int, quality: int):
+
+def prepare(src: pathlib.Path, dst: pathlib.Path, margin: float, max_dim: int, quality: int,
+            rotate: int = 0):
     im = Image.open(src).convert("RGBA")
 
     # Trim to the opaque region — the specimen
@@ -55,6 +64,11 @@ def prepare(src: pathlib.Path, dst: pathlib.Path, margin: float, max_dim: int, q
     pad = int(max(im.size) * margin)
     canvas = Image.new("RGB", (im.width + pad * 2, im.height + pad * 2), "white")
     canvas.paste(im, (pad, pad), im)          # alpha as the paste mask
+
+    # Rotate after padding so the margin stays uniform. PIL's transpose
+    # constants are counter-clockwise, hence the mapping.
+    if rotate:
+        canvas = canvas.transpose({90: Image.ROTATE_270, 180: Image.ROTATE_180, 270: Image.ROTATE_90}[rotate])
 
     # Downscale to the target long edge
     long_edge = max(canvas.size)
@@ -75,6 +89,8 @@ def main():
                     help="margin as a fraction of the long edge (default 0.16)")
     ap.add_argument("--max-dim", type=int, default=2000)
     ap.add_argument("--quality", type=int, default=88)
+    ap.add_argument("--only", nargs="*", metavar="NAME",
+                    help="regenerate only these plates (e.g. --only dorsal)")
     args = ap.parse_args()
 
     total_in = total_out = 0
@@ -85,11 +101,14 @@ def main():
 
     for filename, name in PLATES.items():
         src = SRC / filename
+        if args.only and name not in args.only:
+            continue
         if not src.exists():
             missing.append(filename)
             continue
         dst = SRC / f"{name}.jpg"
-        size, nbytes = prepare(src, dst, args.margin, args.max_dim, args.quality)
+        size, nbytes = prepare(src, dst, args.margin, args.max_dim, args.quality,
+                               rotate=ROTATE.get(name, 0))
         total_in += src.stat().st_size
         total_out += nbytes
         print(f"{name:<22} {size[0]}x{size[1]:<8} {nbytes // 1024:>6} KB")
