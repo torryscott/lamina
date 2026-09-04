@@ -6,156 +6,343 @@
 <title>Lamina — Sheep Brain Neuroanatomy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* ------------------------------------------------------------------
+     Palette: the specimen is warm tan on white, so the page is a warm
+     near-white and the one strong colour is a deep teal — the natural
+     complement to tissue. Caslon for headings (the type of the classic
+     anatomical plate), Plex for everything a student reads or clicks.
+     ------------------------------------------------------------------ */
   :root {
-    --bg-a: #f7f9fc;
-    --bg-b: #eef2f7;
-    --panel: #ffffff;
-    --ink: #1a1d29;
-    --ink-soft: #3c4050;
-    --muted: #6b7280;
-    --muted-soft: #9aa0ac;
-    --accent: #1e3a5f;
-    --accent-hover: #2a4e7a;
-    --accent-soft: #e8eef5;
-    --gold: #b48a3c;
-    --gold-soft: #f5ecdc;
-    --rule: #e3e7ee;
-    --rule-strong: #cfd5df;
-    --chip: #eef1f6;
-    --radius: 14px;
-    --shadow-sm: 0 1px 2px rgba(20,20,30,.04);
+    --ground:      #FBFAF7;
+    --surface:     #FFFFFF;
+    --ink:         #1F1C18;
+    --ink-2:       #4E4841;
+    --muted:       #857D72;
+    --muted-2:     #B0A99D;
+    --rule:        #E9E5DE;
+    --rule-2:      #D9D3C9;
+    --accent:      #2A5D5A;
+    --accent-2:    #1F4845;
+    --accent-soft: #E3EDEC;
+    --tissue:      #C08A62;
+    --notice-bg:   #F6EEDF;
+    --notice-ink:  #6B4A18;
+    --notice-rule: #E4D3AE;
+    --display: 'Libre Caslon Text', 'Iowan Old Style', Georgia, serif;
+    --sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --mono:    'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+    --shadow: 0 1px 2px rgba(31,28,24,.04), 0 6px 22px rgba(31,28,24,.05);
+    --shadow-up: 0 2px 4px rgba(31,28,24,.05), 0 14px 34px rgba(31,28,24,.09);
   }
+
   * { box-sizing: border-box; }
-  /* A class that sets `display` outranks the UA rule for [hidden]. */
   [hidden] { display: none !important; }
-  html, body { margin: 0; padding: 0; color: var(--ink); }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16.5px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
-    background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(43,77,109,.06), transparent 60%),
-      radial-gradient(900px 420px at 0% 0%, rgba(30,58,95,.06), transparent 55%),
-      linear-gradient(180deg, var(--bg-a), var(--bg-b));
-    min-height: 100vh;
   }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: var(--r-sm); }
 
-  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 64px; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
 
-  /* ---------- masthead ---------- */
-  header.top { max-width: 940px; margin: 0 auto; padding: 52px 24px 0; }
-  .brand {
-    font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 500;
-    letter-spacing: -.02em; margin: 0 0 6px;
+  /* ---------- top bar ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 22px 0 0;
   }
-  .brand span { color: var(--gold); }
-  .tagline { margin: 0; color: var(--ink-soft); font-size: 1.05rem; max-width: 54ch; }
-  .gloss {
-    margin: 14px 0 0; padding-left: 14px; border-left: 2px solid var(--rule-strong);
-    color: var(--muted); font-size: .92rem; max-width: 52ch;
+  .wordmark {
+    font-family: var(--display); font-size: 1.28rem; letter-spacing: -.01em;
+    color: var(--ink); text-decoration: none;
   }
-  .gloss em { font-style: italic; color: var(--ink-soft); }
+  .wordmark i { font-style: normal; color: var(--tissue); }
+  .topbar nav { display: flex; gap: 22px; align-items: center; }
+  .topbar nav a {
+    font-size: .92rem; color: var(--ink-2); text-decoration: none; padding: 6px 0;
+    border-bottom: 1px solid transparent;
+  }
+  .topbar nav a:hover { color: var(--ink); border-bottom-color: var(--rule-2); }
 
-  /* ---------- instructor-filter notice ---------- */
-  .filtered {
-    margin: 26px 0 0; padding: 13px 18px; border-radius: 10px;
-    background: var(--gold-soft); border: 1px solid #e8d5ae;
-    color: #6e4a15; font-size: .93rem;
-    display: flex; gap: 11px; align-items: flex-start;
+  /* ---------- instructor notice ---------- */
+  .notice {
+    margin: 22px 0 0; padding: 12px 16px; border-radius: var(--r-md);
+    background: var(--notice-bg); border: 1px solid var(--notice-rule); color: var(--notice-ink);
+    font-size: .93rem; display: flex; gap: 12px; align-items: flex-start;
   }
-  .filtered::before { content: "◑"; font-size: 1rem; line-height: 1.3; }
-  .filtered b { font-weight: 600; }
+  .notice svg { flex: none; width: 18px; height: 18px; margin-top: 3px; }
+  .notice b { font-weight: 600; }
 
-  /* ---------- groups ---------- */
-  .group { margin-top: 44px; }
-  .group > h2 {
-    font-size: .74rem; text-transform: uppercase; letter-spacing: .12em;
-    color: var(--muted); font-weight: 600; margin: 0 0 4px;
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr);
+    gap: 48px; align-items: center;
+    padding: 56px 0 40px;
   }
-  .group > p {
-    margin: 0 0 16px; color: var(--muted); font-size: .92rem; max-width: 60ch;
+  .eyebrow {
+    font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500; margin: 0 0 14px;
   }
+  .hero h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(2.6rem, 2.6vw + 1.3rem, 3.8rem); line-height: 1.02; letter-spacing: -.02em;
+    margin: 0 0 18px; text-wrap: balance;
+  }
+  .hero h1 i { font-style: normal; color: var(--tissue); }
+  .hero .lede {
+    font-size: 1.12rem; color: var(--ink-2); margin: 0 0 26px; max-width: 34ch;
+    text-wrap: pretty;
+  }
+  .cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--sans); font-size: .96rem; font-weight: 500;
+    padding: 12px 20px; border-radius: var(--r-md); text-decoration: none;
+    border: 1px solid var(--rule-2); background: var(--surface); color: var(--ink);
+    transition: background .15s, border-color .15s, color .15s, transform .15s;
+  }
+  .btn:hover { border-color: var(--muted-2); background: #fff; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .hero-plate { position: relative; }
+  .plate {
+    position: relative; width: 100%; aspect-ratio: 4 / 3;
+  }
+  .plate img {
+    display: block; width: 100%; height: 100%; object-fit: contain;
+    /* The plate is a specimen on pure white. Multiply lets the white fall
+       away so the brain sits directly on the page instead of in a box. */
+    mix-blend-mode: multiply;
+    user-select: none; -webkit-user-drag: none;
+  }
+  .plate svg.leaders {
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  }
+  .plate .dot {
+    position: absolute; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent); border: 2px solid #fff;
+    box-shadow: 0 0 0 3px rgba(42,93,90,.22);
+    transform: translate(-50%, -50%);
+  }
+  .plate .pill {
+    position: absolute; transform: translate(-50%, -50%);
+    background: var(--accent); color: #fff;
+    font-family: var(--sans); font-size: .78rem; font-weight: 600; letter-spacing: .01em;
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(31,28,24,.16);
+  }
+  .plate-caption {
+    margin: 10px 4px 0; font-size: .82rem; color: var(--muted);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .plate-caption code { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+
+  /* ---------- choose a view ---------- */
+  .choose { padding: 28px 0 0; }
+  .choose-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    border-top: 1px solid var(--rule); padding-top: 30px; margin-bottom: 8px;
+  }
+  .choose-head h2 {
+    font-family: var(--display); font-weight: 400; font-size: 1.85rem; letter-spacing: -.012em; margin: 0;
+  }
+  .progress {
+    font-family: var(--mono); font-size: .78rem; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .progress .bar { width: 96px; height: 4px; background: var(--rule); border-radius: 2px; overflow: hidden; }
+  .progress .bar i { display: block; height: 100%; background: var(--accent); width: 0; }
+  .choose > p.sub { margin: 0 0 6px; color: var(--ink-2); max-width: 60ch; }
+
+  .group { margin-top: 30px; }
+  .group-head { display: flex; align-items: baseline; gap: 14px; margin: 0 0 14px; }
+  .group-head h3 {
+    font-family: var(--mono); font-size: .74rem; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; margin: 0;
+  }
+  .group-head span { font-size: .9rem; color: var(--muted); }
 
   .cards {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); gap: 12px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;
   }
   .card {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius);
-    padding: 16px 17px 14px; box-shadow: var(--shadow-sm);
-    display: flex; flex-direction: column; gap: 3px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg);
+    box-shadow: var(--shadow); overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
   }
-  .card h3 {
-    font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.22rem;
-    margin: 0; letter-spacing: -.01em;
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-up); border-color: var(--rule-2); }
+  .card .thumb {
+    aspect-ratio: 4 / 3; background: var(--surface); padding: 10px;
+    border-bottom: 1px solid var(--rule); overflow: hidden;
   }
-  .card .meta {
-    font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums;
-    min-height: 1.3em;
+  .card .thumb img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+    mix-blend-mode: multiply; transition: transform .3s ease;
   }
-  .card .meta b { color: var(--ink); font-weight: 600; }
-  .card .acts { display: flex; gap: 8px; margin-top: 11px; }
-  .card a.act {
-    flex: 1; text-align: center; text-decoration: none;
-    font-size: .89rem; font-weight: 500; padding: 8px 10px; border-radius: 7px;
-    border: 1px solid var(--rule-strong); color: var(--ink); background: var(--panel);
-    transition: background .15s, border-color .15s, color .15s;
+  .card:hover .thumb img { transform: scale(1.025); }
+  .card .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .card .row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .card h4 {
+    font-family: var(--display); font-weight: 400; font-size: 1.28rem; letter-spacing: -.01em; margin: 0;
   }
-  .card a.act:hover { background: var(--chip); border-color: var(--muted-soft); }
-  .card a.act.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .card a.act.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-  .card a.act:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .card .count { font-family: var(--mono); font-size: .8rem; color: var(--muted); white-space: nowrap; }
+  .card .count b { color: var(--ink); font-weight: 500; }
+  .card .acts { display: flex; gap: 8px; }
+  .card .acts a {
+    flex: 1; text-align: center; text-decoration: none; font-size: .9rem; font-weight: 500;
+    padding: 9px 10px; border-radius: var(--r-sm);
+    border: 1px solid var(--rule-2); background: var(--surface); color: var(--ink);
+    transition: background .15s, border-color .15s;
+  }
+  .card .acts a:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-2); }
+  .card .acts a.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .card .acts a.primary:hover { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
 
-  .card.pending { background: #fbfcfd; border-style: dashed; }
-  .card.pending h3 { color: var(--muted); }
-  .card.pending .meta { color: var(--muted-soft); font-style: italic; }
+  .pending {
+    margin: 14px 0 0; padding: 12px 16px; border: 1px dashed var(--rule-2); border-radius: var(--r-md);
+    font-size: .9rem; color: var(--muted); display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
+  }
+  .pending b { color: var(--ink-2); font-weight: 500; }
+  .pending .list { color: var(--muted); }
 
   /* ---------- footer ---------- */
   footer {
-    max-width: 940px; margin: 0 auto; padding: 44px 24px 34px;
-    border-top: 1px solid var(--rule); margin-top: 48px;
-    color: var(--muted); font-size: .87rem;
+    margin-top: 72px; border-top: 1px solid var(--rule); padding: 36px 0 44px;
+    color: var(--ink-2); font-size: .92rem;
   }
-  footer p { margin: 0 0 7px; max-width: 62ch; }
-  footer a { color: var(--accent); }
-  footer .fine { color: var(--muted-soft); font-size: .82rem; margin-top: 12px; }
+  footer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+  footer h5 {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; margin: 0 0 8px;
+  }
+  footer p { margin: 0 0 6px; max-width: 46ch; text-wrap: pretty; }
+  footer .etym { font-family: var(--display); font-style: italic; color: var(--ink-2); }
+  footer .fine { margin-top: 26px; font-size: .82rem; color: var(--muted); }
 
-  .sr-only {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-  }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-  @media (max-width: 600px) {
-    header.top { padding: 34px 18px 0; }
-    .wrap { padding: 0 18px 44px; }
-    .brand { font-size: 2rem; }
-    footer { padding: 34px 18px 28px; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 26px; padding: 36px 0 24px; }
+    .hero .lede { max-width: none; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 560px) {
+    .container { padding: 0 18px; }
+    .topbar nav { gap: 14px; }
+    .card .thumb { padding: 6px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <h1 class="brand">Lamina<span>.</span></h1>
-  <p class="tagline">Sheep brain neuroanatomy — an interactive atlas and a practicum quiz,
-     across twelve views of a dissected specimen.</p>
-  <p class="gloss"><em>lamina</em> — Latin, a plate or layer. Both the laminae of the cortex
-     and the plate of an anatomical atlas.</p>
-</header>
+<div class="container">
 
-<div class="wrap">
-  <div class="filtered" id="filterNotice" hidden></div>
-  <div id="groups"></div>
+  <header class="topbar">
+    <a class="wordmark" href="index.html">Lamina<i>.</i></a>
+    <nav aria-label="Site">
+      <a href="#views">Views</a>
+      <a href="tools/link-builder.html">For instructors</a>
+      <a href="https://github.com/torryscott/lamina">Source</a>
+    </nav>
+  </header>
+
+  <div class="notice" id="filterNotice" hidden>
+    <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 2a8 8 0 0 1 0 16Z" fill="currentColor"/></svg>
+    <span id="filterText"></span>
+  </div>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Sheep brain neuroanatomy</p>
+      <h1>Learn the brain by finding your way around it<i>.</i></h1>
+      <p class="lede">An interactive atlas of a dissected sheep brain, and a quiz that
+         tests you on the same structures — from twelve views.</p>
+      <div class="cta">
+        <a class="btn primary" id="ctaAtlas" href="atlas.html?view=midsagittal">
+          Open the atlas
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a class="btn" id="ctaQuiz" href="quiz.html?view=midsagittal">Take the quiz</a>
+      </div>
+    </div>
+
+    <figure class="hero-plate" aria-labelledby="plateCap">
+      <div class="plate">
+        <img src="images/clean/midsagittal.jpg"
+             alt="Midsagittal section of a preserved sheep brain with four labelled structures.">
+        <svg class="leaders" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <line x1="22.41" y1="46.20" x2="6.84"  y2="71.18" stroke="#2A5D5A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="36.17" y1="52.41" x2="36.40" y2="80.02" stroke="#2A5D5A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="54.85" y1="43.75" x2="70.72" y2="5.43"  stroke="#2A5D5A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="91.02" y1="46.13" x2="94.34" y2="35.17" stroke="#2A5D5A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <span class="dot" style="left:22.41%;top:46.20%" aria-hidden="true"></span>
+        <span class="dot" style="left:36.17%;top:52.41%" aria-hidden="true"></span>
+        <span class="dot" style="left:54.85%;top:43.75%" aria-hidden="true"></span>
+        <span class="dot" style="left:91.02%;top:46.13%" aria-hidden="true"></span>
+        <span class="pill" style="left:6.84%;top:71.18%"  aria-hidden="true">Corpus Callosum</span>
+        <span class="pill" style="left:36.40%;top:80.02%" aria-hidden="true">Thalamus</span>
+        <span class="pill" style="left:70.72%;top:5.43%"  aria-hidden="true">Superior Colliculus</span>
+        <span class="pill" style="left:94.34%;top:35.17%" aria-hidden="true">Cerebellum</span>
+      </div>
+      <figcaption class="plate-caption" id="plateCap">
+        <span>Midsagittal view · four of <b id="heroTotal">25</b> structures shown</span>
+        <code>midsagittal.jpg</code>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="choose" id="views">
+    <div class="choose-head">
+      <h2>Choose a view</h2>
+      <span class="progress" aria-label="Views mapped so far">
+        <span id="progText">— of 12 mapped</span>
+        <span class="bar"><i id="progBar"></i></span>
+      </span>
+    </div>
+    <p class="sub">Each view has its own atlas and quiz. Surface views show the intact brain;
+       sectioned views show cut surfaces.</p>
+    <div id="groups"></div>
+  </section>
+
+  <footer>
+    <div class="cols">
+      <div>
+        <h5>For instructors</h5>
+        <p>The <a href="tools/link-builder.html">link builder</a> makes a student link that
+           covers exactly the structures you assign. Every page here honours it.</p>
+      </div>
+      <div>
+        <h5>The name</h5>
+        <p><span class="etym">lamina</span> — Latin, a plate or a layer. The laminae of the
+           cortex, and the plate of an anatomical atlas.</p>
+      </div>
+      <div>
+        <h5>Open source</h5>
+        <p>Code under MIT. Specimen photographs CC BY 4.0.
+           <a href="https://github.com/torryscott/lamina">github.com/torryscott/lamina</a></p>
+      </div>
+    </div>
+    <p class="fine">St. Mary's College of Maryland · Neurobiology lab practicum</p>
+  </footer>
+
 </div>
-
-<footer>
-  <p><b>Instructors:</b> the <a href="tools/link-builder.html">link builder</a> generates a
-     student link covering exactly the structures you want. Everything here respects it.</p>
-  <p class="fine">Open source — code MIT, specimen photographs CC BY 4.0.
-     <a href="https://github.com/torryscott/lamina">github.com/torryscott/lamina</a></p>
-</footer>
 
 <p class="sr-only" role="status" aria-live="polite" id="srStatus"></p>
 
@@ -163,23 +350,17 @@
 (function () {
   'use strict';
 
-  /* Every view the module covers. A view appears as soon as its data file
-     exists, so adding one means adding data/<id>.json and nothing else. */
+  /* A view is live as soon as data/<id>.json exists. Nothing else to edit. */
   var GROUPS = [
-    {
-      title: 'Surface views',
-      blurb: 'The intact brain from the outside, plus one dissection with the cerebellum drawn back.',
+    { title: 'Surface views', blurb: 'the intact brain from the outside',
       views: [
         { id: 'dorsal',              label: 'Dorsal' },
         { id: 'lateral',             label: 'Lateral' },
         { id: 'ventral',             label: 'Ventral' },
         { id: 'posterior-internal',  label: 'Posterior' },
         { id: 'pulled-back-lateral', label: 'Lateral, retracted' }
-      ]
-    },
-    {
-      title: 'Sectioned views',
-      blurb: 'Cut surfaces. The coronal series runs rostral to caudal.',
+      ] },
+    { title: 'Sectioned views', blurb: 'cut surfaces; coronal runs rostral to caudal',
       views: [
         { id: 'midsagittal', label: 'Midsagittal' },
         { id: 'coronal-a',   label: 'Coronal A' },
@@ -188,72 +369,68 @@
         { id: 'coronal-d',   label: 'Coronal D' },
         { id: 'coronal-e',   label: 'Coronal E' },
         { id: 'coronal-f',   label: 'Coronal F' }
-      ]
-    }
+      ] }
   ];
 
   var search = new URLSearchParams(window.location.search);
-
-  /* Which structures has the instructor switched off? */
   var excluded = {};
-  search.forEach(function (v, k) {
-    if (k.indexOf('inc_') === 0 && v === '0') excluded[k] = true;
-  });
+  search.forEach(function (v, k) { if (k.indexOf('inc_') === 0 && v === '0') excluded[k] = true; });
   var excludedCount = Object.keys(excluded).length;
 
-  function linkFor(page, viewId) {
+  function linkFor(page, id) {
     var p = new URLSearchParams(window.location.search);
-    p.set('view', viewId);
+    p.set('view', id);
     return page + '?' + p.toString();
   }
 
+  /* Hero CTAs carry the instructor's flags too. */
+  document.getElementById('ctaAtlas').href = linkFor('atlas.html', 'midsagittal');
+  document.getElementById('ctaQuiz').href  = linkFor('quiz.html',  'midsagittal');
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
   function card(view, data) {
-    var el = document.createElement('div');
-    el.className = 'card' + (data ? '' : ' pending');
+    var c = el('article', 'card');
 
-    var h = document.createElement('h3');
-    h.textContent = view.label;
-    el.appendChild(h);
+    var thumb = el('div', 'thumb');
+    var img = document.createElement('img');
+    img.src = data.image;
+    img.alt = '';
+    img.loading = 'lazy';
+    thumb.appendChild(img);
+    c.appendChild(thumb);
 
-    var meta = document.createElement('p');
-    meta.className = 'meta';
-    el.appendChild(meta);
-
-    if (!data) {
-      meta.textContent = 'Not yet available';
-      return el;
-    }
+    var body = el('div', 'body');
+    var row = el('div', 'row');
+    row.appendChild(el('h4', null, view.label));
 
     var total = data.structures.length;
     var shown = data.structures.filter(function (s) { return !excluded[s.flag]; }).length;
-    meta.innerHTML = shown === total
+    var count = el('span', 'count');
+    count.innerHTML = shown === total
       ? '<b>' + total + '</b> structures'
-      : '<b>' + shown + '</b> of ' + total + ' structures';
+      : '<b>' + shown + '</b> of ' + total;
+    row.appendChild(count);
+    body.appendChild(row);
 
-    var acts = document.createElement('div');
-    acts.className = 'acts';
-
-    var a1 = document.createElement('a');
-    a1.className = 'act';
+    var acts = el('div', 'acts');
+    var a1 = el('a', null, 'Atlas');
     a1.href = linkFor('atlas.html', view.id);
-    a1.textContent = 'Atlas';
     a1.setAttribute('aria-label', 'Open the ' + view.label + ' atlas');
-
-    var a2 = document.createElement('a');
-    a2.className = 'act primary';
+    var a2 = el('a', 'primary', 'Quiz');
     a2.href = linkFor('quiz.html', view.id);
-    a2.textContent = 'Practicum';
-    a2.setAttribute('aria-label', 'Start the ' + view.label + ' practicum');
-
-    acts.appendChild(a1);
-    acts.appendChild(a2);
-    el.appendChild(acts);
-    return el;
+    a2.setAttribute('aria-label', 'Start the ' + view.label + ' quiz');
+    acts.appendChild(a1); acts.appendChild(a2);
+    body.appendChild(acts);
+    c.appendChild(body);
+    return c;
   }
 
-  /* A view is live once its data file loads. Views not yet built 404 here —
-     that is expected, and the noise disappears as each data file lands. The
-     alternative, a manifest, is one more file to forget to update. */
   function loadView(v) {
     return fetch('data/' + v.id + '.json')
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -269,34 +446,43 @@
 
     var host = document.getElementById('groups');
     GROUPS.forEach(function (g) {
-      var sec = document.createElement('section');
-      sec.className = 'group';
+      var sec = el('section', 'group');
+      var head = el('div', 'group-head');
+      head.appendChild(el('h3', null, g.title));
+      head.appendChild(el('span', null, g.blurb));
+      sec.appendChild(head);
 
-      var h2 = document.createElement('h2');
-      h2.textContent = g.title;
-      sec.appendChild(h2);
+      var live = g.views.filter(function (v) { return byId[v.id]; });
+      var pend = g.views.filter(function (v) { return !byId[v.id]; });
 
-      var blurb = document.createElement('p');
-      blurb.textContent = g.blurb;
-      sec.appendChild(blurb);
-
-      var cards = document.createElement('div');
-      cards.className = 'cards';
-      g.views.forEach(function (v) { cards.appendChild(card(v, byId[v.id])); });
-      sec.appendChild(cards);
+      if (live.length) {
+        var grid = el('div', 'cards');
+        live.forEach(function (v) { grid.appendChild(card(v, byId[v.id])); });
+        sec.appendChild(grid);
+      }
+      if (pend.length) {
+        var p = el('div', 'pending');
+        p.appendChild(el('b', null, live.length ? 'Coming' : 'In progress'));
+        p.appendChild(el('span', 'list', pend.map(function (v) { return v.label; }).join(' · ')));
+        sec.appendChild(p);
+      }
       host.appendChild(sec);
     });
 
     var ready = loaded.filter(Boolean).length;
-    document.getElementById('srStatus').textContent =
-      ready + ' of ' + all.length + ' views available.';
+    document.getElementById('progText').textContent = ready + ' of ' + all.length + ' mapped';
+    document.getElementById('progBar').style.width = (ready / all.length * 100) + '%';
+    document.getElementById('srStatus').textContent = ready + ' of ' + all.length + ' views available.';
+
+    var mid = byId.midsagittal;
+    if (mid) document.getElementById('heroTotal').textContent = mid.structures.length;
 
     if (excludedCount) {
-      var n = document.getElementById('filterNotice');
-      n.innerHTML = '<span><b>This link is customized.</b> Your instructor has narrowed the set — '
+      document.getElementById('filterText').innerHTML =
+        '<b>This link is customised.</b> Your instructor has narrowed the set — '
         + excludedCount + ' structure' + (excludedCount === 1 ? '' : 's')
-        + ' excluded. Counts below reflect what you will actually be shown.</span>';
-      n.hidden = false;
+        + ' excluded. Counts below reflect what you will actually see.';
+      document.getElementById('filterNotice').hidden = false;
     }
   });
 })();
