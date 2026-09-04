@@ -1,0 +1,61 @@
+{
+  "view": "coronal-f",
+  "label": "Coronal F",
+  "image": "images/clean/coronal-f.jpg",
+  "structures": [
+    {
+      "flag": "inc_cor_superior_colliculus",
+      "name": "Superior Colliculus",
+      "matter": "Gray Matter",
+      "about": "The rostral pair of swellings on the roof of the midbrain, involved in visual reflexes and orienting.",
+      "accept": [
+        "superior colliculi",
+        "rostral colliculus",
+        "optic tectum"
+      ],
+      "target": {
+        "x": 0.4,
+        "y": 0.4765
+      },
+      "label": {
+        "x": 0.22,
+        "y": 0.06
+      }
+    },
+    {
+      "flag": "inc_cor_coronal_cerebral_aqueduct",
+      "name": "Cerebral Aqueduct",
+      "matter": "a Cavity",
+      "about": "The narrow channel through the midbrain connecting the third and fourth ventricles.",
+      "accept": [
+        "aqueduct",
+        "aqueduct of sylvius"
+      ],
+      "target": {
+        "x": 0.4766,
+        "y": 0.6409
+      },
+      "label": {
+        "x": 0.8,
+        "y": 0.94
+      }
+    },
+    {
+      "flag": "inc_cor_tegmentum",
+      "name": "Tegmentum",
+      "matter": "Gray Matter",
+      "about": "The core of the midbrain beneath the colliculi, carrying cranial nerve nuclei and ascending and descending tracts.",
+      "accept": [
+        "midbrain tegmentum"
+      ],
+      "target": {
+        "x": 0.4563,
+        "y": 0.7476
+      },
+      "label": {
+        "x": 0.22,
+        "y": 0.94
+      }
+    }
+  ]
+}

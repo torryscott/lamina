@@ -28,15 +28,15 @@ SRC = ROOT / "images" / "clean"
 # Regenerating it here would reframe the specimen and misalign every label.
 # Re-enable only if you also re-place the markers in the capture tool.
 PLATES = {
-    # The master filenames run one ahead of the teaching-atlas letters: the
-    # photograph named "Coronal C" is the slice printed "Coronal B", and so on.
-    # "Coronal B.png" is a slice the teaching atlas never labels, and the atlas's
-    # own plate F (midbrain with cerebellum) has no photograph, so neither is built.
+    # Coronal A-E come from PNG masters named to match the printed plates.
+    # Coronal F has no master: it is recovered from the atlas PDF by
+    # scripts/extract-coronal-f.py, which writes images/clean/coronal-f.jpg
+    # directly. Running this script does not touch that plate.
     "Coronal A.png":                "coronal-a",
-    "Coronal C.png":                "coronal-b",
-    "Coronal D.png":                "coronal-c",
-    "Coronal E.png":                "coronal-d",
-    "Coronal F.png":                "coronal-e",
+    "Coronal B.png":                "coronal-b",
+    "Coronal C.png":                "coronal-c",
+    "Coronal D.png":                "coronal-d",
+    "Coronal E.png":                "coronal-e",
     "Gross Dorsal View.png":        "dorsal",
     "Gross Lateral View.png":       "lateral",
     "Gross Posterior Internal.png": "posterior-internal",
