@@ -13,8 +13,8 @@
         "y": 0.4555
       },
       "label": {
-        "x": 0.4406,
-        "y": 0.0663
+        "x": 0.4174,
+        "y": 0.0462
       },
       "accept": [
         "habenular nucleus",
@@ -48,8 +48,8 @@
         "y": 0.462
       },
       "label": {
-        "x": 0.0684,
-        "y": 0.7118
+        "x": 0.0771,
+        "y": 0.6715
       },
       "accept": [
         "callosum"
@@ -61,8 +61,8 @@
       "matter": "White Matter",
       "about": "The arbor vitae is the white matter of the cerebellum. It has a tree-like appearance from a midsagittal view.",
       "target": {
-        "x": 0.8018,
-        "y": 0.488
+        "x": 0.7916,
+        "y": 0.5077
       },
       "label": {
         "x": 0.9047,
@@ -83,8 +83,8 @@
         "y": 0.5515
       },
       "label": {
-        "x": 0.8384,
-        "y": 0.2118
+        "x": 0.8628,
+        "y": 0.1986
       },
       "accept": [
         "aqueduct of sylvius",
@@ -117,8 +117,8 @@
         "y": 0.3794
       },
       "label": {
-        "x": 0.299,
-        "y": 0.0516
+        "x": 0.2423,
+        "y": 0.0401
       },
       "accept": [
         "gyrus cinguli"
@@ -134,8 +134,8 @@
         "y": 0.6136
       },
       "label": {
-        "x": 0.4275,
-        "y": 0.8564
+        "x": 0.4448,
+        "y": 0.8909
       }
     },
     {
@@ -148,8 +148,8 @@
         "y": 0.6699
       },
       "label": {
-        "x": 0.2431,
-        "y": 0.8379
+        "x": 0.2528,
+        "y": 0.8221
       },
       "accept": [
         "optic chiasma",
@@ -203,8 +203,8 @@
         "y": 0.5053
       },
       "label": {
-        "x": 0.7811,
-        "y": 0.1252
+        "x": 0.7897,
+        "y": 0.1289
       },
       "accept": [
         "caudal colliculus"
@@ -220,8 +220,8 @@
         "y": 0.418
       },
       "label": {
-        "x": 0.3619,
-        "y": 0.1096
+        "x": 0.3436,
+        "y": 0.0941
       }
     },
     {
@@ -234,8 +234,8 @@
         "y": 0.5093
       },
       "label": {
-        "x": 0.1008,
-        "y": 0.8094
+        "x": 0.0816,
+        "y": 0.7768
       },
       "accept": [
         "septum lucidum",
@@ -252,8 +252,8 @@
         "y": 0.4923
       },
       "label": {
-        "x": 0.558,
-        "y": 0.0691
+        "x": 0.5428,
+        "y": 0.0479
       },
       "accept": [
         "caudal commissure",
@@ -270,8 +270,8 @@
         "y": 0.5638
       },
       "label": {
-        "x": 0.134,
-        "y": 0.8996
+        "x": 0.1202,
+        "y": 0.8805
       },
       "accept": [
         "rostral commissure"
@@ -287,8 +287,8 @@
         "y": 0.2781
       },
       "label": {
-        "x": 0.1291,
-        "y": 0.0645
+        "x": 0.0594,
+        "y": 0.0435
       },
       "accept": [
         "central fissure",
@@ -306,8 +306,8 @@
         "y": 0.2947
       },
       "label": {
-        "x": 0.067,
-        "y": 0.1851
+        "x": 0.0601,
+        "y": 0.2508
       },
       "accept": [
         "primary motor cortex",
@@ -325,8 +325,8 @@
         "y": 0.244
       },
       "label": {
-        "x": 0.2079,
-        "y": 0.1197
+        "x": 0.1594,
+        "y": 0.1228
       },
       "accept": [
         "primary somatosensory cortex",
@@ -344,8 +344,8 @@
         "y": 0.6786
       },
       "label": {
-        "x": 0.4765,
-        "y": 0.7578
+        "x": 0.5062,
+        "y": 0.7751
       },
       "accept": [
         "mamillary bodies",
@@ -362,8 +362,8 @@
         "y": 0.7192
       },
       "label": {
-        "x": 0.6084,
-        "y": 0.8214
+        "x": 0.7204,
+        "y": 0.8691
       },
       "accept": [
         "pons varolii"
@@ -379,8 +379,8 @@
         "y": 0.6492
       },
       "label": {
-        "x": 0.8294,
-        "y": 0.8444
+        "x": 0.9295,
+        "y": 0.8021
       }
     },
     {
@@ -389,8 +389,8 @@
       "matter": "White Matter",
       "about": "The cerebellum is a hindbrain structure that coordinates voluntary movement, balance, and motor learning.",
       "target": {
-        "x": 0.9102,
-        "y": 0.4613
+        "x": 0.9046,
+        "y": 0.5417
       },
       "label": {
         "x": 0.9434,
@@ -407,8 +407,8 @@
         "y": 0.6133
       },
       "label": {
-        "x": 0.5704,
-        "y": 0.8831
+        "x": 0.597,
+        "y": 0.8552
       },
       "accept": [
         "midbrain tegmentum",
@@ -425,8 +425,8 @@
         "y": 0.7413
       },
       "label": {
-        "x": 0.6913,
-        "y": 0.8453
+        "x": 0.825,
+        "y": 0.8509
       },
       "accept": [
         "medulla oblongata"
