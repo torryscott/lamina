@@ -276,6 +276,32 @@
     padding: 6px 12px; border-radius: 999px; pointer-events: none;
   }
   @media (hover: hover) and (pointer: fine) { .zoom-hint { display: none; } }
+
+  /* ---------- quiz mode chooser ---------- */
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 540px; margin: 14px auto 18px; text-align: left; }
+  .mode {
+    font: inherit; text-align: left; padding: 12px 14px; border-radius: 12px; cursor: pointer;
+    border: 1.5px solid var(--rule-strong); background: var(--panel); color: var(--ink);
+  }
+  .mode strong { display: block; font-size: 1rem; margin-bottom: 2px; }
+  .mode span { display: block; font-size: .85rem; color: var(--muted); line-height: 1.35; }
+  .mode.active { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .mode:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 480px) { .modes { grid-template-columns: 1fr; } }
+
+  /* ---------- find it: tap targets, tap mark ---------- */
+  #plate.findable { cursor: crosshair; }
+  .hotspot {
+    position: absolute; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%;
+    border: 0; padding: 0; background: transparent; opacity: 0; cursor: crosshair; z-index: 3;
+  }
+  .hotspot:focus-visible { opacity: 1; outline: 3px solid var(--accent); outline-offset: 2px; background: rgba(255,255,255,.55); }
+  .tapmark {
+    position: absolute; transform: translate(-50%, -50%); width: 22px; height: 22px; border-radius: 50%;
+    border: 3px solid; z-index: 3; pointer-events: none; box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+  }
+  .tapmark.right { border-color: var(--right); }
+  .tapmark.wrong { border-color: var(--wrong); }
 </style>
 <script src="codes.js"></script>
 </head>
@@ -294,8 +320,15 @@
   <!-- ============ START ============ -->
   <section class="card start" id="screenStart">
     <h1 id="startTitle">Midsagittal Practicum</h1>
-    <p>You'll be shown a structure marked with an <strong>X</strong>. Type its name.
-       Order is randomized each time.</p>
+    <p id="startBlurb">Choose how you want to be tested. Order is randomized each time.</p>
+    <div class="modes" role="radiogroup" aria-label="Quiz mode">
+      <button type="button" class="mode active" data-mode="name" role="radio" aria-checked="true">
+        <strong>Name it</strong><span>An X marks a structure. You type its name.</span>
+      </button>
+      <button type="button" class="mode" data-mode="find" role="radio" aria-checked="false">
+        <strong>Find it</strong><span>You are given a name. You tap where it is.</span>
+      </button>
+    </div>
     <div class="count"><strong id="startCount">0</strong> structures in this set</div>
     <div class="actions">
       <button class="primary" id="btnBegin" type="button">Begin</button>
@@ -322,8 +355,10 @@
 
     <!-- asking -->
     <div class="card answer" id="panelAsk">
-      <p class="prompt">Identify the structure marked by the <strong>X</strong>.</p>
+      <p class="prompt" id="promptName">Identify the structure marked by the <strong>X</strong>.</p>
+      <p class="prompt" id="promptFind" hidden>Find the <strong id="findName"></strong>.</p>
       <p class="matter">This is <b id="matterHint">—</b></p>
+      <p class="matter" id="findHelp" hidden>Tap its location on the image. Enlarge gives a closer look.</p>
       <form class="answer-row" id="answerForm" autocomplete="off">
         <input type="text" id="answerInput" placeholder="Structure name"
                aria-label="Structure name" autocapitalize="off" autocorrect="off" spellcheck="false">
@@ -496,7 +531,7 @@
     state.tick = setInterval(function () {
       state.remaining--;
       paintTimer();
-      if (state.remaining <= 0) { stopTimer(); grade(el('answerInput').value, true); }
+      if (state.remaining <= 0) { stopTimer(); timeUp(); }
     }, 1000);
   }
   function paintTimer() {
@@ -510,21 +545,39 @@
   /* ---------- question rendering ---------- */
   function clearOverlays() {
     var stage = el('stage');
-    stage.querySelectorAll('.xmark,.revealdot,.revealpill,.revealline').forEach(function (n) { n.remove(); });
+    stage.querySelectorAll('.xmark,.revealdot,.revealpill,.revealline,.hotspot,.tapmark').forEach(function (n) { n.remove(); });
   }
 
   function current() { return state.pool[state.order[state.at]]; }
 
   function renderQuestion() {
     var s = current();
+    var find = state.mode === 'find';
     state.answered = false;
     clearOverlays();
 
-    var x = document.createElement('div');
-    x.className = 'xmark';
-    x.style.left = (s.target.x * 100) + '%';
-    x.style.top  = (s.target.y * 100) + '%';
-    el('stage').appendChild(x);
+    if (!find) {
+      var x = document.createElement('div');
+      x.className = 'xmark';
+      x.style.left = (s.target.x * 100) + '%';
+      x.style.top  = (s.target.y * 100) + '%';
+      el('stage').appendChild(x);
+    } else {
+      // Keyboard access to the plate: one invisible button per candidate
+      // structure, in a shuffled order and named only by position, so the
+      // list gives nothing away. Enter on one is a tap at that spot.
+      var order = shuffle(state.allowed.length);
+      order.forEach(function (i, k) {
+        var c = state.allowed[i];
+        var h = document.createElement('button');
+        h.type = 'button'; h.className = 'hotspot';
+        h.setAttribute('aria-label', 'Location ' + (k + 1) + ' of ' + order.length);
+        h.style.left = (c.target.x * 100) + '%';
+        h.style.top  = (c.target.y * 100) + '%';
+        h.addEventListener('click', function (e) { e.stopPropagation(); gradeFind(c.target.x, c.target.y, false); });
+        el('stage').appendChild(h);
+      });
+    }
 
     el('qNum').textContent   = state.at + 1;
     el('qTotal').textContent = state.pool.length;
@@ -532,31 +585,29 @@
     el('trackFill').style.width = ((state.at) / state.pool.length * 100) + '%';
     el('matterHint').textContent = s.matter || 'part of the specimen';
 
+    el('promptName').hidden = find;
+    el('promptFind').hidden = !find;
+    el('findHelp').hidden = !find;
+    el('findName').textContent = s.name;
+    el('answerInput').hidden = find;
+    el('btnSubmit').hidden = find;
+    el('plate').classList.toggle('findable', find);
+
     el('panelAsk').hidden = false;
     el('panelFeedback').hidden = true;
     el('answerInput').value = '';
     el('answerInput').disabled = false;
     el('btnSubmit').disabled = false;
-    el('answerInput').focus();
+    if (!find) el('answerInput').focus();
 
     el('plate').alt = 'Sheep brain ' + state.data.label.toLowerCase()
-      + ' section with one structure marked by an X';
+      + (find ? ' section. Tap the location of the named structure.' : ' section with one structure marked by an X');
 
     startTimer();
   }
 
-  function grade(given, timedOut) {
-    if (state.answered) return;
-    state.answered = true;
-    stopTimer();
-
-    var s = current();
-    var ok = !timedOut && isCorrect(given, s);
-    if (ok) state.score++;
-    else state.missed.push({ name: s.name, gave: (given || '').trim(), timedOut: !!timedOut });
-
-    // reveal where it was: the pulsing target gives way to the reveal dot
-    el('stage').querySelectorAll('.xmark').forEach(function (n) { n.remove(); });
+  /* Draw the answer on the plate: a dot at the target, its label, and a leader. */
+  function reveal(s) {
     var dot = document.createElement('div');
     dot.className = 'revealdot';
     dot.style.left = (s.target.x * 100) + '%';
@@ -584,24 +635,92 @@
     line.setAttribute('vector-effect', 'non-scaling-stroke');
     svg.appendChild(line);
     el('stage').appendChild(svg);
+  }
 
-    // feedback panel
+  function showFeedback(ok, badge, text, yours, s) {
     var v = el('verdict');
     v.className = 'verdict ' + (ok ? 'right' : 'wrong');
-    el('verdictBadge').textContent = ok ? 'Correct' : (timedOut ? 'Time up' : 'Not quite');
-    el('verdictText').textContent = ok
-      ? 'That’s the one.'
-      : (timedOut ? 'The clock ran out on this one.' : 'Here’s where it was.');
-    el('yourAnswer').textContent = (given || '').trim() || (timedOut ? '(no answer)' : '(blank)');
+    el('verdictBadge').textContent = badge;
+    el('verdictText').textContent = text;
+    el('yourAnswer').textContent = yours;
     el('correctAnswer').textContent = s.name;
     el('aboutText').textContent = s.about || '';
-    el('btnOverride').hidden = ok;
+    el('btnOverride').hidden = ok || state.mode === 'find';   // a tap is not a spelling question
 
     el('qScore').textContent = state.score;
     el('panelAsk').hidden = true;
     el('panelFeedback').hidden = false;
     el('btnNext').focus();
     el('srStatus').textContent = (ok ? 'Correct. ' : 'Incorrect. ') + 'The answer is ' + s.name + '.';
+  }
+
+  /* Name it: the typed answer against the name and its accepted synonyms. */
+  function grade(given, timedOut) {
+    if (state.answered) return;
+    state.answered = true;
+    stopTimer();
+
+    var s = current();
+    var ok = !timedOut && isCorrect(given, s);
+    if (ok) state.score++;
+    else state.missed.push({ name: s.name, gave: (given || '').trim(), timedOut: !!timedOut });
+
+    // the pulsing target gives way to the reveal
+    el('stage').querySelectorAll('.xmark').forEach(function (n) { n.remove(); });
+    reveal(s);
+    showFeedback(ok,
+      ok ? 'Correct' : (timedOut ? 'Time up' : 'Not quite'),
+      ok ? 'That’s the one.' : (timedOut ? 'The clock ran out on this one.' : 'Here’s where it was.'),
+      (given || '').trim() || (timedOut ? '(no answer)' : '(blank)'),
+      s);
+  }
+
+  /* Find it: a tap is right if it lands within a small radius of the target,
+     or within a larger one while still being closer to the target than to any
+     other structure on the plate. Radii are fractions of the plate width. */
+  var FIND_R = 0.06, FIND_R0 = 0.025;
+  function gradeFind(fx, fy, timedOut) {
+    if (state.answered) return;
+    state.answered = true;
+    stopTimer();
+
+    var s = current(), img = el('plate');
+    var W = img.naturalWidth || 2000, H = img.naturalHeight || 1500;
+    var dist = function (c) {
+      var dx = (fx - c.target.x) * W, dy = (fy - c.target.y) * H;
+      return Math.sqrt(dx * dx + dy * dy) / W;
+    };
+    var tapped = !timedOut && fx != null;
+    var nearest = null, nd = Infinity, dTarget = Infinity, ok = false, hit = false;
+    if (tapped) {
+      state.allowed.forEach(function (c) { var d = dist(c); if (d < nd) { nd = d; nearest = c; } });
+      dTarget = dist(s);
+      ok = dTarget <= FIND_R0 || (nearest === s && dTarget <= FIND_R);
+      hit = !ok && nearest && nearest !== s && nd <= FIND_R;
+    }
+    if (ok) state.score++;
+    else state.missed.push({ name: s.name, find: true, timedOut: !!timedOut,
+                             gave: !tapped ? '' : (hit ? 'tapped the ' + nearest.name : 'tapped elsewhere') });
+
+    clearOverlays();
+    if (tapped) {
+      var ring = document.createElement('div');
+      ring.className = 'tapmark ' + (ok ? 'right' : 'wrong');
+      ring.style.left = (fx * 100) + '%';
+      ring.style.top  = (fy * 100) + '%';
+      el('stage').appendChild(ring);
+    }
+    reveal(s);
+    showFeedback(ok,
+      ok ? 'Correct' : (timedOut ? 'Time up' : 'Not quite'),
+      ok ? 'That’s it.' : (timedOut ? 'The clock ran out on this one.'
+          : (hit ? 'That was the ' + nearest.name + '. Here’s the ' + s.name + '.' : 'Here’s where it is.')),
+      !tapped ? '(no tap)' : (ok ? 'Tapped on it' : (hit ? 'Tapped the ' + nearest.name : 'Tapped somewhere else')),
+      s);
+  }
+  function timeUp() {
+    if (state.mode === 'find') gradeFind(null, null, true);
+    else grade(el('answerInput').value, true);
   }
 
   function next() {
@@ -627,7 +746,7 @@
         var li = document.createElement('li');
         var n = document.createElement('span'); n.textContent = m.name;
         var g = document.createElement('span'); g.className = 'gave';
-        g.textContent = m.timedOut ? 'no answer' : (m.gave ? '“' + m.gave + '”' : 'blank');
+        g.textContent = m.timedOut ? 'no answer' : (m.find ? (m.gave || 'no tap') : (m.gave ? '“' + m.gave + '”' : 'blank'));
         li.appendChild(n); li.appendChild(g);
         list.appendChild(li);
       });
@@ -671,6 +790,29 @@
     run(state.pool.filter(function (s) { return names[s.name]; }));
   });
   el('btnBegin').addEventListener('click', function () { run(state.allowed.slice()); });
+
+  // Find it: a tap on the plate is the answer.
+  el('plate').addEventListener('click', function (e) {
+    if (state.mode !== 'find' || state.answered) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();   // this tap is an answer, not a request to enlarge
+    var r = e.currentTarget.getBoundingClientRect();
+    gradeFind((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height, false);
+  });
+
+  // Mode: chosen on the start screen; ?mode=find preselects it for a shared link.
+  state.mode = new URLSearchParams(window.location.search).get('mode') === 'find' ? 'find' : 'name';
+  function paintMode() {
+    document.querySelectorAll('.mode').forEach(function (b) {
+      var on = b.dataset.mode === state.mode;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  }
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.addEventListener('click', function () { state.mode = b.dataset.mode; paintMode(); });
+  });
+  paintMode();
 
   // Going back to the index must not drop the instructor's selection.
   (function () {
@@ -733,6 +875,8 @@
       var w = Math.min(plate.naturalWidth || 2000, Math.max(window.innerWidth * 2.4, 1000));
       canvas.style.setProperty('--zw', w + 'px');
       canvas.style.setProperty('--iw', w + 'px');          // the X scales with the enlarged plate
+      var finding = state.mode === 'find' && !state.answered;   // must not give the location away
+      zx.hidden = finding;
       zx.style.left = (s.target.x * 100) + '%';
       zx.style.top  = (s.target.y * 100) + '%';
       zimg.src = plate.src;
@@ -740,8 +884,9 @@
       document.body.style.overflow = 'hidden';
       var centre = function () {
         var h = w * (plate.naturalHeight / plate.naturalWidth);
-        scroller.scrollLeft = s.target.x * w - scroller.clientWidth / 2;
-        scroller.scrollTop  = s.target.y * h - scroller.clientHeight / 2;
+        var cx = finding ? 0.5 : s.target.x, cy = finding ? 0.5 : s.target.y;
+        scroller.scrollLeft = cx * w - scroller.clientWidth / 2;
+        scroller.scrollTop  = cy * h - scroller.clientHeight / 2;
         closeBtn.focus();
       };
       if (zimg.complete && zimg.naturalWidth) centre(); else zimg.onload = centre;
@@ -751,7 +896,18 @@
       document.body.style.overflow = '';
       if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
-    plate.addEventListener('click', openZoom);
+    plate.addEventListener('click', function (e) {
+      if (e.defaultPrevented) return;   // the find-it handler took that tap as an answer
+      openZoom();
+    });
+    // In find mode a tap on the enlarged plate is the answer too.
+    zimg.addEventListener('click', function (e) {
+      if (state.mode !== 'find' || state.answered) return;
+      var r = zimg.getBoundingClientRect();
+      var fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+      closeZoom();
+      gradeFind(fx, fy, false);
+    });
     el('zoomBtn').addEventListener('click', openZoom);
     closeBtn.addEventListener('click', closeZoom);
     scroller.addEventListener('click', function (e) { if (e.target === scroller || e.target === canvas) closeZoom(); });
