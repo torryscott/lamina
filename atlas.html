@@ -297,22 +297,26 @@
     }
   }
 
-  /* ---------- structure detail: what the hovered or tapped marker is ---------- */
-  .detail {
-    max-width: 1280px; margin: 0 auto 14px;
-    background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius-lg);
-    padding: 14px 18px; min-height: 76px; box-shadow: var(--shadow-sm);
+
+  /* ---------- popover: the hovered or pinned structure's description ----------
+     Absolutely positioned over the plate, so it never moves the layout, and
+     transparent to the pointer, so the cursor cannot land on it and lose the
+     marker underneath. */
+  .pop {
+    position: absolute; z-index: 6; pointer-events: none;
+    width: min(300px, calc(100% - 24px));
+    background: rgba(255,255,255,.97); border: 1px solid var(--rule-strong); border-radius: 10px;
+    padding: 10px 12px 11px; box-shadow: 0 6px 22px rgba(20,20,30,.16);
+    font-size: .9rem; line-height: 1.45; color: var(--ink-soft);
   }
-  .detail-empty { margin: 0; color: var(--muted); font-size: .95rem; }
-  .detail-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
-  .detail-name { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.25rem; margin: 0; letter-spacing: -.01em; }
-  .detail-chip {
-    font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
-    color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 9px;
+  .pop-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .pop-name { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.05rem; color: var(--ink); }
+  .pop-chip {
+    font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
+    color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 7px;
   }
-  .detail-about { margin: 0; color: var(--ink-soft); font-size: .98rem; line-height: 1.5; max-width: 78ch; }
-  .detail.below { margin: 14px auto 0; min-height: 0; }
-  @media (max-width: 720px) { .detail { padding: 12px 14px; } .detail-name { font-size: 1.1rem; } }
+  .pop-about { margin: 0; }
+  @media (max-width: 720px) { .pop { font-size: .86rem; } }
 </style>
 <script src="codes.js"></script>
 </head>
@@ -338,16 +342,6 @@
   </div>
 
   <div class="atlas-card">
-    <aside class="detail" id="detail" aria-live="polite" aria-atomic="true">
-      <p class="detail-empty" id="detailEmpty">Hover over a marker, or Tab to one, to read about that structure.</p>
-      <div class="detail-body" id="detailBody" hidden>
-        <div class="detail-head">
-          <h2 class="detail-name" id="detailName"></h2>
-          <span class="detail-chip" id="detailMatter"></span>
-        </div>
-        <p class="detail-about" id="detailAbout"></p>
-      </div>
-    </aside>
     <div class="stage-wrap">
       <div class="stage mode-show" id="stage">
         <img id="atlasImg" alt="">
@@ -355,6 +349,10 @@
     </div>
     <h2 class="sr-only">Labeled structures in this view</h2>
     <ul id="srList" class="sr-only" aria-live="polite"></ul>
+    <div class="pop" id="pop" role="status" aria-live="polite" hidden>
+      <div class="pop-head"><span class="pop-name" id="popName"></span><span class="pop-chip" id="popChip"></span></div>
+      <p class="pop-about" id="popAbout"></p>
+    </div>
   </div>
 </main>
 
@@ -376,59 +374,40 @@ function readFlags() {
 
 const srList = document.getElementById('srList');
 
-const detailEmpty = document.getElementById('detailEmpty');
-const detailBody  = document.getElementById('detailBody');
-/* The panel must never change height, or a hover near the top of the plate
-   pushes the plate out from under the cursor and the label strobes. Measure
-   every description offscreen at the current width and reserve the tallest. */
-function reserveDetailHeight() {
-  const detail = document.getElementById('detail');
-  if (!CAN_HOVER || !detail || !MARKERS.length) return;
-  const probe = detail.cloneNode(true);
-  probe.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-  probe.removeAttribute('id'); probe.setAttribute('aria-hidden', 'true');
-  probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;min-height:0;width:' + detail.clientWidth + 'px';
-  document.body.appendChild(probe);
-  const pe = probe.querySelector('.detail-empty'), pb = probe.querySelector('.detail-body');
-  const pn = probe.querySelector('.detail-name'), pc = probe.querySelector('.detail-chip'), pa = probe.querySelector('.detail-about');
-  pe.hidden = false; pb.hidden = true;
-  let max = probe.offsetHeight;
-  pe.hidden = true; pb.hidden = false;
-  MARKERS.forEach(m => {
-    pn.textContent = m.text; pc.textContent = m.matter || ''; pc.hidden = !m.matter; pa.textContent = m.about || '';
-    max = Math.max(max, probe.offsetHeight);
-  });
-  probe.remove();
-  detail.style.minHeight = max + 'px';
-}
-let reserveTimer = null;
-window.addEventListener('resize', () => { clearTimeout(reserveTimer); reserveTimer = setTimeout(reserveDetailHeight, 120); });
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(reserveDetailHeight);
-
-function showDetail(m) {
-  if (!m) { detailBody.hidden = true; detailEmpty.hidden = false; return; }
-  document.getElementById('detailName').textContent = m.text;
-  const chip = document.getElementById('detailMatter');
+const pop = document.getElementById('pop');
+stage.appendChild(pop);   // positioned relative to the plate, so it must live inside its box
+let popPill = null;
+function showPop(m, pill) {
+  document.getElementById('popName').textContent = m.text;
+  const chip = document.getElementById('popChip');
   chip.textContent = m.matter || ''; chip.hidden = !m.matter;
-  document.getElementById('detailAbout').textContent = m.about || '';
-  detailEmpty.hidden = true; detailBody.hidden = false;
+  document.getElementById('popAbout').textContent = m.about || '';
+  popPill = pill; pop.hidden = false; placePop();
 }
+function hidePop() { pop.hidden = true; popPill = null; }
+/* Below the label if there is room, else above; kept inside the plate sideways. */
+function placePop() {
+  if (pop.hidden || !popPill) return;
+  const S = stage.getBoundingClientRect(), P = popPill.getBoundingClientRect();
+  const w = pop.offsetWidth, h = pop.offsetHeight, gap = 8;
+  let left = P.left - S.left + P.width / 2 - w / 2;
+  left = Math.max(8, Math.min(left, S.width - w - 8));
+  let top = P.bottom - S.top + gap;
+  if (top + h > S.height - 4) top = P.top - S.top - gap - h;
+  if (top < 4) top = 4;
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+}
+window.addEventListener('resize', placePop);
+
 
 /* Does this device have a real hover-capable pointer? A phone or tablet
    does not, so hover-based reveal has to become tap-based there. */
 const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-if (!CAN_HOVER) {
-  detailEmpty.textContent = 'Tap a marker to read about that structure.';
-  // With no hover there is no strobe to prevent, so the panel sits under the
-  // plate where filling it cannot move the markers, and needs no reserved height.
-  const d = document.getElementById('detail');
-  document.querySelector('.stage-wrap').after(d);
-  d.classList.add('below');
-}
 
 function render() {
   // Remove any existing overlay content (keep the <img>)
   stage.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
+  hidePop();
 
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
@@ -486,13 +465,13 @@ function render() {
 
     const entry = {};
     const enter = () => {
-      showDetail(m);
+      showPop(m, pill);
       dot.classList.add('hovered');
       pill.classList.add('hovered');
       line.classList.add('hovered');
     };
     const leave = () => {
-      if (pinned !== entry) showDetail(null);
+      if (pinned !== entry) hidePop();
       dot.classList.remove('hovered');
       pill.classList.remove('hovered');
       line.classList.remove('hovered');
@@ -517,13 +496,7 @@ function render() {
       e.preventDefault();
       e.stopPropagation();
       if (pinned === entry) { clearPinned(); }
-      else {
-        clearPinned(); enter(); pinned = entry;
-        if (!CAN_HOVER) {
-          const d = document.getElementById('detail'), r = d.getBoundingClientRect();
-          if (r.bottom > window.innerHeight || r.top < 0) d.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        }
-      }
+      else { clearPinned(); enter(); pinned = entry; }
     });
   });
 }
@@ -531,7 +504,7 @@ function render() {
 /* Only one label is pinned at a time. */
 let pinned = null;
 function clearPinned() {
-  if (pinned) { const e = pinned; pinned = null; e.leave(); showDetail(null); }
+  if (pinned) { const e = pinned; pinned = null; e.leave(); hidePop(); }
 }
 
 // Mode toggle
@@ -610,7 +583,7 @@ fetch('data/' + view + '.json')
     document.getElementById('foot').textContent = 'Open Ovis \u00b7 ' + data.label + ' atlas';
     atlasImg.alt = data.label + ' section of a preserved sheep brain. '
       + 'A list of labeled structures follows the image.';
-    atlasImg.addEventListener('load', function () { render(); updateIW(); reserveDetailHeight(); });
+    atlasImg.addEventListener('load', function () { render(); updateIW(); });
     atlasImg.src = data.image;
   })
   .catch(function (err) {
