@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Open Ovis — Atlas</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="Interactive labeled atlas of a dissected sheep brain. Show labels, hover to reveal, or hide markers to test yourself.">
+<link rel="canonical" href="https://torryscott.github.io/open-ovis/atlas.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Ovis">
+<meta property="og:title" content="Open Ovis — Atlas">
+<meta property="og:description" content="Interactive labeled atlas of a dissected sheep brain. Show labels, hover to reveal, or hide markers to test yourself.">
+<meta property="og:url" content="https://torryscott.github.io/open-ovis/atlas.html">
+<meta property="og:image" content="https://torryscott.github.io/open-ovis/images/hero/midsagittal.jpg">
+<meta property="og:image:alt" content="Midsagittal section of a preserved sheep brain">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -286,6 +296,22 @@
       font-weight: 600;
     }
   }
+
+  /* ---------- structure detail: what the hovered or tapped marker is ---------- */
+  .detail {
+    max-width: 1280px; margin: 0 auto 14px;
+    background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius-lg);
+    padding: 14px 18px; min-height: 76px; box-shadow: var(--shadow-sm);
+  }
+  .detail-empty { margin: 0; color: var(--muted); font-size: .95rem; }
+  .detail-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .detail-name { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.25rem; margin: 0; letter-spacing: -.01em; }
+  .detail-chip {
+    font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
+    color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 9px;
+  }
+  .detail-about { margin: 0; color: var(--ink-soft); font-size: .98rem; line-height: 1.5; max-width: 78ch; }
+  @media (max-width: 720px) { .detail { padding: 12px 14px; min-height: 0; } .detail-name { font-size: 1.1rem; } }
 </style>
 <script src="codes.js"></script>
 </head>
@@ -311,6 +337,16 @@
   </div>
 
   <div class="atlas-card">
+    <aside class="detail" id="detail" aria-live="polite" aria-atomic="true">
+      <p class="detail-empty" id="detailEmpty">Hover over a marker, or Tab to one, to read about that structure.</p>
+      <div class="detail-body" id="detailBody" hidden>
+        <div class="detail-head">
+          <h2 class="detail-name" id="detailName"></h2>
+          <span class="detail-chip" id="detailMatter"></span>
+        </div>
+        <p class="detail-about" id="detailAbout"></p>
+      </div>
+    </aside>
     <div class="stage-wrap">
       <div class="stage mode-show" id="stage">
         <img id="atlasImg" alt="">
@@ -339,9 +375,21 @@ function readFlags() {
 
 const srList = document.getElementById('srList');
 
+const detailEmpty = document.getElementById('detailEmpty');
+const detailBody  = document.getElementById('detailBody');
+function showDetail(m) {
+  if (!m) { detailBody.hidden = true; detailEmpty.hidden = false; return; }
+  document.getElementById('detailName').textContent = m.text;
+  const chip = document.getElementById('detailMatter');
+  chip.textContent = m.matter || ''; chip.hidden = !m.matter;
+  document.getElementById('detailAbout').textContent = m.about || '';
+  detailEmpty.hidden = true; detailBody.hidden = false;
+}
+
 /* Does this device have a real hover-capable pointer? A phone or tablet
    does not, so hover-based reveal has to become tap-based there. */
 const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (!CAN_HOVER) detailEmpty.textContent = 'Tap a marker to read about that structure.';
 
 function render() {
   // Remove any existing overlay content (keep the <img>)
@@ -401,17 +449,20 @@ function render() {
     pill.setAttribute('aria-hidden', 'true');
     stage.appendChild(pill);
 
+    const entry = {};
     const enter = () => {
+      showDetail(m);
       dot.classList.add('hovered');
       pill.classList.add('hovered');
       line.classList.add('hovered');
     };
     const leave = () => {
+      if (pinned !== entry) showDetail(null);
       dot.classList.remove('hovered');
       pill.classList.remove('hovered');
       line.classList.remove('hovered');
     };
-    const entry = { enter, leave };
+    entry.enter = enter; entry.leave = leave;
 
     // Pointer hover — only where hovering is actually possible.
     if (CAN_HOVER) {
@@ -439,7 +490,7 @@ function render() {
 /* Only one label is pinned at a time. */
 let pinned = null;
 function clearPinned() {
-  if (pinned) { pinned.leave(); pinned = null; }
+  if (pinned) { const e = pinned; pinned = null; e.leave(); showDetail(null); }
 }
 
 // Mode toggle
@@ -510,7 +561,7 @@ fetch('data/' + view + '.json')
     // The data file is the single source of truth for coordinates; the atlas
     // and the quiz both read it. `name` is the canonical label.
     MARKERS = data.structures.map(function (s) {
-      return { flag: s.flag, text: s.name, target: s.target, label: s.label };
+      return { matter: s.matter, about: s.about, flag: s.flag, text: s.name, target: s.target, label: s.label };
     });
 
     document.title = 'Open Ovis \u2014 ' + data.label + ' Atlas';

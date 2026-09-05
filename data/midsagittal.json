@@ -76,7 +76,7 @@
     {
       "flag": "inc_mid_cerebral_aqueduct",
       "name": "Cerebral Aqueduct",
-      "matter": "Cavity",
+      "matter": "a Cavity",
       "about": "The cerebral aqueduct is a narrow canal that runs through the midbrain (mesencephalon), connecting the third and forth ventricles.",
       "target": {
         "x": 0.5658,
@@ -96,7 +96,7 @@
     {
       "flag": "inc_mid_third_ventricle",
       "name": "Third Ventricle",
-      "matter": "Cavity",
+      "matter": "a Cavity",
       "about": "The third ventricle is a more narrow cavity spanning the midline in the area around the thalamus",
       "target": {
         "x": 0.3265,
@@ -227,7 +227,7 @@
     {
       "flag": "inc_mid_septum_pellucidum",
       "name": "Septum Pellucidum",
-      "matter": "thin tissue",
+      "matter": "a thin piece of tissue",
       "about": "The septum pellucidum is a thin membrane located at the midline. It separates the lateral ventricles from each other.",
       "target": {
         "x": 0.2545,

@@ -62,7 +62,7 @@
     {
       "flag": "inc_vent_infundibulum",
       "name": "Infundibulum",
-      "matter": "white matter",
+      "matter": "White Matter",
       "about": "The stalk connecting the hypothalamus to the pituitary gland. The pituitary itself is usually lost when the brain is removed from the skull.",
       "accept": [
         "pituitary stalk",

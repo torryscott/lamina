@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Open Ovis — Sheep Brain Study Guide</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="An interactive atlas of a dissected sheep brain and a quiz on the same structures, across twelve views. Free and open source.">
+<link rel="canonical" href="https://torryscott.github.io/open-ovis/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Ovis">
+<meta property="og:title" content="Open Ovis — Sheep Brain Study Guide">
+<meta property="og:description" content="An interactive atlas of a dissected sheep brain and a quiz on the same structures, across twelve views. Free and open source.">
+<meta property="og:url" content="https://torryscott.github.io/open-ovis/">
+<meta property="og:image" content="https://torryscott.github.io/open-ovis/images/hero/midsagittal.jpg">
+<meta property="og:image:alt" content="Midsagittal section of a preserved sheep brain">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -292,7 +302,7 @@
 
     <figure class="hero-plate" aria-label="Midsagittal section of a sheep brain with four structures labeled">
       <div class="plate">
-        <img src="images/clean/midsagittal.jpg"
+        <img src="images/hero/midsagittal.jpg"
              alt="Midsagittal section of a preserved sheep brain with four labeled structures.">
         <svg class="leaders" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <line x1="22.41" y1="46.20" x2="6.84"  y2="71.18" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
@@ -400,7 +410,8 @@
 
     var thumb = el('div', 'thumb');
     var img = document.createElement('img');
-    img.src = data.image;
+    img.src = 'images/thumbs/' + view.id + '.jpg';
+    img.onerror = function () { img.onerror = null; img.src = data.image; };   // fall back to the full plate
     img.alt = '';
     img.loading = 'lazy';
     thumb.appendChild(img);

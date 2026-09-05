@@ -101,6 +101,30 @@ def prepare(src: pathlib.Path, dst: pathlib.Path, margin: float, max_dim: int, q
     return canvas.size, dst.stat().st_size
 
 
+THUMB_W, HERO_W, THUMB_Q = 480, 1200, 80
+
+
+def thumbnails(only=None):
+    """Small copies for the homepage cards, and a mid-size midsagittal for the
+    hero and link previews. The full plates stay for the atlas and quiz."""
+    thumbs = SRC.parent / "thumbs"; hero = SRC.parent / "hero"
+    thumbs.mkdir(exist_ok=True); hero.mkdir(exist_ok=True)
+    made = 0
+    for plate in sorted(SRC.glob("*.jpg")):
+        if only and plate.stem not in only:
+            continue
+        im = Image.open(plate)
+        s = THUMB_W / im.width
+        im.resize((THUMB_W, round(im.height * s)), Image.LANCZOS).save(
+            thumbs / plate.name, "JPEG", quality=THUMB_Q, optimize=True, progressive=True)
+        made += 1
+        if plate.stem == "midsagittal":
+            s = HERO_W / im.width
+            im.resize((HERO_W, round(im.height * s)), Image.LANCZOS).save(
+                hero / plate.name, "JPEG", quality=84, optimize=True, progressive=True)
+    print(f"{made} thumbnails -> images/thumbs/ (and images/hero/midsagittal.jpg)")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--margin", type=float, default=0.16,
@@ -132,6 +156,7 @@ def main():
         print(f"{name:<22} {size[0]}x{size[1]:<8} {nbytes // 1024:>6} KB")
 
     print("-" * 46)
+    thumbnails(args.only)
     print(f"{len(PLATES) - len(missing)} plates   "
           f"{total_in / 1e6:.1f} MB PNG -> {total_out / 1e6:.1f} MB JPEG")
 
