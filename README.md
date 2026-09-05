@@ -337,3 +337,5 @@ see [`CITATION.cff`](CITATION.cff).
 Adaptations to other specimens, additional views, and accessibility fixes are all welcome.
 If you build an atlas for a species this doesn't cover, a pull request would be genuinely useful
 to other instructors.
+
+The site icon is from Lucide; see [THIRD-PARTY.md](THIRD-PARTY.md).
