@@ -148,16 +148,20 @@
      (18 px) and a cap for large screens. Static under reduced-motion. */
   .xmark {
     position: absolute; transform: translate(-50%,-50%); z-index: 3;
-    width: clamp(18px, calc(var(--iw,1000px) * .026), 46px);
-    height: clamp(18px, calc(var(--iw,1000px) * .026), 46px);
+    width: clamp(18px, calc(var(--iw,1000px) * .024), 40px);
+    height: clamp(18px, calc(var(--iw,1000px) * .024), 40px);
     pointer-events: none;
     animation: xmark-breathe 2.4s ease-in-out infinite;
   }
+  /* Each diagonal is a bar with its middle left transparent, so the four arms
+     point at the structure without lying on top of it. The white halo is a
+     drop shadow rather than a box shadow so the gap stays open. */
   .xmark::before, .xmark::after {
     content: ""; position: absolute; left: 50%; top: 0;
-    width: clamp(2px, calc(var(--iw,1000px) * .002), 3.5px); height: 100%;
-    background: var(--marker); border-radius: 2px;
-    box-shadow: 0 0 0 1.5px rgba(255,255,255,.95);
+    width: clamp(1.5px, calc(var(--iw,1000px) * .0017), 2.5px); height: 100%;
+    background: linear-gradient(to bottom, var(--marker) 0 30%, transparent 30% 70%, var(--marker) 70% 100%);
+    border-radius: 2px;
+    filter: drop-shadow(0 0 .8px #fff) drop-shadow(0 0 .8px rgba(255,255,255,.9));
   }
   .xmark::before { transform: translateX(-50%) rotate(45deg); }
   .xmark::after  { transform: translateX(-50%) rotate(-45deg); }
