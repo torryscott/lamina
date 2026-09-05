@@ -306,7 +306,7 @@ graphic's description field.
 Actively in development. Working today:
 
 - Flag-based customization across all 110 structures
-- Link builder covering all three views
+- Link builder covering every view, read from the same data files as the site
 - Midsagittal interactive atlas (25 labeled structures)
 
 In progress:

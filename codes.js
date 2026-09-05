@@ -11,7 +11,10 @@
    its view's run, wherever it sits in the list. scripts/check-codes.py
    verifies this file against the builder and the data files.
 
-   Letters: D dorsal · L lateral · V ventral · P posterior · C coronal · M midsagittal */
+   Letters: D dorsal · L lateral · V ventral · P posterior · C coronal · M midsagittal
+
+   A retired structure keeps its code (marked below) so that no old link can
+   ever silently point at a different structure. */
 window.OPENOVIS = (function () {
   'use strict';
   var CODES = {
@@ -25,9 +28,9 @@ window.OPENOVIS = (function () {
     L1:   'inc_lat_rhinencephalon',
     L2:   'inc_lat_rhinal_fissure',
     L3:   'inc_lat_insula',
-    P1:   'inc_post_vermis',
-    P2:   'inc_post_cerebellar_hemispheres',
-    P3:   'inc_post_fourth_ventricle',
+    P1:   'inc_post_vermis',   // retired 2026-09-04, code stays reserved
+    P2:   'inc_post_cerebellar_hemispheres',   // retired 2026-09-04, code stays reserved
+    P3:   'inc_post_fourth_ventricle',   // retired 2026-09-04, code stays reserved
     V1:   'inc_vent_lateral_olfactory_tract',
     V2:   'inc_vent_optic_chiasm',
     V3:   'inc_vent_optic_tract',
@@ -52,11 +55,11 @@ window.OPENOVIS = (function () {
     L9:   'inc_lat_temporal_lobe',
     L10:  'inc_lat_pons',
     L11:  'inc_lat_medulla',
-    L12:  'inc_lat_lateral_geniculate_nucleus',
-    L13:  'inc_lat_medial_geniculate_nucleus',
-    L14:  'inc_lat_superior_colliculus',
-    L15:  'inc_lat_brachium',
-    L16:  'inc_lat_middle_cerebellar_peduncle',
+    L12:  'inc_lat_lateral_geniculate_nucleus',   // retired 2026-09-04, code stays reserved
+    L13:  'inc_lat_medial_geniculate_nucleus',   // retired 2026-09-04, code stays reserved
+    L14:  'inc_lat_superior_colliculus',   // retired 2026-09-04, code stays reserved
+    L15:  'inc_lat_brachium',   // retired 2026-09-04, code stays reserved
+    L16:  'inc_lat_middle_cerebellar_peduncle',   // retired 2026-09-04, code stays reserved
     V12:  'inc_vent_medulla',
     V13:  'inc_vent_rhinal_fissure',
     V14:  'inc_vent_rhinencephalon',
