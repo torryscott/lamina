@@ -177,6 +177,7 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
+    overflow: visible;           /* leaders may run to pills placed in the margin band */
     z-index: 1;
   }
   .marker {
@@ -228,7 +229,9 @@
     border: 1px solid var(--label-border);
     padding: 0.3em 0.8em;
     border-radius: 14px;
-    font-size: clamp(0.8rem, calc(var(--iw, 1000px) * 0.014), 1.55rem);
+    /* --label-scale is set by the layout pass when the pills need to shrink to fit */
+    font-size: calc(clamp(0.8rem, var(--iw, 1000px) * 0.014, 1.55rem) * var(--label-scale, 1));
+    width: max-content;          /* size from the text, not from where the pill sits */
     white-space: normal;
     word-break: normal;
     overflow-wrap: normal;
@@ -245,8 +248,13 @@
     cursor: default;
   }
 
-  /* Mode: hide-all */
-  .stage.mode-hide .label-pill { display: none; }
+  /* The margin band the label pass may open above and below the plate is
+     only needed while every label is showing. */
+  .stage.mode-show { margin-top: var(--band-top, 0px); margin-bottom: var(--band-bottom, 0px); }
+
+  /* Mode: hide-all. Pills stay in the layout (visibility, not display) so
+     the label pass can still measure them. */
+  .stage.mode-hide .label-pill { visibility: hidden; }
   .stage.mode-hide .marker { display: none; }
   .stage.mode-hide svg.leaders line { display: none; }
 
@@ -290,8 +298,7 @@
     .spacer { display: none; }
     .count-chip { text-align: center; font-size: 0.78rem; }
     .label-pill {
-      font-size: 0.6rem;
-      max-width: 8em;
+      max-width: 9em;
       padding: 0.2em 0.55em;
       font-weight: 600;
     }
@@ -408,6 +415,7 @@ function render() {
   // Remove any existing overlay content (keep the <img>)
   stage.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
   hidePop();
+  laid = [];
 
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
@@ -462,6 +470,7 @@ function render() {
     pill.dataset.flag = m.flag;
     pill.setAttribute('aria-hidden', 'true');
     stage.appendChild(pill);
+    laid.push({ m, pill, line });
 
     const entry = {};
     const enter = () => {
@@ -499,7 +508,115 @@ function render() {
       else { clearPinned(); enter(); pinned = entry; }
     });
   });
+  layoutLabels();
 }
+
+/* ---- Label layout ----
+   Dots never move. Pills start where the data file puts them, then get pushed
+   out of each other's way, off the dots, and back inside the plate. If pills
+   still overlap after that, the text steps down a size and the pass repeats,
+   down to a 10 px floor. If they still overlap at the floor, the plate gets a
+   margin band above and below and pills may move into it, the way labels sit
+   in the margin of a printed atlas. Runs after every render, on resize, and
+   once the web font has loaded. At widths where nothing overlaps, nothing moves. */
+let laid = [];                                   // [{m, pill, line}] from the last render
+const LABEL_STEPS = [1, 0.9, 0.8];
+const LABEL_MIN_PX = 10;
+const LABEL_BANDS = [0, 0.3, 0.6];              // margin band above and below, as a fraction of plate height
+const LABEL_GAP = 3;                             // px kept between pills
+const DOT_KEEPOUT = 9;                           // half-size of the box a pill keeps off a dot
+
+function layoutLabels() {
+  updateIW();
+  const W = atlasImg.clientWidth, H = atlasImg.clientHeight;
+  if (!W || !H || !laid.length) return;
+  stage.style.setProperty('--label-scale', 1);
+  const basePx = parseFloat(getComputedStyle(laid[0].pill).fontSize);
+  const dots = laid.map(e => ({ x: e.m.target.x * W, y: e.m.target.y * H }));
+  let best = null;
+  outer:
+  for (const band of LABEL_BANDS) {
+    for (const scale of LABEL_STEPS) {
+      if (basePx * scale < LABEL_MIN_PX && best) continue;
+      stage.style.setProperty('--label-scale', scale);
+      const boxes = laid.map(e => ({
+        e, w: e.pill.offsetWidth + LABEL_GAP, h: e.pill.offsetHeight + LABEL_GAP,
+        x: e.m.label.x * W, y: e.m.label.y * H,    // centre, seeded from the data file
+        sx: e.m.label.x * W, sy: e.m.label.y * H
+      }));
+      const overlap = relaxLabels(boxes, dots, W, H, band * H);
+      if (!best || overlap < best.overlap) best = { scale, band, boxes, overlap };
+      if (overlap === 0) break outer;
+    }
+  }
+  stage.style.setProperty('--label-scale', best.scale);
+  // open the margins only as far as the pills actually reach
+  let top = 0, bottom = 0;
+  best.boxes.forEach(b => {
+    top = Math.max(top, b.h / 2 - b.y);
+    bottom = Math.max(bottom, b.y + b.h / 2 - H);
+    b.e.lx = b.x / W * 100; b.e.ly = b.y / H * 100;
+  });
+  stage.style.setProperty('--band-top', Math.ceil(top) + 'px');
+  stage.style.setProperty('--band-bottom', Math.ceil(bottom) + 'px');
+  applyPositions();
+}
+
+/* Show-labels mode uses the laid-out positions. The reveal modes show one
+   label at a time, so nothing can collide and each pill goes back to the
+   hand-placed spot beside its dot. */
+function applyPositions() {
+  const useLayout = stage.classList.contains('mode-show');
+  laid.forEach(e => {
+    const x = useLayout && e.lx != null ? e.lx : e.m.label.x * 100;
+    const y = useLayout && e.ly != null ? e.ly : e.m.label.y * 100;
+    e.pill.style.left = x + '%';
+    e.pill.style.top  = y + '%';
+    e.line.setAttribute('x2', x);
+    e.line.setAttribute('y2', y);
+  });
+  if (pinned) placePop();
+}
+
+function relaxLabels(boxes, dots, W, H, band) {
+  const n = boxes.length;
+  for (let iter = 0; iter < 160; iter++) {
+    const pull = iter < 100 ? 0.02 : 0;          // lean toward the hand placement, then settle
+    for (const b of boxes) { b.x += (b.sx - b.x) * pull; b.y += (b.sy - b.y) * pull; }
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+      const a = boxes[i], b = boxes[j];
+      const ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x);
+      const oy = (a.h + b.h) / 2 - Math.abs(a.y - b.y);
+      if (ox <= 0 || oy <= 0) continue;
+      if (ox < oy) { const s = (a.x <= b.x ? -1 : 1) * ox * 0.5; a.x += s; b.x -= s; }
+      else         { const s = (a.y <= b.y ? -1 : 1) * oy * 0.5; a.y += s; b.y -= s; }
+    }
+    for (const b of boxes) for (const d of dots) {  // pills move off dots; dots stay
+      const ox = b.w / 2 + DOT_KEEPOUT - Math.abs(b.x - d.x);
+      const oy = b.h / 2 + DOT_KEEPOUT - Math.abs(b.y - d.y);
+      if (ox <= 0 || oy <= 0) continue;
+      if (ox < oy) b.x += (b.x < d.x ? -1 : 1) * ox * 0.6;
+      else         b.y += (b.y < d.y ? -1 : 1) * oy * 0.6;
+    }
+    for (const b of boxes) {
+      b.x = Math.max(b.w / 2, Math.min(W - b.w / 2, b.x));
+      b.y = Math.max(b.h / 2 - band, Math.min(H + band - b.h / 2, b.y));
+    }
+  }
+  let overlap = 0;                               // what is left, in px of intrusion
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+    const a = boxes[i], b = boxes[j];
+    const ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x), oy = (a.h + b.h) / 2 - Math.abs(a.y - b.y);
+    if (ox > 0.5 && oy > 0.5) overlap += Math.min(ox, oy);
+  }
+  return overlap;
+}
+
+let layoutTimer = 0;
+function scheduleLayout() { clearTimeout(layoutTimer); layoutTimer = setTimeout(layoutLabels, 60); }
+if ('ResizeObserver' in window) new ResizeObserver(scheduleLayout).observe(atlasImg);
+else window.addEventListener('resize', scheduleLayout);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleLayout);
 
 /* Only one label is pinned at a time. */
 let pinned = null;
@@ -518,6 +635,7 @@ document.querySelectorAll('.mode-group button').forEach(btn => {
     btn.setAttribute('aria-checked', 'true');
     stage.classList.remove('mode-show', 'mode-hover', 'mode-hide');
     stage.classList.add('mode-' + btn.dataset.mode);
+    applyPositions();
   });
 });
 
