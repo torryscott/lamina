@@ -168,7 +168,32 @@
 
   /* Hide-labels mode */
   .stage.hide-labels .label-pill { display: none; }
-  .stage.hide-labels svg.leaders { display: none; }
+  .stage.hide-labels svg.leaders line:not(.rubber) { display: none; }
+
+  /* Zones: a polygon per structure, drawn in the same 0-100 space as the leaders.
+     The selected structure's zone gets corner handles; a draft being traced is
+     a polyline with a rubber-band line to the cursor. */
+  svg.leaders polygon.zone {
+    fill: rgba(30, 58, 95, 0.06); stroke: rgba(30, 58, 95, 0.45);
+    stroke-width: 1.25; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke;
+  }
+  svg.leaders polygon.zone.selected {
+    fill: rgba(224, 176, 64, 0.18); stroke: #b98a1c; stroke-width: 1.75; stroke-dasharray: none;
+  }
+  svg.leaders polyline.draft { fill: rgba(224, 176, 64, 0.12); stroke: #b98a1c; stroke-width: 1.75; vector-effect: non-scaling-stroke; }
+  svg.leaders line.rubber { stroke: #b98a1c; stroke-width: 1.25; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+  .vertex {
+    position: absolute; transform: translate(-50%, -50%); width: 10px; height: 10px;
+    background: #fff; border: 2px solid #b98a1c; border-radius: 2px; cursor: move; z-index: 4;
+  }
+  .vertex.first { width: 14px; height: 14px; border-radius: 50%; }
+  .stage.drawing img { cursor: crosshair; }
+  .stage.drawing .marker, .stage.drawing .label-pill, .stage.drawing .vertex { pointer-events: none; }
+  .stage.hide-zones polygon.zone, .stage.hide-zones .vertex { display: none; }
+  .zone-tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .zone-tools .toggle { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); cursor: pointer; user-select: none; }
+  button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button:disabled { opacity: .5; cursor: default; }
 
   /* Hover preview mode — dots always; labels + leaders only for the hovered marker */
   .stage.hover-mode .label-pill { opacity: 0; transition: opacity 0.15s; }
@@ -305,7 +330,7 @@
 <body>
 <header>
   <h1 id="pageTitle">Atlas Coord Capture — Midsagittal</h1>
-  <p>Click to drop a labeled marker. Drag the dot or the pill to fine-tune target and label positions. The leader line updates automatically.</p>
+  <p>Click to drop a labeled marker. Drag the dot or the pill to fine-tune target and label positions. Select a structure and use Draw zone to trace the region a Find it tap should count for.</p>
 </header>
 
 <div class="app">
@@ -333,6 +358,12 @@
     <div class="form-row">
       <input type="text" id="displayText" placeholder="Optional display text (defaults to area name)">
     </div>
+    <div class="zone-tools">
+      <button id="zoneBtn" disabled>Draw zone</button>
+      <button id="zoneClearBtn" disabled>Remove zone</button>
+      <label class="toggle"><input type="checkbox" id="showZones" checked> Show zones</label>
+    </div>
+    <p class="hint" id="zoneHint">Select a structure, then Draw zone: click around its outline and click the first corner (or press Enter) to close. Drag a corner to adjust, Alt-click a corner to remove it, Backspace undoes the last corner while drawing, Escape cancels.</p>
 
     <div class="markers-list" id="list"></div>
 
@@ -476,10 +507,11 @@ const MID_AREAS = Object.values(ALL_AREAS).flat();
 
 const state = {
   image: null,
-  markers: [],       // [{flag, area, text, target:{x,y}, label:{x,y}}]
+  markers: [],       // [{flag, area, text, target:{x,y}, label:{x,y}, zone?:[[x,y],…]}]
   selectedIdx: -1,
   dragIdx: -1,
-  dragWhich: null    // 'target' | 'label'
+  dragWhich: null,   // 'target' | 'label' | 'vertex'
+  drawing: null      // {idx, points:[[x,y],…]} while a zone is being traced
 };
 
 const dropzone = document.getElementById('dropzone');
@@ -491,6 +523,10 @@ const jsonOut = document.getElementById('jsonOut');
 const copiedMsg = document.getElementById('copiedMsg');
 const hideLabelsCb = document.getElementById('hideLabels');
 const hoverModeCb = document.getElementById('hoverMode');
+const showZonesCb = document.getElementById('showZones');
+const zoneBtn = document.getElementById('zoneBtn');
+const zoneClearBtn = document.getElementById('zoneClearBtn');
+const CLOSE_PX = 12;   // clicking this near the first corner closes the zone
 
 for (const [group, items] of Object.entries(ALL_AREAS)) {
   const og = document.createElement('optgroup');
@@ -555,6 +591,7 @@ function renderStage() {
   stage.id = 'stage';
   stage.classList.toggle('hide-labels', hideLabelsCb.checked);
   stage.classList.toggle('hover-mode',  hoverModeCb.checked);
+  stage.classList.toggle('hide-zones',  !showZonesCb.checked);
 
   const imgEl = document.createElement('img');
   imgEl.src = state.image.src;
@@ -574,6 +611,7 @@ function renderStage() {
 
   dropzone.appendChild(stage);
   stage.addEventListener('mousedown', onStageMouseDown);
+  stage.addEventListener('mousemove', onStageMouseMove);
 
   renderMarkers();
 }
@@ -596,6 +634,16 @@ function onImgClick(e) {
   const rect = img.getBoundingClientRect();
   const x = (e.clientX - rect.left) / rect.width;
   const y = (e.clientY - rect.top) / rect.height;
+  if (state.drawing) {
+    const pts = state.drawing.points;
+    if (pts.length >= 3) {
+      const dx = (x - pts[0][0]) * rect.width, dy = (y - pts[0][1]) * rect.height;
+      if (Math.hypot(dx, dy) <= CLOSE_PX) { finishZone(); return; }
+    }
+    pts.push([x, y]);
+    renderMarkers();
+    return;
+  }
   const flag = flagSel.value;
   const typed = displayInput.value.trim();
   if (!flag && !typed) {
@@ -616,11 +664,19 @@ function onImgClick(e) {
 function onStageMouseDown(e) {
   const t = e.target;
   let which = null, idx = -1;
+  let vi = -1;
   if (t.classList.contains('marker')) { which = 'target'; idx = +t.dataset.idx; }
   else if (t.classList.contains('label-pill')) { which = 'label'; idx = +t.dataset.idx; }
+  else if (t.classList.contains('vertex')) { which = 'vertex'; idx = +t.dataset.idx; vi = +t.dataset.vi; }
   if (which === null) return;
   e.preventDefault();
   e.stopPropagation();
+  if (which === 'vertex' && e.altKey) {          // Alt-click removes a corner
+    const zone = state.markers[idx].zone;
+    if (zone.length > 3) { zone.splice(vi, 1); renderMarkers(); updateJson(); }
+    else statusEl.textContent = 'A zone needs at least three corners. Use Remove zone to drop it.';
+    return;
+  }
   state.dragIdx = idx;
   state.dragWhich = which;
   state.selectedIdx = idx;
@@ -630,8 +686,8 @@ function onStageMouseDown(e) {
     const rect = img.getBoundingClientRect();
     const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
     const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
-    state.markers[idx][which].x = x;
-    state.markers[idx][which].y = y;
+    if (which === 'vertex') state.markers[idx].zone[vi] = [x, y];
+    else { state.markers[idx][which].x = x; state.markers[idx][which].y = y; }
     renderMarkers();
     updateJson();
   };
@@ -650,13 +706,51 @@ function onStageMouseDown(e) {
 function renderMarkers() {
   const stage = document.getElementById('stage');
   if (!stage) return;
-  stage.querySelectorAll('.marker, .label-pill').forEach(n => n.remove());
+  stage.querySelectorAll('.marker, .label-pill, .vertex').forEach(n => n.remove());
   const svg = stage.querySelector('svg.leaders');
   if (svg) svg.innerHTML = '';
   stage.classList.toggle('hide-labels', hideLabelsCb.checked);
   stage.classList.toggle('hover-mode',  hoverModeCb.checked);
+  stage.classList.toggle('hide-zones',  !showZonesCb.checked);
+  stage.classList.toggle('drawing',     !!state.drawing);
 
   const svgNS = 'http://www.w3.org/2000/svg';
+  const pts100 = pts => pts.map(p => (p[0] * 100) + ',' + (p[1] * 100)).join(' ');
+  const handle = (idx, vi, p, first) => {
+    const h = document.createElement('div');
+    h.className = 'vertex' + (first ? ' first' : '');
+    h.dataset.idx = idx; h.dataset.vi = vi;
+    h.style.left = (p[0] * 100) + '%';
+    h.style.top  = (p[1] * 100) + '%';
+    h.title = first ? 'First corner' : 'Drag to move · Alt-click to remove';
+    stage.appendChild(h);
+  };
+
+  // zones sit under the leaders and markers
+  state.markers.forEach((m, i) => {
+    if (!m.zone || m.zone.length < 3) return;
+    const poly = document.createElementNS(svgNS, 'polygon');
+    poly.setAttribute('class', 'zone' + (i === state.selectedIdx ? ' selected' : ''));
+    poly.setAttribute('points', pts100(m.zone));
+    svg.appendChild(poly);
+    if (i === state.selectedIdx && !state.drawing) m.zone.forEach((p, vi) => handle(i, vi, p, false));
+  });
+  if (state.drawing) {
+    const pts = state.drawing.points;
+    if (pts.length) {
+      const draft = document.createElementNS(svgNS, 'polyline');
+      draft.setAttribute('class', 'draft');
+      draft.setAttribute('points', pts100(pts));
+      svg.appendChild(draft);
+      const rubber = document.createElementNS(svgNS, 'line');
+      rubber.setAttribute('class', 'rubber');
+      const last = pts[pts.length - 1];
+      rubber.setAttribute('x1', last[0] * 100); rubber.setAttribute('y1', last[1] * 100);
+      rubber.setAttribute('x2', last[0] * 100); rubber.setAttribute('y2', last[1] * 100);
+      svg.appendChild(rubber);
+      pts.forEach((p, vi) => handle(state.drawing.idx, vi, p, vi === 0));
+    }
+  }
 
   state.markers.forEach((m, i) => {
     const sel = (i === state.selectedIdx);
@@ -714,6 +808,7 @@ function renderList() {
     empty.style.cssText = 'color:var(--muted);font-size:0.82rem;padding:10px 4px;';
     empty.textContent = 'No markers yet. Pick a flag and click on the image.';
     listEl.appendChild(empty);
+    syncZoneTools();
     return;
   }
   state.markers.forEach((m, i) => {
@@ -722,20 +817,23 @@ function renderList() {
     row.innerHTML = `
       <div>
         <div class="name">${m.flag}</div>
-        <small>"${m.text}"  ·  target ${(m.target.x*100).toFixed(1)}%, ${(m.target.y*100).toFixed(1)}%  ·  label ${(m.label.x*100).toFixed(1)}%, ${(m.label.y*100).toFixed(1)}%</small>
+        <small>"${m.text}"  ·  target ${(m.target.x*100).toFixed(1)}%, ${(m.target.y*100).toFixed(1)}%  ·  label ${(m.label.x*100).toFixed(1)}%, ${(m.label.y*100).toFixed(1)}%${m.zone && m.zone.length >= 3 ? `  ·  zone ${m.zone.length} corners` : ''}</small>
       </div>
       <button data-del="${i}" title="Remove">✕</button>
     `;
     row.addEventListener('click', ev => {
       if (ev.target.matches('[data-del]')) return;
+      if (state.drawing && state.drawing.idx !== i) cancelZone();
       state.selectedIdx = i;
       renderMarkers();
     });
     listEl.appendChild(row);
   });
+  syncZoneTools();
   listEl.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', ev => {
       const i = +ev.target.dataset.del;
+      if (state.drawing) cancelZone();
       state.markers.splice(i, 1);
       if (state.selectedIdx === i) state.selectedIdx = -1;
       else if (state.selectedIdx > i) state.selectedIdx--;
@@ -759,11 +857,16 @@ function updateJson() {
       .filter(s => byFlag[s.flag])
       .map(s => {
         const m = byFlag[s.flag]; seen.add(s.flag);
-        return {...s, target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}};
+        const out = {...s, target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}};
+        if (m.zone && m.zone.length >= 3) out.zone = m.zone.map(p => [r4(p[0]), r4(p[1])]);
+        else delete out.zone;
+        return out;
       });
     for (const m of state.markers) if (!seen.has(m.flag)) {
-      structures.push({flag: m.flag, name: m.text || m.area, matter: '', about: '', accept: [],
-                       target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}});
+      const out = {flag: m.flag, name: m.text || m.area, matter: '', about: '', accept: [],
+                   target: {x: r4(m.target.x), y: r4(m.target.y)}, label: {x: r4(m.label.x), y: r4(m.label.y)}};
+      if (m.zone && m.zone.length >= 3) out.zone = m.zone.map(p => [r4(p[0]), r4(p[1])]);
+      structures.push(out);
     }
     payload = {...state.dataFile, structures};
   } else {
@@ -772,7 +875,8 @@ function updateJson() {
       markers: state.markers.map(m => ({
         flag: m.flag, area: m.area, text: m.text,
         target: {x: r4(m.target.x), y: r4(m.target.y)},
-        label:  {x: r4(m.label.x),  y: r4(m.label.y)}
+        label:  {x: r4(m.label.x),  y: r4(m.label.y)},
+        zone:   m.zone && m.zone.length >= 3 ? m.zone.map(p => [r4(p[0]), r4(p[1])]) : undefined
       }))
     };
   }
@@ -781,6 +885,7 @@ function updateJson() {
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   if (!confirm('Remove all markers?')) return;
+  if (state.drawing) cancelZone();
   state.markers = [];
   state.selectedIdx = -1;
   renderMarkers();
@@ -823,11 +928,12 @@ document.getElementById('loadJson').addEventListener('click', () => {
         // Accept this tool's own export ({markers}) or a study-guide data file
         // ({structures}), so a draft data/<view>.json loads straight in.
         const list = parsed.markers
-          || (parsed.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label}));
+          || (parsed.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label, zone: s.zone}));
         state.markers = list.map(m => {
           // Migrate old schema (flat x,y) → new schema (target/label)
           if (m.target && m.label) {
-            return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target: m.target, label: m.label};
+            return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target: m.target, label: m.label,
+                    zone: Array.isArray(m.zone) && m.zone.length >= 3 ? m.zone.map(p => [+p[0], +p[1]]) : undefined};
           }
           const target = {x: m.x, y: m.y};
           return {flag: m.flag, area: m.area || m.flag, text: m.text || m.area || m.flag, target, label: autoPlaceLabel(target)};
@@ -840,6 +946,66 @@ document.getElementById('loadJson').addEventListener('click', () => {
     reader.readAsText(f);
   };
   input.click();
+});
+
+/* ---- zones ---- */
+function startZone() {
+  if (state.selectedIdx < 0) return;
+  state.drawing = {idx: state.selectedIdx, points: []};
+  statusEl.textContent = `Tracing ${state.markers[state.selectedIdx].text}: click around the outline, then click the first corner or press Enter.`;
+  renderMarkers();
+}
+function finishZone() {
+  if (!state.drawing) return;
+  const {idx, points} = state.drawing;
+  if (points.length < 3) { statusEl.textContent = 'A zone needs at least three corners.'; return; }
+  state.markers[idx].zone = points.map(p => [p[0], p[1]]);
+  state.drawing = null;
+  statusEl.textContent = `Zone saved for ${state.markers[idx].text} (${points.length} corners).`;
+  renderMarkers();
+  updateJson();
+}
+function cancelZone() {
+  if (!state.drawing) return;
+  state.drawing = null;
+  statusEl.textContent = 'Zone drawing cancelled.';
+  renderMarkers();
+}
+function syncZoneTools() {
+  const m = state.markers[state.selectedIdx];
+  zoneBtn.disabled = !m;
+  zoneBtn.classList.toggle('active', !!state.drawing);
+  zoneBtn.textContent = state.drawing ? 'Finish zone (Enter)' : (m && m.zone ? 'Redraw zone' : 'Draw zone');
+  zoneClearBtn.disabled = !(m && m.zone) || !!state.drawing;
+}
+function onStageMouseMove(e) {
+  if (!state.drawing || !state.drawing.points.length) return;
+  const img = document.getElementById('stageImg');
+  const rubber = document.querySelector('#stage svg.leaders line.rubber');
+  if (!img || !rubber) return;
+  const rect = img.getBoundingClientRect();
+  rubber.setAttribute('x2', (e.clientX - rect.left) / rect.width * 100);
+  rubber.setAttribute('y2', (e.clientY - rect.top) / rect.height * 100);
+}
+zoneBtn.addEventListener('click', () => { if (state.drawing) finishZone(); else startZone(); });
+zoneClearBtn.addEventListener('click', () => {
+  const m = state.markers[state.selectedIdx];
+  if (!m || !m.zone) return;
+  delete m.zone;
+  statusEl.textContent = `Zone removed from ${m.text}.`;
+  renderMarkers();
+  updateJson();
+});
+showZonesCb.addEventListener('change', () => {
+  const stage = document.getElementById('stage');
+  if (stage) stage.classList.toggle('hide-zones', !showZonesCb.checked);
+});
+document.addEventListener('keydown', e => {
+  if (!state.drawing) return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName)) return;
+  if (e.key === 'Enter') { e.preventDefault(); finishZone(); }
+  else if (e.key === 'Escape') { e.preventDefault(); cancelZone(); }
+  else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); state.drawing.points.pop(); renderMarkers(); }
 });
 
 hideLabelsCb.addEventListener('change', () => {
@@ -863,7 +1029,8 @@ renderList();
   fetch(`../data/${view}.json`).then(r => { if (!r.ok) throw new Error(r.status + ' ' + r.statusText); return r.json(); })
     .then(data => {
       state.dataFile = data;
-      state.markers = (data.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label}));
+      state.markers = (data.structures || []).map(s => ({flag: s.flag, area: s.name, text: s.name, target: s.target, label: s.label,
+        zone: Array.isArray(s.zone) && s.zone.length >= 3 ? s.zone.map(p => [+p[0], +p[1]]) : undefined}));
       state.selectedIdx = -1;
       const url = '../' + data.image;
       const img = new Image();

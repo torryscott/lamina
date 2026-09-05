@@ -67,6 +67,8 @@ That's the minimum. The survey works immediately; everything below is customizat
 
 The quiz has two modes, chosen on its start screen. **Name it** marks a structure with an X and asks for its name. **Find it** gives the name and asks the student to tap the structure; a tap counts if it lands within a small radius of the target, or within a larger one while still being closer to the target than to any other structure. `quiz.html?view=dorsal&mode=find` opens a view straight into find mode.
 
+A structure may also carry a `zone`: a list of `[x, y]` fractions outlining the region a Find it tap should count for, traced with the capture tool's Draw zone button. Structures without a zone are graded by distance to their marker.
+
 ## How the flag system works
 
 Each structure has a permanent short code — a view letter plus a number — and a long flag
