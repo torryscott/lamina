@@ -121,7 +121,7 @@
 
   .hero-plate { position: relative; }
   .plate {
-    position: relative; width: 100%; aspect-ratio: 2000 / 1597;
+    position: relative; width: 100%; aspect-ratio: 4 / 3;
   }
   .plate img {
     display: block; width: 100%; height: 100%; object-fit: contain;
@@ -245,7 +245,6 @@
   /* The full name needs its own row on a narrow screen, or it squeezes the nav. */
   @media (max-width: 620px) {
     .topbar { flex-wrap: wrap; row-gap: 10px; }
-    .plate .pill { white-space: normal; max-width: 11em; font-size: .72rem; text-align: center; line-height: 1.15; padding: 4px 8px; }
     .wordmark { flex: 1 0 100%; font-size: 1.18rem; }
     .topbar nav { gap: 18px; }
     .topbar nav a { white-space: nowrap; }
@@ -297,26 +296,26 @@
 
     <figure class="hero-plate" aria-labelledby="plateCap">
       <div class="plate">
-        <img src="images/clean/pulled-back-lateral.jpg"
-             alt="Sheep brain with the cerebellum drawn back to expose the midbrain, with four labeled structures.">
+        <img src="images/clean/midsagittal.jpg"
+             alt="Midsagittal section of a preserved sheep brain with four labeled structures.">
         <svg class="leaders" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <line x1="32.16" y1="50.38" x2="20.00" y2="10.00" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-          <line x1="44.52" y1="51.37" x2="64.00" y2="10.00" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-          <line x1="35.19" y1="59.35" x2="22.00" y2="90.00" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-          <line x1="51.83" y1="61.55" x2="68.00" y2="90.00" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="22.41" y1="46.20" x2="6.84"  y2="71.18" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="36.17" y1="52.41" x2="36.40" y2="80.02" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="54.85" y1="43.75" x2="70.72" y2="5.43"  stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          <line x1="91.02" y1="46.13" x2="94.34" y2="35.17" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
         </svg>
-        <span class="dot" style="left:32.16%;top:50.38%" aria-hidden="true"></span>
-        <span class="dot" style="left:44.52%;top:51.37%" aria-hidden="true"></span>
-        <span class="dot" style="left:35.19%;top:59.35%" aria-hidden="true"></span>
-        <span class="dot" style="left:51.83%;top:61.55%" aria-hidden="true"></span>
-        <span class="pill" style="left:20.00%;top:10.00%" aria-hidden="true">Lateral Geniculate Nucleus</span>
-        <span class="pill" style="left:64.00%;top:10.00%" aria-hidden="true">Superior Colliculus</span>
-        <span class="pill" style="left:22.00%;top:90.00%" aria-hidden="true">Medial Geniculate Nucleus</span>
-        <span class="pill" style="left:68.00%;top:90.00%" aria-hidden="true">Middle Cerebellar Peduncle</span>
+        <span class="dot" style="left:22.41%;top:46.20%" aria-hidden="true"></span>
+        <span class="dot" style="left:36.17%;top:52.41%" aria-hidden="true"></span>
+        <span class="dot" style="left:54.85%;top:43.75%" aria-hidden="true"></span>
+        <span class="dot" style="left:91.02%;top:46.13%" aria-hidden="true"></span>
+        <span class="pill" style="left:6.84%;top:71.18%"  aria-hidden="true">Corpus Callosum</span>
+        <span class="pill" style="left:36.40%;top:80.02%" aria-hidden="true">Thalamus</span>
+        <span class="pill" style="left:70.72%;top:5.43%"  aria-hidden="true">Superior Colliculus</span>
+        <span class="pill" style="left:94.34%;top:35.17%" aria-hidden="true">Cerebellum</span>
       </div>
       <figcaption class="plate-caption" id="plateCap">
-        <span>Lateral, retracted view · four of its <b id="heroTotal">5</b> structures</span>
-        <code>pulled-back-lateral.jpg</code>
+        <span>Midsagittal view · four of <b id="heroTotal">25</b> structures shown</span>
+        <code>midsagittal.jpg</code>
       </figcaption>
     </figure>
   </section>
@@ -484,8 +483,8 @@
     document.getElementById('progBar').style.width = (ready / all.length * 100) + '%';
     document.getElementById('srStatus').textContent = ready + ' of ' + all.length + ' views available.';
 
-    var hero = byId['pulled-back-lateral'];
-    if (hero) document.getElementById('heroTotal').textContent = hero.structures.length;
+    var mid = byId.midsagittal;
+    if (mid) document.getElementById('heroTotal').textContent = mid.structures.length;
 
     if (excludedCount) {
       document.getElementById('filterText').innerHTML =
