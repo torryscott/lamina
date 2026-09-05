@@ -92,7 +92,7 @@
   .hero {
     display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr);
     gap: 48px; align-items: center;
-    padding: 56px 0 40px;
+    padding: 56px 0 18px;
   }
   .eyebrow {
     font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
@@ -149,14 +149,9 @@
     padding: 4px 10px; border-radius: 999px; white-space: nowrap;
     box-shadow: 0 2px 8px rgba(31,28,24,.16);
   }
-  .plate-caption {
-    margin: 10px 4px 0; font-size: .82rem; color: var(--muted);
-    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  }
-  .plate-caption code { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
 
   /* ---------- choose a view ---------- */
-  .choose { padding: 28px 0 0; }
+  .choose { padding: 14px 0 0; }
   .choose-head {
     display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     border-top: 1px solid var(--rule); padding-top: 30px; margin-bottom: 8px;
@@ -241,7 +236,7 @@
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   @media (max-width: 860px) {
-    .hero { grid-template-columns: 1fr; gap: 26px; padding: 36px 0 24px; }
+    .hero { grid-template-columns: 1fr; gap: 26px; padding: 36px 0 12px; }
     .hero .lede { max-width: none; }
   }
   /* The full name needs its own row on a narrow screen, or it squeezes the nav. */
@@ -295,7 +290,7 @@
       </div>
     </div>
 
-    <figure class="hero-plate" aria-labelledby="plateCap">
+    <figure class="hero-plate" aria-label="Midsagittal section of a sheep brain with four structures labeled">
       <div class="plate">
         <img src="images/clean/midsagittal.jpg"
              alt="Midsagittal section of a preserved sheep brain with four labeled structures.">
@@ -314,10 +309,6 @@
         <span class="pill" style="left:70.72%;top:5.43%"  aria-hidden="true">Superior Colliculus</span>
         <span class="pill" style="left:94.34%;top:35.17%" aria-hidden="true">Cerebellum</span>
       </div>
-      <figcaption class="plate-caption" id="plateCap">
-        <span>Midsagittal view · four of <b id="heroTotal">25</b> structures shown</span>
-        <code>midsagittal.jpg</code>
-      </figcaption>
     </figure>
   </section>
 
@@ -484,8 +475,6 @@
     document.getElementById('progBar').style.width = (ready / all.length * 100) + '%';
     document.getElementById('srStatus').textContent = ready + ' of ' + all.length + ' views available.';
 
-    var mid = byId.midsagittal;
-    if (mid) document.getElementById('heroTotal').textContent = mid.structures.length;
 
     if (excludedCount) {
       document.getElementById('filterText').innerHTML =
