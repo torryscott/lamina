@@ -1,4 +1,4 @@
-/* Lamina — structure codes and URL flag resolution.
+/* Sheep Brain Study Guide — structure codes and URL flag resolution.
 
    Every structure has a permanent short code: a view letter and a number.
    A student link hides structures by listing their codes:
@@ -12,7 +12,7 @@
    verifies this file against the builder and the data files.
 
    Letters: D dorsal · L lateral · V ventral · P posterior · C coronal · M midsagittal */
-window.LAMINA = (function () {
+window.SHEEPBRAIN = (function () {
   'use strict';
   var CODES = {
     D1:   'inc_dorsal_central_sulcus',

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lamina — Sheep Brain Neuroanatomy</title>
+<title>Sheep Brain Study Guide</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -241,6 +242,13 @@
     .hero { grid-template-columns: 1fr; gap: 26px; padding: 36px 0 24px; }
     .hero .lede { max-width: none; }
   }
+  /* The full name needs its own row on a narrow screen, or it squeezes the nav. */
+  @media (max-width: 620px) {
+    .topbar { flex-wrap: wrap; row-gap: 10px; }
+    .wordmark { flex: 1 0 100%; font-size: 1.18rem; }
+    .topbar nav { gap: 18px; }
+    .topbar nav a { white-space: nowrap; }
+  }
   @media (max-width: 560px) {
     .container { padding: 0 18px; }
     .topbar nav { gap: 14px; }
@@ -258,11 +266,11 @@
 <div class="container">
 
   <header class="topbar">
-    <a class="wordmark" href="index.html">Lamina<i>.</i></a>
+    <a class="wordmark" href="index.html">Sheep Brain Study Guide<i>.</i></a>
     <nav aria-label="Site">
       <a href="#views">Views</a>
       <a href="tools/link-builder.html">For instructors</a>
-      <a href="https://github.com/torryscott/lamina">Source</a>
+      <a href="https://github.com/torryscott/sheepbrain">Source</a>
     </nav>
   </header>
 
@@ -273,7 +281,7 @@
 
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Sheep brain neuroanatomy</p>
+      <p class="eyebrow">An open neuroanatomy module</p>
       <h1>Learn the brain by finding your way around it<i>.</i></h1>
       <p class="lede">An interactive atlas of a dissected sheep brain, and a quiz that
          tests you on the same structures — from twelve views.</p>
@@ -334,13 +342,11 @@
       </div>
       <div>
         <h5>The name</h5>
-        <p><span class="etym">lamina</span> — Latin, a plate or a layer. The laminae of the
-           cortex, and the plate of an anatomical atlas.</p>
       </div>
       <div>
         <h5>Open source</h5>
         <p>Code under MIT. Specimen photographs CC BY 4.0.
-           <a href="https://github.com/torryscott/lamina">github.com/torryscott/lamina</a></p>
+           <a href="https://github.com/torryscott/sheepbrain">github.com/torryscott/sheepbrain</a></p>
       </div>
     </div>
     <p class="fine">St. Mary's College of Maryland · Neurobiology lab practicum</p>
@@ -377,7 +383,7 @@
   ];
 
   var search = new URLSearchParams(window.location.search);
-  var excluded = LAMINA.excludedMap();   // honours ?off= and the long form
+  var excluded = SHEEPBRAIN.excludedMap();   // honours ?off= and the long form
   var excludedCount = Object.keys(excluded).length;
 
   function linkFor(page, id) {

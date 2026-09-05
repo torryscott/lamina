@@ -1,4 +1,4 @@
-# Lamina
+# Sheep Brain Study Guide
 
 **A customizable sheep brain neuroanatomy practicum for Qualtrics, with an interactive
 labeled atlas.**
@@ -10,8 +10,6 @@ or duplicating the survey**.
 Built for the Neurobiology lab practicum at St. Mary's College of Maryland, and released
 so other instructors can run it, adapt it, or extend it to their own specimens.
 
-> *lamina* — Latin, a plate or layer. Both the laminae of the cortex and the plate of an
-> anatomical atlas.
 
 ---
 

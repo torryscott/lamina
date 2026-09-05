@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate the two Lamina QSF variants from one canonical survey file.
+Generate the two Qualtrics QSF variants from one canonical survey file.
 
   lamina.qsf                  images served from GitHub Pages (portable — what
                               adopters import; works on import with no uploads)

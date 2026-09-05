@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve the Lamina repo locally for development.
+"""Serve the repo locally for development.
 
     python3 scripts/serve.py [port]
 
@@ -25,5 +25,5 @@ class Server(socketserver.TCPServer):
 
 
 with Server(("127.0.0.1", PORT), Handler) as httpd:
-    print(f"Lamina serving {ROOT} at http://localhost:{PORT}", flush=True)
+    print(f"serving {ROOT} at http://localhost:{PORT}", flush=True)
     httpd.serve_forever()

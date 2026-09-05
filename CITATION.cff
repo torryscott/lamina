@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: Lamina
+title: Sheep Brain Study Guide
 message: >-
   If you use this module in your teaching or reference it in
   scholarship, please cite it as below.
@@ -11,7 +11,7 @@ authors:
     #   family-names: ""
     #   affiliation: "St. Mary's College of Maryland"
     #   orcid: "https://orcid.org/0000-0000-0000-0000"
-repository-code: "https://github.com/torryscott/lamina"
+repository-code: "https://github.com/torryscott/sheepbrain"
 abstract: >-
   A customizable neuroanatomy practicum for Qualtrics. Students
   identify structures on photographs of a preserved sheep brain
@@ -27,4 +27,4 @@ keywords:
   - interactive atlas
   - open educational resources
 license: MIT
-license-url: "https://github.com/torryscott/lamina/blob/main/LICENSE"
+license-url: "https://github.com/torryscott/sheepbrain/blob/main/LICENSE"

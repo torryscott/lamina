@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lamina — Practicum</title>
+<title>Sheep Brain Study Guide — Quiz</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -240,7 +241,7 @@
 <body>
 
 <header class="top">
-  <div class="brand">Lamina<span>.</span></div>
+  <div class="brand">Sheep Brain<span>.</span></div>
   <div class="viewname" id="viewName">—</div>
   <span class="spacer"></span>
   <button class="ghost" id="atlasLink" type="button">Open atlas</button>
@@ -328,7 +329,7 @@
   <p class="sr-only" role="status" aria-live="polite" id="srStatus"></p>
 </div>
 
-<footer class="foot">Lamina · Sheep brain neuroanatomy practicum</footer>
+<footer class="foot">Sheep Brain Study Guide</footer>
 
 <script>
 (function () {
@@ -350,7 +351,7 @@
   };
 
   /* ---------- flag filtering, same convention as the atlas ---------- */
-  function excludedFlags() { return LAMINA.excludedMap(); }   // ?off= or the long form
+  function excludedFlags() { return SHEEPBRAIN.excludedMap(); }   // ?off= or the long form
 
   /* ---------- answer matching ----------
      Two layers. Mechanical variants (ordinals, articles, plurals, punctuation)
@@ -648,7 +649,7 @@
       var ex = excludedFlags();
       state.allowed = data.structures.filter(function (s) { return !ex[s.flag]; });
 
-      document.title = 'Lamina \u2014 ' + data.label + ' Practicum';
+      document.title = 'Sheep Brain Study Guide \u2014 ' + data.label + ' Quiz';
       el('viewName').textContent = data.label;
       el('startTitle').textContent = data.label + ' Practicum';
       el('startCount').textContent = state.allowed.length;
