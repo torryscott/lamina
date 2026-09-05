@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sheep Brain Study Guide — Atlas</title>
+<title>Open Ovis — Atlas</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -291,7 +291,7 @@
 </head>
 <body>
 <section class="hero">
-  <div class="hero-eyebrow">Sheep Brain · Atlas · <a id="homeLink" href="index.html">all views</a></div>
+  <div class="hero-eyebrow">Open Ovis · Atlas · <a id="homeLink" href="index.html">all views</a></div>
   <h1 id="viewTitle">Atlas</h1>
   <p id="viewBlurb">Switch between study modes below. Your instructor's selection determines which structures are shown.</p>
 </section>
@@ -321,7 +321,7 @@
   </div>
 </main>
 
-<footer id="foot">Sheep Brain Study Guide</footer>
+<footer id="foot">Open Ovis · sheep brain study guide</footer>
 
 <script>
 
@@ -334,7 +334,7 @@ const cntTotal = document.getElementById('cntTotal');
 
 // Which flags does the URL hide? codes.js resolves ?off= and the long form.
 function readFlags() {
-  return new Set(Object.keys(SHEEPBRAIN.excludedMap()));
+  return new Set(Object.keys(OPENOVIS.excludedMap()));
 }
 
 const srList = document.getElementById('srList');
@@ -513,9 +513,9 @@ fetch('data/' + view + '.json')
       return { flag: s.flag, text: s.name, target: s.target, label: s.label };
     });
 
-    document.title = 'Sheep Brain Study Guide \u2014 ' + data.label + ' Atlas';
+    document.title = 'Open Ovis \u2014 ' + data.label + ' Atlas';
     document.getElementById('viewTitle').textContent = data.label + ' View';
-    document.getElementById('foot').textContent = 'Sheep Brain \u00b7 ' + data.label + ' atlas';
+    document.getElementById('foot').textContent = 'Open Ovis \u00b7 ' + data.label + ' atlas';
     atlasImg.alt = data.label + ' section of a preserved sheep brain. '
       + 'A list of labeled structures follows the image.';
     atlasImg.addEventListener('load', function () { render(); updateIW(); });

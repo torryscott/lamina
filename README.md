@@ -1,4 +1,6 @@
-# Sheep Brain Study Guide
+# Open Ovis
+
+An open sheep brain study guide.
 
 **A customizable sheep brain neuroanatomy practicum for Qualtrics, with an interactive
 labeled atlas.**
