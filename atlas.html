@@ -338,6 +338,8 @@
     padding: 10px 12px 11px; box-shadow: 0 6px 22px rgba(20,20,30,.16);
     font-size: .9rem; line-height: 1.45; color: var(--ink-soft);
   }
+  /* On a narrow figure the card would cover the plate, so it docks beneath it instead. */
+  .pop.docked { position: static; width: auto; max-width: none; margin: 12px 0 2px; pointer-events: auto; box-shadow: none; }
   .pop-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
   .pop-name { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.05rem; color: var(--ink); }
   .pop-chip {
@@ -376,6 +378,7 @@
         <img id="atlasImg" alt="">
       </div>
     </div>
+    <div id="popDock"></div>
     <h2 class="sr-only">Labeled structures in this view</h2>
     <ul id="srList" class="sr-only" aria-live="polite"></ul>
     <div class="pop" id="pop" role="status" aria-live="polite" hidden>
@@ -419,15 +422,20 @@ function showPop(m, pill) {
   const chip = document.getElementById('popChip');
   chip.textContent = m.matter || ''; chip.hidden = !m.matter;
   document.getElementById('popAbout').textContent = m.about || '';
-  const host = pill.parentElement;             // the figure holding this pill: main or enlarged
+  const figure = pill.parentElement;           // the figure holding this pill: main or enlarged
+  const dock = figure === stage && stage.clientWidth < NARROW_PLATE;
+  const host = dock ? document.getElementById('popDock') : figure;
   if (pop.parentElement !== host) host.appendChild(pop);
+  pop.classList.toggle('docked', dock);
   popPill = pill; pop.hidden = false; placePop();
-  if (host.id === 'zoomStage') pop.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  if (figure.id === 'zoomStage') pop.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
+const NARROW_PLATE = 560;   // px; below this the popover docks under the figure
 function hidePop() { pop.hidden = true; popPill = null; }
 /* Below the label if there is room, else above; kept inside the plate sideways. */
 function placePop() {
   if (pop.hidden || !popPill) return;
+  if (pop.classList.contains('docked')) { pop.style.left = ''; pop.style.top = ''; return; }
   const S = popPill.parentElement.getBoundingClientRect(), P = popPill.getBoundingClientRect();
   const w = pop.offsetWidth, h = pop.offsetHeight, gap = 8;
   let left = P.left - S.left + P.width / 2 - w / 2;
