@@ -3,9 +3,9 @@
 
 Every other plate comes from a PNG master with the background already removed.
 Coronal F has no master, but the atlas PDF embeds the original photograph
-underneath its printed labels, so the unlabelled image can be pulled straight
+underneath its printed labels, so the unlabeled image can be pulled straight
 out. The photo sits on a dark dissection surface, so the specimen is segmented
-by colour rather than by an alpha channel.
+by color rather than by an alpha channel.
 
 The photograph is tilted. `--rotate` sets how far it is turned before trimming,
 in degrees clockwise. 5.0 reproduces the orientation of the printed plate;

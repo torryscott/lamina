@@ -25,7 +25,7 @@
       "flag": "inc_mid_thalamus",
       "name": "Thalamus",
       "matter": "Gray Matter",
-      "about": "The thalamus is a grey matter structure located in the diencephalon. It acts as a sensory and motor relay.",
+      "about": "The thalamus is a gray matter structure located in the diencephalon. It acts as a sensory and motor relay.",
       "target": {
         "x": 0.3617,
         "y": 0.5241
@@ -111,7 +111,7 @@
       "flag": "inc_mid_cingulate_gyrus",
       "name": "Cingulate Gyrus",
       "matter": "Gray Matter",
-      "about": "The cingulate gyrus is grey matter just dorsal to the corpus callosum. It is a part of the limbic system and acts as an integrative hub of emotions, sensation, and behavioral regulation.",
+      "about": "The cingulate gyrus is gray matter just dorsal to the corpus callosum. It is a part of the limbic system and acts as an integrative hub of emotions, sensation, and behavioral regulation.",
       "target": {
         "x": 0.3267,
         "y": 0.3794

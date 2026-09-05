@@ -6,7 +6,7 @@
      ?off=D1.M3
 
    Everything not listed is shown. The long form ?inc_<flag>=0 is still
-   honoured. Codes are case-insensitive in the URL. They never change and
+   honored. Codes are case-insensitive in the URL. They never change and
    are never reused: when a structure is added, give it the next number in
    its view's run, wherever it sits in the list. scripts/check-codes.py
    verifies this file against the builder and the data files.

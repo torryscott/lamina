@@ -3,8 +3,8 @@
 ## Brain icon (favicon.svg)
 
 The site icon is the `brain` icon from [Lucide](https://lucide.dev), used under
-the ISC licence, with its stroke weight increased and colour set to match the
-site. The licence text follows.
+the ISC license, with its stroke weight increased and color set to match the
+site. The license text follows.
 
 ```
 ISC License

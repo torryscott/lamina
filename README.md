@@ -72,7 +72,7 @@ name. Both live in `codes.js`; the code is what goes in links.
 ?off=D1.M3        hide these structures; everything else shown
 ```
 
-Codes are case-insensitive and never reused. The long form is still honoured:
+Codes are case-insensitive and never reused. The long form is still honored:
 
 ```
 inc_mid_thalamus
