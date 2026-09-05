@@ -257,7 +257,20 @@
   .stage.mode-hide .marker { display: none; }
   .stage.mode-hide svg.leaders line { display: none; }
 
-  /* Mode: hover-reveal */
+  /* Mode: hover-reveal. One label shows at a time, so nothing can crowd: the
+     dots and the revealed pill keep a readable minimum size on small screens
+     instead of scaling down with the figure. */
+  .stage.mode-hover .marker {
+    width: clamp(7px, calc(var(--iw, 1000px) * 0.0072), 14px);
+    height: clamp(7px, calc(var(--iw, 1000px) * 0.0072), 14px);
+    box-shadow: 0 0 0 3px var(--marker-ring), 0 1px 2px rgba(0,0,0,0.3);
+    border-width: 1.5px;
+  }
+  .stage.mode-hover .label-pill {
+    font-size: clamp(0.75rem, calc(var(--iw, 1000px) * 0.014), 1.55rem);
+    border-width: 1px;
+  }
+  .stage.mode-hover svg.leaders line { stroke-width: clamp(1.25px, calc(var(--iw, 1000px) * 0.00175), 2.5px); }
   .stage.mode-hover .label-pill { opacity: 0; pointer-events: none; }
   .stage.mode-hover svg.leaders line { opacity: 0; }
   .stage.mode-hover .marker.hovered,
