@@ -25,8 +25,8 @@
     --panel: #ffffff;
     --ink: #1a1d29;
     --ink-soft: #3c4050;
-    --muted: #6b7280;
-    --muted-soft: #9aa0ac;
+    --muted: #666d7a;
+    --muted-soft: #656c7b;
     --accent: #1e3a5f;
     --accent-hover: #2a4e7a;
     --accent-soft: #e8eef5;
@@ -245,6 +245,37 @@
     .stage-card { padding: 10px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ---------- enlarge: a pannable, pinch-zoomable view centred on the X ---------- */
+  .stage { position: relative; }
+  .zoom-btn {
+    position: absolute; right: 8px; bottom: 8px; z-index: 4;
+    display: inline-flex; align-items: center; gap: 6px;
+    font: inherit; font-size: .8rem; font-weight: 500; color: var(--ink);
+    background: rgba(255,255,255,.92); border: 1px solid var(--rule-strong); border-radius: 999px;
+    padding: 6px 11px; cursor: pointer; box-shadow: var(--shadow-sm);
+  }
+  .zoom-btn svg { width: 14px; height: 14px; }
+  .zoom-btn:hover { background: #fff; }
+  .zoom-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  #plate { cursor: zoom-in; }
+  .zoom { position: fixed; inset: 0; z-index: 60; background: rgba(20,20,30,.94); }
+  .zoom-scroller { position: absolute; inset: 0; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; }
+  .zoom-canvas { position: relative; width: var(--zw, 1000px); }
+  .zoom-canvas img { display: block; width: 100%; height: auto; }
+  .zoom-close {
+    position: fixed; top: 14px; right: 14px; z-index: 61;
+    font: inherit; font-size: .95rem; font-weight: 600; color: var(--ink);
+    background: #fff; border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  }
+  .zoom-close:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .zoom-hint {
+    position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); margin: 0;
+    color: rgba(255,255,255,.85); font-size: .85rem; background: rgba(0,0,0,.45);
+    padding: 6px 12px; border-radius: 999px; pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) { .zoom-hint { display: none; } }
 </style>
 <script src="codes.js"></script>
 </head>
@@ -284,6 +315,7 @@
       <div class="stage-wrap">
         <div class="stage" id="stage">
           <img id="plate" alt="" >
+          <button class="zoom-btn" id="zoomBtn" type="button" aria-label="Enlarge the image"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 6V2h4M14 10v4h-4M2 2l4.5 4.5M14 14 9.5 9.5"/></svg>Enlarge</button>
         </div>
       </div>
     </div>
@@ -340,6 +372,17 @@
 </div>
 
 <footer class="foot">Open Ovis · sheep brain study guide</footer>
+
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Enlarged view of the plate" hidden>
+  <div class="zoom-scroller" id="zoomScroller">
+    <div class="zoom-canvas" id="zoomCanvas">
+      <img id="zoomImg" alt="Enlarged plate with the target marked">
+      <div class="xmark" id="zoomX" aria-hidden="true"></div>
+    </div>
+  </div>
+  <button class="zoom-close" id="zoomClose" type="button">Close</button>
+  <p class="zoom-hint" aria-hidden="true">Drag to pan · pinch to zoom</p>
+</div>
 
 <script>
 (function () {
@@ -678,7 +721,44 @@
         'browsers block fetch() on file:// URLs.';
       el('btnBegin').disabled = true;
     });
+
+  /* ---------- enlarge ---------- */
+  (function () {
+    var zoom = el('zoom'), scroller = el('zoomScroller'), canvas = el('zoomCanvas'),
+        zimg = el('zoomImg'), zx = el('zoomX'), closeBtn = el('zoomClose'), plate = el('plate');
+    var lastFocus = null;
+    function openZoom() {
+      var s = current(); if (!s || !plate.src) return;
+      lastFocus = document.activeElement;
+      var w = Math.min(plate.naturalWidth || 2000, Math.max(window.innerWidth * 2.4, 1000));
+      canvas.style.setProperty('--zw', w + 'px');
+      canvas.style.setProperty('--iw', w + 'px');          // the X scales with the enlarged plate
+      zx.style.left = (s.target.x * 100) + '%';
+      zx.style.top  = (s.target.y * 100) + '%';
+      zimg.src = plate.src;
+      zoom.hidden = false;
+      document.body.style.overflow = 'hidden';
+      var centre = function () {
+        var h = w * (plate.naturalHeight / plate.naturalWidth);
+        scroller.scrollLeft = s.target.x * w - scroller.clientWidth / 2;
+        scroller.scrollTop  = s.target.y * h - scroller.clientHeight / 2;
+        closeBtn.focus();
+      };
+      if (zimg.complete && zimg.naturalWidth) centre(); else zimg.onload = centre;
+    }
+    function closeZoom() {
+      zoom.hidden = true;
+      document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    plate.addEventListener('click', openZoom);
+    el('zoomBtn').addEventListener('click', openZoom);
+    closeBtn.addEventListener('click', closeZoom);
+    scroller.addEventListener('click', function (e) { if (e.target === scroller || e.target === canvas) closeZoom(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !zoom.hidden) closeZoom(); });
+  })();
 })();
 </script>
+
 </body>
 </html>
