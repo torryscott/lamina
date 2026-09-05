@@ -311,7 +311,8 @@
     color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 9px;
   }
   .detail-about { margin: 0; color: var(--ink-soft); font-size: .98rem; line-height: 1.5; max-width: 78ch; }
-  @media (max-width: 720px) { .detail { padding: 12px 14px; min-height: 0; } .detail-name { font-size: 1.1rem; } }
+  .detail.below { margin: 14px auto 0; min-height: 0; }
+  @media (max-width: 720px) { .detail { padding: 12px 14px; } .detail-name { font-size: 1.1rem; } }
 </style>
 <script src="codes.js"></script>
 </head>
@@ -377,6 +378,33 @@ const srList = document.getElementById('srList');
 
 const detailEmpty = document.getElementById('detailEmpty');
 const detailBody  = document.getElementById('detailBody');
+/* The panel must never change height, or a hover near the top of the plate
+   pushes the plate out from under the cursor and the label strobes. Measure
+   every description offscreen at the current width and reserve the tallest. */
+function reserveDetailHeight() {
+  const detail = document.getElementById('detail');
+  if (!CAN_HOVER || !detail || !MARKERS.length) return;
+  const probe = detail.cloneNode(true);
+  probe.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+  probe.removeAttribute('id'); probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;min-height:0;width:' + detail.clientWidth + 'px';
+  document.body.appendChild(probe);
+  const pe = probe.querySelector('.detail-empty'), pb = probe.querySelector('.detail-body');
+  const pn = probe.querySelector('.detail-name'), pc = probe.querySelector('.detail-chip'), pa = probe.querySelector('.detail-about');
+  pe.hidden = false; pb.hidden = true;
+  let max = probe.offsetHeight;
+  pe.hidden = true; pb.hidden = false;
+  MARKERS.forEach(m => {
+    pn.textContent = m.text; pc.textContent = m.matter || ''; pc.hidden = !m.matter; pa.textContent = m.about || '';
+    max = Math.max(max, probe.offsetHeight);
+  });
+  probe.remove();
+  detail.style.minHeight = max + 'px';
+}
+let reserveTimer = null;
+window.addEventListener('resize', () => { clearTimeout(reserveTimer); reserveTimer = setTimeout(reserveDetailHeight, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(reserveDetailHeight);
+
 function showDetail(m) {
   if (!m) { detailBody.hidden = true; detailEmpty.hidden = false; return; }
   document.getElementById('detailName').textContent = m.text;
@@ -389,7 +417,14 @@ function showDetail(m) {
 /* Does this device have a real hover-capable pointer? A phone or tablet
    does not, so hover-based reveal has to become tap-based there. */
 const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-if (!CAN_HOVER) detailEmpty.textContent = 'Tap a marker to read about that structure.';
+if (!CAN_HOVER) {
+  detailEmpty.textContent = 'Tap a marker to read about that structure.';
+  // With no hover there is no strobe to prevent, so the panel sits under the
+  // plate where filling it cannot move the markers, and needs no reserved height.
+  const d = document.getElementById('detail');
+  document.querySelector('.stage-wrap').after(d);
+  d.classList.add('below');
+}
 
 function render() {
   // Remove any existing overlay content (keep the <img>)
@@ -482,7 +517,13 @@ function render() {
       e.preventDefault();
       e.stopPropagation();
       if (pinned === entry) { clearPinned(); }
-      else { clearPinned(); enter(); pinned = entry; }
+      else {
+        clearPinned(); enter(); pinned = entry;
+        if (!CAN_HOVER) {
+          const d = document.getElementById('detail'), r = d.getBoundingClientRect();
+          if (r.bottom > window.innerHeight || r.top < 0) d.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
     });
   });
 }
@@ -569,7 +610,7 @@ fetch('data/' + view + '.json')
     document.getElementById('foot').textContent = 'Open Ovis \u00b7 ' + data.label + ' atlas';
     atlasImg.alt = data.label + ' section of a preserved sheep brain. '
       + 'A list of labeled structures follows the image.';
-    atlasImg.addEventListener('load', function () { render(); updateIW(); });
+    atlasImg.addEventListener('load', function () { render(); updateIW(); reserveDetailHeight(); });
     atlasImg.src = data.image;
   })
   .catch(function (err) {
