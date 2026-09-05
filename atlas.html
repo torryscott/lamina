@@ -155,6 +155,7 @@
     box-shadow: var(--shadow-md);
   }
   .stage-wrap {
+    position: relative;
     display: flex;
     justify-content: center;
   }
@@ -177,18 +178,22 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
-    overflow: visible;           /* leaders may run to pills placed in the margin band */
     z-index: 1;
   }
+  .stage svg.leaders line { stroke-width: calc(var(--iw, 1000px) * 0.00175); }
+  /* The figure is one fixed composition: dots, pills, and leaders are sized
+     as fractions of the plate width (--iw), so a phone shows the desktop
+     figure scaled down rather than a rearranged one. Enlarge opens it at
+     full size. */
   .marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: clamp(6px, calc(var(--iw, 1000px) * 0.0072), 14px);
-    height: clamp(6px, calc(var(--iw, 1000px) * 0.0072), 14px);
+    width: calc(var(--iw, 1000px) * 0.0072);
+    height: calc(var(--iw, 1000px) * 0.0072);
     border-radius: 50%;
     background: var(--marker);
-    box-shadow: 0 0 0 3px var(--marker-ring), 0 1px 2px rgba(0,0,0,0.3);
-    border: 1.5px solid #fff;
+    box-shadow: 0 0 0 calc(var(--iw, 1000px) * 0.003) var(--marker-ring), 0 1px 2px rgba(0,0,0,0.3);
+    border: calc(var(--iw, 1000px) * 0.0015) solid #fff;
     z-index: 3;
     transition: transform 0.15s;
     padding: 0;
@@ -226,11 +231,10 @@
     position: absolute;
     transform: translate(-50%, -50%);
     background: var(--label-bg);
-    border: 1px solid var(--label-border);
+    border: calc(var(--iw, 1000px) * 0.001) solid var(--label-border);
     padding: 0.3em 0.8em;
-    border-radius: 14px;
-    /* --label-scale is set by the layout pass when the pills need to shrink to fit */
-    font-size: calc(clamp(0.8rem, var(--iw, 1000px) * 0.014, 1.55rem) * var(--label-scale, 1));
+    border-radius: 1em;
+    font-size: calc(var(--iw, 1000px) * 0.014);
     width: max-content;          /* size from the text, not from where the pill sits */
     white-space: normal;
     word-break: normal;
@@ -248,13 +252,8 @@
     cursor: default;
   }
 
-  /* The margin band the label pass may open above and below the plate is
-     only needed while every label is showing. */
-  .stage.mode-show { margin-top: var(--band-top, 0px); margin-bottom: var(--band-bottom, 0px); }
-
-  /* Mode: hide-all. Pills stay in the layout (visibility, not display) so
-     the label pass can still measure them. */
-  .stage.mode-hide .label-pill { visibility: hidden; }
+  /* Mode: hide-all */
+  .stage.mode-hide .label-pill { display: none; }
   .stage.mode-hide .marker { display: none; }
   .stage.mode-hide svg.leaders line { display: none; }
 
@@ -270,6 +269,34 @@
     border-color: var(--accent);
   }
   .stage.mode-hover svg.leaders line.hovered { opacity: 1; }
+
+  /* ---------- Enlarge: the same figure at full size, panned by hand ---------- */
+  .zoom-btn {
+    position: absolute; right: 10px; bottom: 10px; z-index: 5;
+    font: inherit; font-size: 0.82rem; font-weight: 600; padding: 6px 12px;
+    border-radius: 999px; border: 1px solid var(--label-border);
+    background: rgba(255,255,255,0.94); color: var(--ink); cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .zoom-btn:hover { background: #fff; border-color: var(--accent); }
+  .zoom-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .zoom { position: fixed; inset: 0; z-index: 60; background: rgba(20, 24, 34, 0.94); }
+  .zoom-scroller { position: absolute; inset: 0; overflow: auto; -webkit-overflow-scrolling: touch; cursor: grab; }
+  .zoom-scroller.dragging { cursor: grabbing; }
+  .zoom-stage { display: block; max-width: none; margin: 56px 24px 48px; background: #fff; border-radius: 6px; }
+  .zoom-stage img { max-width: none; max-height: none; width: 100%; height: auto; }
+  .zoom-close {
+    position: absolute; top: 12px; right: 12px; z-index: 2;
+    font: inherit; font-size: 0.85rem; font-weight: 600; padding: 8px 14px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.14); color: #fff; cursor: pointer;
+  }
+  .zoom-close:hover { background: rgba(255,255,255,0.26); }
+  .zoom-close:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .zoom-hint {
+    position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center;
+    color: #fff; opacity: 0.7; font-size: 0.78rem; pointer-events: none;
+  }
 
   footer {
     max-width: 1280px;
@@ -297,11 +324,6 @@
     .mode-group button { padding: 6px 10px; font-size: 0.8rem; }
     .spacer { display: none; }
     .count-chip { text-align: center; font-size: 0.78rem; }
-    .label-pill {
-      max-width: 9em;
-      padding: 0.2em 0.55em;
-      font-weight: 600;
-    }
   }
 
 
@@ -365,6 +387,14 @@
 
 <footer id="foot">Open Ovis · sheep brain study guide</footer>
 
+<div class="zoom" id="zoom" hidden role="dialog" aria-modal="true" aria-label="Enlarged atlas figure">
+  <div class="zoom-scroller" id="zoomScroller">
+    <div class="stage zoom-stage mode-show" id="zoomStage"><img id="zoomImg" alt=""></div>
+  </div>
+  <button type="button" class="zoom-close" id="zoomClose">Close</button>
+  <p class="zoom-hint">Drag to pan · Esc to close</p>
+</div>
+
 <script>
 
 let MARKERS = [];   // populated from data/<view>.json
@@ -389,13 +419,16 @@ function showPop(m, pill) {
   const chip = document.getElementById('popChip');
   chip.textContent = m.matter || ''; chip.hidden = !m.matter;
   document.getElementById('popAbout').textContent = m.about || '';
+  const host = pill.parentElement;             // the figure holding this pill: main or enlarged
+  if (pop.parentElement !== host) host.appendChild(pop);
   popPill = pill; pop.hidden = false; placePop();
+  if (host.id === 'zoomStage') pop.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
 function hidePop() { pop.hidden = true; popPill = null; }
 /* Below the label if there is room, else above; kept inside the plate sideways. */
 function placePop() {
   if (pop.hidden || !popPill) return;
-  const S = stage.getBoundingClientRect(), P = popPill.getBoundingClientRect();
+  const S = popPill.parentElement.getBoundingClientRect(), P = popPill.getBoundingClientRect();
   const w = pop.offsetWidth, h = pop.offsetHeight, gap = 8;
   let left = P.left - S.left + P.width / 2 - w / 2;
   left = Math.max(8, Math.min(left, S.width - w - 8));
@@ -412,20 +445,7 @@ window.addEventListener('resize', placePop);
 const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 function render() {
-  // Remove any existing overlay content (keep the <img>)
-  stage.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
   hidePop();
-  laid = [];
-
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('class', 'leaders');
-  svg.setAttribute('viewBox', '0 0 100 100');
-  svg.setAttribute('preserveAspectRatio', 'none');
-  svg.setAttribute('aria-hidden', 'true');  // decorative; text alternative lives in srList
-  svg.setAttribute('focusable', 'false');
-  stage.appendChild(svg);
-
   const excluded = readFlags();
   const visible = MARKERS.filter(m => !excluded.has(m.flag));
   cntShown.textContent = visible.length;
@@ -439,6 +459,24 @@ function render() {
     srList.appendChild(li);
   });
 
+  buildFigure(stage, visible);
+}
+
+/* Draw the labeled figure into a container: leaders, dots, pills, and the
+   hover / tap / keyboard behavior. The main stage and the enlarged copy are
+   built by the same code, so they behave the same. */
+function buildFigure(container, visible) {
+  container.querySelectorAll('.marker, .label-pill, svg.leaders').forEach(n => n.remove());
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'leaders');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');  // decorative; text alternative lives in srList
+  svg.setAttribute('focusable', 'false');
+  container.appendChild(svg);
+
   visible.forEach((m) => {
     const line = document.createElementNS(svgNS, 'line');
     line.setAttribute('x1', m.target.x * 100);
@@ -446,7 +484,6 @@ function render() {
     line.setAttribute('x2', m.label.x * 100);
     line.setAttribute('y2', m.label.y * 100);
     line.setAttribute('stroke', 'rgba(30, 58, 95, 0.7)');
-    line.setAttribute('stroke-width', '1.75');
     line.setAttribute('vector-effect', 'non-scaling-stroke');
     svg.appendChild(line);
 
@@ -458,7 +495,7 @@ function render() {
     dot.style.top  = (m.target.y * 100) + '%';
     dot.dataset.flag = m.flag;
     dot.setAttribute('aria-label', m.text);
-    stage.appendChild(dot);
+    container.appendChild(dot);
 
     // Label pill: decorative visual; the real accessible name is on the dot button.
     // Hide the pill from assistive tech to avoid duplicate announcement.
@@ -469,8 +506,7 @@ function render() {
     pill.textContent = m.text;
     pill.dataset.flag = m.flag;
     pill.setAttribute('aria-hidden', 'true');
-    stage.appendChild(pill);
-    laid.push({ m, pill, line });
+    container.appendChild(pill);
 
     const entry = {};
     const enter = () => {
@@ -508,115 +544,7 @@ function render() {
       else { clearPinned(); enter(); pinned = entry; }
     });
   });
-  layoutLabels();
 }
-
-/* ---- Label layout ----
-   Dots never move. Pills start where the data file puts them, then get pushed
-   out of each other's way, off the dots, and back inside the plate. If pills
-   still overlap after that, the text steps down a size and the pass repeats,
-   down to a 10 px floor. If they still overlap at the floor, the plate gets a
-   margin band above and below and pills may move into it, the way labels sit
-   in the margin of a printed atlas. Runs after every render, on resize, and
-   once the web font has loaded. At widths where nothing overlaps, nothing moves. */
-let laid = [];                                   // [{m, pill, line}] from the last render
-const LABEL_STEPS = [1, 0.9, 0.8];
-const LABEL_MIN_PX = 10;
-const LABEL_BANDS = [0, 0.3, 0.6];              // margin band above and below, as a fraction of plate height
-const LABEL_GAP = 3;                             // px kept between pills
-const DOT_KEEPOUT = 9;                           // half-size of the box a pill keeps off a dot
-
-function layoutLabels() {
-  updateIW();
-  const W = atlasImg.clientWidth, H = atlasImg.clientHeight;
-  if (!W || !H || !laid.length) return;
-  stage.style.setProperty('--label-scale', 1);
-  const basePx = parseFloat(getComputedStyle(laid[0].pill).fontSize);
-  const dots = laid.map(e => ({ x: e.m.target.x * W, y: e.m.target.y * H }));
-  let best = null;
-  outer:
-  for (const band of LABEL_BANDS) {
-    for (const scale of LABEL_STEPS) {
-      if (basePx * scale < LABEL_MIN_PX && best) continue;
-      stage.style.setProperty('--label-scale', scale);
-      const boxes = laid.map(e => ({
-        e, w: e.pill.offsetWidth + LABEL_GAP, h: e.pill.offsetHeight + LABEL_GAP,
-        x: e.m.label.x * W, y: e.m.label.y * H,    // centre, seeded from the data file
-        sx: e.m.label.x * W, sy: e.m.label.y * H
-      }));
-      const overlap = relaxLabels(boxes, dots, W, H, band * H);
-      if (!best || overlap < best.overlap) best = { scale, band, boxes, overlap };
-      if (overlap === 0) break outer;
-    }
-  }
-  stage.style.setProperty('--label-scale', best.scale);
-  // open the margins only as far as the pills actually reach
-  let top = 0, bottom = 0;
-  best.boxes.forEach(b => {
-    top = Math.max(top, b.h / 2 - b.y);
-    bottom = Math.max(bottom, b.y + b.h / 2 - H);
-    b.e.lx = b.x / W * 100; b.e.ly = b.y / H * 100;
-  });
-  stage.style.setProperty('--band-top', Math.ceil(top) + 'px');
-  stage.style.setProperty('--band-bottom', Math.ceil(bottom) + 'px');
-  applyPositions();
-}
-
-/* Show-labels mode uses the laid-out positions. The reveal modes show one
-   label at a time, so nothing can collide and each pill goes back to the
-   hand-placed spot beside its dot. */
-function applyPositions() {
-  const useLayout = stage.classList.contains('mode-show');
-  laid.forEach(e => {
-    const x = useLayout && e.lx != null ? e.lx : e.m.label.x * 100;
-    const y = useLayout && e.ly != null ? e.ly : e.m.label.y * 100;
-    e.pill.style.left = x + '%';
-    e.pill.style.top  = y + '%';
-    e.line.setAttribute('x2', x);
-    e.line.setAttribute('y2', y);
-  });
-  if (pinned) placePop();
-}
-
-function relaxLabels(boxes, dots, W, H, band) {
-  const n = boxes.length;
-  for (let iter = 0; iter < 160; iter++) {
-    const pull = iter < 100 ? 0.02 : 0;          // lean toward the hand placement, then settle
-    for (const b of boxes) { b.x += (b.sx - b.x) * pull; b.y += (b.sy - b.y) * pull; }
-    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
-      const a = boxes[i], b = boxes[j];
-      const ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x);
-      const oy = (a.h + b.h) / 2 - Math.abs(a.y - b.y);
-      if (ox <= 0 || oy <= 0) continue;
-      if (ox < oy) { const s = (a.x <= b.x ? -1 : 1) * ox * 0.5; a.x += s; b.x -= s; }
-      else         { const s = (a.y <= b.y ? -1 : 1) * oy * 0.5; a.y += s; b.y -= s; }
-    }
-    for (const b of boxes) for (const d of dots) {  // pills move off dots; dots stay
-      const ox = b.w / 2 + DOT_KEEPOUT - Math.abs(b.x - d.x);
-      const oy = b.h / 2 + DOT_KEEPOUT - Math.abs(b.y - d.y);
-      if (ox <= 0 || oy <= 0) continue;
-      if (ox < oy) b.x += (b.x < d.x ? -1 : 1) * ox * 0.6;
-      else         b.y += (b.y < d.y ? -1 : 1) * oy * 0.6;
-    }
-    for (const b of boxes) {
-      b.x = Math.max(b.w / 2, Math.min(W - b.w / 2, b.x));
-      b.y = Math.max(b.h / 2 - band, Math.min(H + band - b.h / 2, b.y));
-    }
-  }
-  let overlap = 0;                               // what is left, in px of intrusion
-  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
-    const a = boxes[i], b = boxes[j];
-    const ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x), oy = (a.h + b.h) / 2 - Math.abs(a.y - b.y);
-    if (ox > 0.5 && oy > 0.5) overlap += Math.min(ox, oy);
-  }
-  return overlap;
-}
-
-let layoutTimer = 0;
-function scheduleLayout() { clearTimeout(layoutTimer); layoutTimer = setTimeout(layoutLabels, 60); }
-if ('ResizeObserver' in window) new ResizeObserver(scheduleLayout).observe(atlasImg);
-else window.addEventListener('resize', scheduleLayout);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleLayout);
 
 /* Only one label is pinned at a time. */
 let pinned = null;
@@ -635,7 +563,6 @@ document.querySelectorAll('.mode-group button').forEach(btn => {
     btn.setAttribute('aria-checked', 'true');
     stage.classList.remove('mode-show', 'mode-hover', 'mode-hide');
     stage.classList.add('mode-' + btn.dataset.mode);
-    applyPositions();
   });
 });
 
@@ -663,6 +590,68 @@ if (!CAN_HOVER) {
     "Tap a marker to name the structure. Your instructor's selection determines "
     + 'which structures are shown.';
 }
+
+/* ---------- Enlarge: the same figure at full size ----------
+   The small figure on a phone is an overview; the labels are only readable
+   here. The enlarged copy is built by buildFigure with the current study mode,
+   so tap-to-reveal and the popover work inside it too. */
+(function () {
+  const zoom = document.getElementById('zoom');
+  const scroller = document.getElementById('zoomScroller');
+  const zstage = document.getElementById('zoomStage');
+  const zimg = document.getElementById('zoomImg');
+  const closeBtn = document.getElementById('zoomClose');
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'zoom-btn'; btn.textContent = 'Enlarge';
+  btn.setAttribute('aria-label', 'Enlarge the figure');
+  document.querySelector('.stage-wrap').appendChild(btn);
+  let lastFocus = null;
+
+  function openZoom() {
+    clearPinned(); hidePop();                    // nothing pinned on the small figure carries over
+    const natural = atlasImg.naturalWidth || 2000;
+    const w = Math.round(Math.min(natural, Math.max(1000, window.innerWidth * 2.6)));
+    zstage.style.width = w + 'px';
+    zstage.style.setProperty('--iw', w + 'px');
+    zstage.className = 'stage zoom-stage ' + Array.from(stage.classList).filter(c => c.indexOf('mode-') === 0).join(' ');
+    zimg.src = atlasImg.src; zimg.alt = atlasImg.alt;
+    const excluded = readFlags();
+    buildFigure(zstage, MARKERS.filter(m => !excluded.has(m.flag)));
+    lastFocus = document.activeElement;
+    zoom.hidden = false;
+    document.body.style.overflow = 'hidden';
+    // centre on the plate now; reading scrollWidth forces the layout
+    scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) / 2;
+    scroller.scrollTop = (scroller.scrollHeight - scroller.clientHeight) / 2;
+    closeBtn.focus();
+  }
+  function closeZoom() {
+    if (zoom.hidden) return;
+    clearPinned(); hidePop();
+    zoom.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btn.addEventListener('click', openZoom);
+  closeBtn.addEventListener('click', closeZoom);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !zoom.hidden) closeZoom(); });
+  zimg.addEventListener('click', clearPinned);
+
+  // A mouse drags the figure around; touch scrolls natively.
+  let drag = null;
+  scroller.addEventListener('mousedown', e => {
+    if (e.button !== 0 || e.target.closest('.marker, .label-pill, button')) return;
+    drag = { x: e.clientX, y: e.clientY, l: scroller.scrollLeft, t: scroller.scrollTop };
+    scroller.classList.add('dragging');
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    scroller.scrollLeft = drag.l - (e.clientX - drag.x);
+    scroller.scrollTop  = drag.t - (e.clientY - drag.y);
+  });
+  window.addEventListener('mouseup', () => { drag = null; scroller.classList.remove('dragging'); });
+})();
 
 /* ---------- load the view ---------- */
 
